@@ -1,0 +1,25 @@
+* {
+   margin:0;
+   padding:0;
+}
+html, body, #wrap {
+   height: 100%;
+}
+body  #wrap {
+   height: auto;
+   min-height: 100%;
+}
+section {
+   padding-bottom: 50px;
+}
+/*El margin top del footer debe ser igual al padding-bottom del section en negativo*/
+footer {
+   position: relative;
+   margin-top: -50px;
+   height: 50px;
+   clear: both;
+   background-color: black;
+   color: white;
+   text-align: center;
+   font-weight:bold;
+}
