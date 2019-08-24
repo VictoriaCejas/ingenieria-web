@@ -1,12 +1,10 @@
-<!---
 {% load static %}
 <head>
 <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
 <link rel="stylesheet" href="{% static 'css/login.css' %}">
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
------- Include the above in your HEAD tag 
-
+<!------ Include the above in your HEAD tag --->
 </head>
 <body>
     <div id="login">
@@ -27,12 +25,12 @@
                                 <input type="text" name="password" id="password" class="form-control" value="{{ form.username.value | default_if_none:""}}" >
                             </div>
                             <div class="form-group">
-                                <label for="remember-me" class="text-info"><span>Remember me</span> <span><input id="remember-me" name="remember-me" type="checkbox"></span></label><br>
+                                <label for="remember-me" class="text-info"><span>Remember me</span> <span><input id="remember-me" name="remember-me" type="checkbox"></span></label><br>
                                 <input type="submit" name="submit" class="btn btn-info btn-md" value="login">
-                                <input type="hidden" name="next" value="{{ next }}">
+                                <input type="hidden" name="next" value="{{ request.GET.next }}">
                             </div>
                             <div id="register-link" class="text-right">
-                                <a href="{% url 'register' %}" class="text-info">Register here</a>
+                                <a href="#" class="text-info">Register here</a>
                             </div>
                         </form>
                     </div>
@@ -41,8 +39,8 @@
         </div>
     </div>
 </body>
---->
 
+<!--
 {% load static %}
 {% block content %}
     {% if form.errors %}
@@ -55,12 +53,38 @@
     <form action="{% url 'login' %}" method="post">
     <form action=" " method="post">
       {% csrf_token %}
-
       <p>Username: {{form.username}}</p>
       <p>Password: {{form.password}}</p>
       <p><input type="submit" value="login"></p>
-      <input type="hidden" name="next" value="{{ next }}">
+      <input type="hidden" name="next" value="{{ request.GET.next }}">
     </form>
     {% endif %}
-{% endblock %}
---->
+{% endblock %}-->
+
+{% comment %}
+**registration/login.html**
+
+It's your responsibility to provide the login form in a template called
+registration/login.html by default. This template gets passed four
+template context variables:
+
+``form``
+    A Form object representing the login form. See the forms
+    documentation for more on Form objects.
+
+``next``
+    The URL to redirect to after successful login. This may contain a
+    query string, too.
+
+``site``
+    The current Site, according to the SITE_ID setting. If you don't
+    have the site framework installed, this will be set to an instance
+    of RequestSite, which derives the site name and domain from the
+    current HttpRequest.
+
+``site_name``
+    An alias for site.name. If you don't have the site framework
+    installed, this will be set to the value of
+    request.META['SERVER_NAME']. For more on sites, see The
+    "sites" framework.
+{% endcomment %}

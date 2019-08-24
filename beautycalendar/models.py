@@ -7,6 +7,7 @@ class Tipo_Usuario(models.Model):
     '''Tipo de usuario: Admin, Bussines, Client'''
     id_Tipo_Usuario= models.AutoField(primary_key=True)
     descripcion= models.CharField(max_length=50, null=False, blank=False)
+    
 class Estado_Usuario(models.Model):
     '''Estados de usuario, pueden ser: Activo, bloqueado,..'''
     id_Estado_Usuario= models.AutoField(primary_key=True)
