@@ -125,3 +125,9 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 LOGOUT_REDIRECT_URL='/'
 ACCOUNT_ACTIVATION_DAYS = 7 # One-week activation window; you may, of course, use a different value.
 SITE_ID=1
+
+EMAIL_USE_TLS = True
+
+EMAIL_HOST = 'localhost' 
+EMAIL_PORT = 1025
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
