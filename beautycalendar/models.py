@@ -23,7 +23,6 @@ class Usuario(models.Model):
     apellido = models.CharField(max_length=50, blank=False,null=False)
     estado = models.ForeignKey(EstadosUsuario, on_delete=models.CASCADE)
     tipo = models.ForeignKey(TiposUsuario, on_delete=models.CASCADE)
-    token = models.CharField(max_length = 40, blank = True, null = True)
     reputacion= models.PositiveSmallIntegerField()
 
     

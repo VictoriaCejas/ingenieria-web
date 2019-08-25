@@ -63,7 +63,13 @@ def signup(request):
             nombre= form.cleaned_data.get('nombre')
             apellido= form.cleaned_data.get('apellido')
             estado= EstadosUsuario.objects.get(descripcion='pendiente activacion')
-            tipo= TiposUsuario.objects.get(descripcion='cliente')
+            tipoGet= form.cleaned_data.get('bussines')
+            if tipoGet:
+                tipo= TiposUsuario.objects.get(descripcion='bussines')
+            else:
+                tipo= TiposUsuario.objects.get(descripcion='cliente')
+
+
             usuario=Usuario(usuario=user,correo=correo,nombre=nombre,apellido=apellido,estado=estado,tipo=tipo,reputacion=0)
             #guarda usuario
             usuario.save()
