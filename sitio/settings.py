@@ -25,7 +25,7 @@ SECRET_KEY = '&utu!&(452a)v%sa=m0^0^1ox!5(&840z^+#k^aeqw#yk&rs8v'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost','127.0.0.1']
+ALLOWED_HOSTS = ['localhost','127.0.0.1'] #LocalHost para login social con Facebook
 
 
 # Application definition

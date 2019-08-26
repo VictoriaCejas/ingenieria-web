@@ -4,7 +4,7 @@
     {% if form.non_field_errors %}
          <ul class='form-errors'>
         {% for error in form.non_field_errors %}
-            <li>{{ error }}</li>
+            <li style="color:red">{{ error }}</li>
         {% endfor %}
         </ul>
     {% endif %}
@@ -21,6 +21,7 @@
       <p><input type="hidden" name="next" value="{{ request.GET.next }}"></p>
       <p><a class="btn btn-primary" href="{% url 'social:begin' 'google-oauth2' %}?next={{ request.GET.next }}">Login with Google</a>
       <a class="btn btn-primary" href="{% url 'social:begin' 'facebook' %}?next={{ request.GET.next }}">Login with Facebook</a></p>
+      
     </div>
 
     </form>

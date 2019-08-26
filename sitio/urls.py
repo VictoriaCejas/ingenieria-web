@@ -16,10 +16,12 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.contrib.auth import views as auth_views
+from beautycalendar.forms import EmailValidationOnForgotPassword
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('',include('beautycalendar.urls')),
+    path('accounts/password_reset/', auth_views.PasswordResetView.as_view(form_class=EmailValidationOnForgotPassword), name='password_reset'),
     path('accounts/', include('django.contrib.auth.urls')),
     path('oauth/', include('social_django.urls', namespace='social')),  # <--
 
