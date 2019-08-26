@@ -1,79 +1,22 @@
 {% extends 'beautycalendar/base.html' %}
 
-<!---
-{% load static %}
 
-
-<head>
-  <link rel="stylesheet" href="{% static 'css/register.css' %}">
-  <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,300italic,400italic,600' rel='stylesheet' type='text/css'>
-  <link href="//netdna.bootstrapcdn.com/font-awesome/3.1.1/css/font-awesome.css" rel="stylesheet">
-</head>
-<div class="testbox">
-  <h1>Registration</h1>
-
-  <form action="{% url 'register' %}" method="post">
-      <hr>
-    <div class="accounttype">
-      <input type="radio" value="None" id="radioOne" name="account" checked/>
-      <label for="radioOne" class="radio" chec>Personal</label>
-      <input type="radio" value="None" id="radioTwo" name="account" />
-      <label for="radioTwo" class="radio">Company</label>
-    </div>
-  <hr>
-  <label id="icon" for="name"><i class="icon-envelope "></i></label>
-  <input type="text" name="name" id="name" placeholder="Email" required/>
-  <label id="icon" for="name"><i class="icon-user"></i></label>
-  <input type="text" name="name" id="name" placeholder="Name" required/>
-  <label id="icon" for="name"><i class="icon-shield"></i></label>
-  <input type="password" name="name" id="name" placeholder="Password" required/>
-  <div class="gender">
-    <input type="radio" value="None" id="male" name="gender" checked/>
-    <label for="male" class="radio" chec>Male</label>
-    <input type="radio" value="None" id="female" name="gender" />
-    <label for="female" class="radio">Female</label>
-   </div>
-   <p>By clicking Register, you agree on our <a href="#">terms and condition</a>.</p>
-   <a href="#" class="button">Register</a>
-  </form>
-</div>
-
-
-<!DOCTYPE html>
-<html lang="en" dir="ltr">
-  <head>
-    <meta charset="utf-8">
-    <title>Register</title>
-  </head>
-  <body>
-    <h1>Pagina de registración  !</h1>
-    <form   action="{% url 'register' %}" method="post">
-      {% csrf_token %}
-      {% if form.errors %}
-        <p>Hay errores en el formulario</p>
-      {% endif %}
-      {{ form }}
-      <input type="submit" value="register">
-      <input type="hidden" name="next" value="{{ next }}">
-    </form>
-  </body>
-</html>--->
 {% block content %}
-  <h2>Sign up</h2>
+  <h2>Registrarse</h2>
   <form method="post">
     {% csrf_token %}
       {% for field in form %}
       <p>
         {{ field.label_tag }}<br>
         {{ field }}
-        {% if field.help_text %}
-          <small style="display: none">{{ field.help_text }}</small>
-        {% endif %}
+       <!-- {% if field.help_text %}
+          <small>{{ field.help_text }}</small>
+        {% endif %}-->
         {% for error in field.errors %}
-          <p style="color: red">{{ error }}</p>
+          <p >{{ error }}</p>
         {% endfor %}
       </p>
       {% endfor %}
-    <button type="submit">Sign up</button>
+    <button type="submit" class='btn btn-primary'>Sign up</button>
   </form>
 {% endblock %}

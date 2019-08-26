@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from .models import Usuario
-    
+from django.contrib.auth import authenticate, login
 
 class SignupForm(UserCreationForm):
    
@@ -26,3 +26,23 @@ class SignupForm(UserCreationForm):
             return mail
         # A user was found with this as a username, raise an error.
         raise forms.ValidationError('Este mail ya esta en uso')
+
+class LoginForm(forms.Form):
+    username = forms.CharField(max_length=255, required=True)
+    password = forms.CharField(widget=forms.PasswordInput, required=True)
+
+    def clean(self):
+        username = self.cleaned_data.get('username')
+        password = self.cleaned_data.get('password')
+        user = authenticate(username=username, password=password)
+        if not user:
+            raise forms.ValidationError("Los datos ingresados son incorrectos, prueba de nuevo")
+        elif not user.is_active:
+            raise forms.ValidationError('Tu cuenta aun no esta activada')
+        return self.cleaned_data
+
+    def login(self, request):
+        username = self.cleaned_data.get('username')
+        password = self.cleaned_data.get('password')
+        user = authenticate(username=username, password=password)
+        return user

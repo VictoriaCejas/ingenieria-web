@@ -7,8 +7,7 @@ from django.contrib.auth.decorators import login_required
 from .models import Usuario, TiposUsuario, EstadosUsuario
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
-from django.contrib.auth import login, authenticate
-from .forms import SignupForm
+from .forms import SignupForm, LoginForm
 from django.contrib.sites.shortcuts import get_current_site
 from django.utils.encoding import force_bytes, force_text
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
@@ -22,21 +21,28 @@ def home(request):
 
 def IniciarSesion(request):
     next=""
+    form= LoginForm(request.POST or None) 
     if request.GET:
         next=request.GET['next']
-    if request.method=='POST':
+    if request.method=='POST' and form.is_valid():
         #next= request.POST['next']
-        form = AuthenticationForm(data=request.POST)
-        if form.is_valid():
-            user=form.get_user()
-            login(request, user)
+        user = form.login(request)
+        if user:
+            login(request,user)
             next = request.POST.get('next', '/')
             return HttpResponseRedirect(next)
+        #  form = AuthenticationForm(data=request.POST)
+        #if form.is_valid():
+         #   user=form.get_user()
+          #  login(request, user)
+           # next = request.POST.get('next', '/')
+            #return HttpResponseRedirect(next)
            # return HttpResponse(next)
     else:
         form = AuthenticationForm(data=request.POST)
 
     return render(request,"registration/login.html",{'form':form})
+
 
 def CerrarSesion(request):
     logout(request)
@@ -53,15 +59,19 @@ def signup(request):
     if request.method == 'POST':
         form = SignupForm(request.POST)
         if form.is_valid():          
+            nombre= form.cleaned_data.get('nombre')
+            apellido= form.cleaned_data.get('apellido')
+
             user = form.save(commit=False)
             user.is_active = False
+            user.first_name=nombre
+            user.last_name=apellido
             user.save()
             
             to_email = form.cleaned_data.get('email')
       
             correo=to_email
-            nombre= form.cleaned_data.get('nombre')
-            apellido= form.cleaned_data.get('apellido')
+            
             estado= EstadosUsuario.objects.get(descripcion='pendiente activacion')
             tipoGet= form.cleaned_data.get('bussines')
             if tipoGet:
@@ -86,6 +96,7 @@ def signup(request):
                         mail_subject, message, to=[to_email]
             )
             email.send()
+            return render(request,'registration/activation_mail_send.html',{})
             return HttpResponse('Please confirm your email address to complete the registration')
     else:
         form = SignupForm()
@@ -105,11 +116,26 @@ def activate(request, uidb64, token):
         usuario.estado=estadoActivado     
         #Guarda usuario como activo
         usuario.save()
-        login(request, user)
+        #login(request, user)
         # return redirect('home')
-        return HttpResponse('Thank you for your email confirmation. Now you can login your account.')
+        login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+        return render(request,'registration/activation_complete.html',{})
+       # return HttpResponse('Thank you for your email confirmation. Now you can login your account.')
     else:
-        return HttpResponse('Activation link is invalid!')
+        return render(request,'registration/activate.html',{})
+      #  return HttpResponse('Activation link is invalid!')
+
+@login_required(login_url='/accounts/login/')
+def perfil(request):
+    try:
+        user=request.user
+        tipo= Usuario.objects.get(usuario=user).tipo.idTipoUsuario
+    except:
+        tipo= 2
+
+    return render(request, 'beautycalendar/perfil.html',{'tipo':tipo})
+    
+
 
 '''
 def register(request):

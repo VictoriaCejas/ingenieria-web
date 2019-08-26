@@ -1,9 +1,9 @@
-from django.urls import path
+from django.urls import path, include
 from . import views
 
 urlpatterns = [
     path('', views.home, name='home'),
-    #path('register', views.register, name='register'),
+    path('perfil', views.perfil, name='perfil'),
     path('login',views.IniciarSesion, name='login'),
     path('logout', views.CerrarSesion,name='logout'),
     path('private',views.Private, name='private'),
@@ -11,6 +11,6 @@ urlpatterns = [
     path('singup',views.signup,name='singup'),
     path('activate/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$',
         views.activate, name='activate'),
-  #  path('bussines_profile', views.bussines_profile,name='bussines_profile'),
 
+   # path('accounts/', include('django.contrib.auth.urls')),
 ]

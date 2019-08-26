@@ -1,7 +1,7 @@
 {% extends 'beautycalendar/base.html' %}
 {% block content %}
-    <p> hello</p>
-    <a class="btn " href="{%url 'private'%}">privado</a>
-    <a class="btn " href="{% url 'public' %}">publico</a>
+    <p> Bienvenido</p>
+    <a class="btn btn-primary " href="{%url 'private'%}">Acceso privado</a>
+    <a class="btn btn-primary " href="{% url 'public' %}">Acceso publico</a>
 
 {% endblock %}

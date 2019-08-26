@@ -1,0 +1,14 @@
+{% extends 'beautycalendar/base.html' %}
+{% block content %}
+    {% if tipo == 1 %}
+        <p>Hola! Bussines</p>
+    {% endif %}
+    {% if tipo == 2 %}
+        <p>Hola! Cliente </p>
+    {% endif %}
+    {% if tipo == 3 %}
+        <p>Hola! Admin </p>
+        <a class="btn" href='admin/''>Administracion</a>
+        <a class="btn " href='admin/auth/user'>Administrar usuarios</a>
+    {% endif %}
+{% endblock %}

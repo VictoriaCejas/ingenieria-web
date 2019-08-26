@@ -25,7 +25,7 @@ SECRET_KEY = '&utu!&(452a)v%sa=m0^0^1ox!5(&840z^+#k^aeqw#yk&rs8v'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1']
+ALLOWED_HOSTS = ['localhost','127.0.0.1']
 
 
 # Application definition
@@ -40,6 +40,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
     'registration',
+    
+    'social_django',  # <--
+
 ]
 
 MIDDLEWARE = [
@@ -50,6 +53,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    'social_django.middleware.SocialAuthExceptionMiddleware',  # <--
+
 ]
 
 ROOT_URLCONF = 'sitio.urls'
@@ -65,6 +71,9 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                
+                'social_django.context_processors.backends',  # <--
+                'social_django.context_processors.login_redirect', # <--
             ],
         },
     },
@@ -131,3 +140,20 @@ EMAIL_USE_TLS = True
 EMAIL_HOST = 'localhost' 
 EMAIL_PORT = 1025
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+AUTHENTICATION_BACKENDS = (
+    'social_core.backends.google.GoogleOAuth2',
+    'social_core.backends.facebook.FacebookOAuth2',
+
+    'django.contrib.auth.backends.ModelBackend',
+    )
+
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY  = '712432114339-qsrrvmd1rkktsfsr68nc1cpl41sn9nia.apps.googleusercontent.com'
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = 'yBRjsixh0bcsvjdv5dlFa_zl'
+
+SOCIAL_AUTH_FACEBOOK_KEY = '1327557150743870'  # App ID
+SOCIAL_AUTH_FACEBOOK_SECRET = 'd4af7f3aa609e4a8cf11cb092f548f4f'  # App Secret
+
+LOGIN_REDIRECT_URL = 'home'
+SOCIAL_AUTH_URL_NAMESPACE = 'social'
+
