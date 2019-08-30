@@ -39,9 +39,16 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
-    'registration',
+    #'registration',
     
-    'social_django',  # <--
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.facebook',
+    'allauth.socialaccount.providers.google',
+
+
+    #'social_django',  con django-social # <--
 
 ]
 
@@ -54,7 +61,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
-    'social_django.middleware.SocialAuthExceptionMiddleware',  # <--
+    #'social_django.middleware.SocialAuthExceptionMiddleware',  # <--
 
 ]
 
@@ -63,7 +70,7 @@ ROOT_URLCONF = 'sitio.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS':[os.path.join(BASE_DIR, 'templates'), os.path.join(BASE_DIR, 'beautycalendar/templates/allauth')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -72,8 +79,12 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 
-                'social_django.context_processors.backends',  # <--
-                'social_django.context_processors.login_redirect', # <--
+                'django.template.context_processors.request',
+
+
+        
+                #'social_django.context_processors.backends',  # <--
+                #'social_django.context_processors.login_redirect', # <--
             ],
         },
     },
@@ -132,7 +143,6 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 LOGOUT_REDIRECT_URL='/'
-ACCOUNT_ACTIVATION_DAYS = 7 # One-week activation window; you may, of course, use a different value.
 SITE_ID=1
 
 EMAIL_USE_TLS = True
@@ -142,18 +152,41 @@ EMAIL_PORT = 1025
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 AUTHENTICATION_BACKENDS = (
-    'social_core.backends.google.GoogleOAuth2',
-    'social_core.backends.facebook.FacebookOAuth2',
+    #'social_core.backends.google.GoogleOAuth2',
+    #'social_core.backends.facebook.FacebookOAuth2',
 
     'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+
     )
 
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY  = '712432114339-qsrrvmd1rkktsfsr68nc1cpl41sn9nia.apps.googleusercontent.com'
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = 'yBRjsixh0bcsvjdv5dlFa_zl'
+#SOCIAL_AUTH_GOOGLE_OAUTH2_KEY  = '712432114339-qsrrvmd1rkktsfsr68nc1cpl41sn9nia.apps.googleusercontent.com'
+#SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = 'yBRjsixh0bcsvjdv5dlFa_zl'
 
-SOCIAL_AUTH_FACEBOOK_KEY = '1327557150743870'  # App ID
-SOCIAL_AUTH_FACEBOOK_SECRET = 'd4af7f3aa609e4a8cf11cb092f548f4f'  # App Secret
+#SOCIAL_AUTH_FACEBOOK_KEY = '1327557150743870'  # App ID
+#SOCIAL_AUTH_FACEBOOK_SECRET = 'd4af7f3aa609e4a8cf11cb092f548f4f'  # App Secret
 
 LOGIN_REDIRECT_URL = 'home'
-SOCIAL_AUTH_URL_NAMESPACE = 'social'
+#SOCIAL_AUTH_URL_NAMESPACE = 'social'
+ACCOUNT_AUTHENTICATED_LOGIN_REDIRECTS =False
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_AUTHENTICATION_METHOD = "username_email"
+ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL= None
+ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS=3
+ACCOUNT_EMAIL_CONFIRMATION_HMAC = True
+ACCOUNT_EMAIL_VERIFICATION= "mandatory"
+ACCOUNT_LOGOUT_ON_PASSWORD_CHANGE = True
+ACCOUNT_PRESERVE_USERNAME_CASING= True #Todos en minuscula
+ACCOUNT_SESSION_REMEMBER = None
+ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_USER_MODEL_USERNAME_FIELD ="username"
+ACCOUNT_USERNAME_REQUIRED = True
+SOCIALACCOUNT_AUTO_SIGNUP = True
+
+ACCOUNT_FORMS = {
+    'signup': 'beautycalendar.forms.CustomSignupForm',
+}
+
+
+
 

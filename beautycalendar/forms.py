@@ -6,59 +6,31 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.tokens import default_token_generator
 from django.db.models import Q
 from django.core.exceptions import MultipleObjectsReturned
+from allauth.account.forms import LoginForm, SignupForm, ResetPasswordForm, UserForm
+from allauth.account.signals import email_confirmed, user_signed_up
+from django.dispatch import receiver
+from allauth.account.adapter import DefaultAccountAdapter
 
 
-
-class SignupForm(UserCreationForm):
-
-    email = forms.EmailField(max_length=200, help_text='Required')
-    nombre = forms.CharField(max_length=50)
-    apellido = forms.CharField(max_length=50)
+class CustomSignupForm(SignupForm):
+    first_name = forms.CharField(max_length=30, label='Nombre')
+    last_name = forms.CharField(max_length=30, label='Apellido')
     Choices = [('bussines', 'Bussines')]
-    bussines = forms.BooleanField(
-        required=False, initial=False, label='Bussines', help_text='Cuenta para emprendedor',)
+    bussines = forms.BooleanField(required=False, initial=False, label='Bussines', help_text='Cuenta para emprendedor',)
 
     class Meta:
-        model = User
-        fields = ('username', 'email', 'nombre', 'apellido',
-                  'password1', 'password2', 'bussines')
+        model=Usuario
+        fields=['bussines']
 
-    def clean_email(self):
-        # Get the email
-        mail = self.cleaned_data.get('email')
-        # Check to see if any users already exist with this email as a username.
-        try:
-            match = User.objects.get(email=mail)
-        except User.DoesNotExist:
-            # Unable to find a user, this is fine
-            return mail
-        # A user was found with this as a username, raise an error.
-        raise forms.ValidationError('Este mail ya esta en uso')
-
-
-class LoginForm(forms.Form):
-    username = forms.CharField(max_length=255, required=True)
-    password = forms.CharField(widget=forms.PasswordInput, required=True)
-
-    def clean(self):
-        username = self.cleaned_data.get('username')
-        password = self.cleaned_data.get('password')
-        user = authenticate(username=username, password=password)
-        if not user:
-            raise forms.ValidationError(
-                "Los datos ingresados son incorrectos, prueba de nuevo")
-        elif not user.is_active:
-            raise forms.ValidationError('Tu cuenta aun no esta activada')
-        return self.cleaned_data
-
-    def login(self, request):
-        username = self.cleaned_data.get('username')
-        password = self.cleaned_data.get('password')
-        user = authenticate(username=username, password=password)
+    def signup(self, request, user):
+        user.first_name = self.cleaned_data['first_name']
+        user.last_name = self.cleaned_data['last_name']
+        user.save()
         return user
 
-
-class EmailValidationOnForgotPassword(PasswordResetForm):
+    
+'''
+class EmailValidationOnForgotPassword(ResetPasswordForm):
     username = forms.CharField(max_length=255, required=True)
 
     class Meta:
@@ -80,3 +52,4 @@ class EmailValidationOnForgotPassword(PasswordResetForm):
        
         return email
 
+'''
