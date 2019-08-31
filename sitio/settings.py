@@ -146,11 +146,17 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 LOGOUT_REDIRECT_URL='/'
 SITE_ID=1
 
-EMAIL_USE_TLS = True
+#EMAIL_USE_TLS = True
 
-EMAIL_HOST = 'localhost' 
-EMAIL_PORT = 1025
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+#EMAIL_HOST = 'localhost' 
+#EMAIL_PORT = 1025
+#EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = DEFAULT_FROM_EMAIL = 'beautydailyadm@gmail.com'
+EMAIL_HOST_PASSWORD = '123456*a'
 
 AUTHENTICATION_BACKENDS = (
     #'social_core.backends.google.GoogleOAuth2',
