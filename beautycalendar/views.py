@@ -38,7 +38,7 @@ def Public(request):
 def Perfil(request):
     user= request.user
     usuario= Usuario.objects.get(usuario=user)
-    tipo = Usuario.objects.get(usuario=user).tipo.idTipoUsuario
+    tipo = Usuario.objects.get(usuario=user).tipo
 
 
     return render(request, 'beautycalendar/perfil.html', {'usuario': usuario,'user':user,'tipo':tipo})
