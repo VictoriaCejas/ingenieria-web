@@ -1,6 +1,4 @@
 from django.contrib import admin
-from .models import Usuario, TiposUsuario, EstadosUsuario
+from .models import Usuario
 # Register your models here.
 admin.site.register(Usuario)
-admin.site.register(TiposUsuario)
-admin.site.register(EstadosUsuario)

@@ -2,9 +2,9 @@
 
 {% load i18n %}
 
-{% block head_title %}{% trans "Account Connections" %}{% endblock %}
 
-{% block content %}
+{% block account_login %}
+<div class="container-fluid">
 <h1>{% trans "Account Connections" %}</h1>
 
 {% if form.accounts %}
@@ -50,5 +50,5 @@
 </ul>
 
 {% include "socialaccount/snippets/login_extra.html" %}
-
+<div>
 {% endblock %}
