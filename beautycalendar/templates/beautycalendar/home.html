@@ -1,5 +1,23 @@
 {% extends 'beautycalendar/base.html' %}
+{% load static %}
+
+{% block header %}
+<div class="page-header section-dark" style="background-image: url('static/assets/img/index.png')">
+    <div class="content-center">
+      <div class="container">
+        <div class="title-brand">
+          <h1 class="presentation-title">BeautyDaily</h1>
+          
+        <h2 class="presentation-subtitle text-center">Tu agenda de belleza online </h2>
+      </div>
+    </div>
+</div>
+   
+</div>
+{% endblock header %}
+
 {% block content %}
+
     <p> Bienvenido</p>
     <a class="btn btn-primary " href="{%url 'private'%}">Acceso privado</a>
     <a class="btn btn-primary " href="{% url 'public' %}">Acceso publico</a>

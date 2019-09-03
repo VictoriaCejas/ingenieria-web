@@ -1,8 +1,60 @@
-{% extends "beautycalendar/base.html" %}
+{% extends "account/base.html" %}
+{% load account socialaccount %}
+{% load i18n %}
+
+
+{% block account %}
+
+    <div class="filter"></div>
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-4 ml-auto mr-auto">
+          <div class="card card-register">
+            <h3 class="title mx-auto">Bienvenido</h3>
+            <div class="social-line text-center">
+              <a href="{% provider_login_url 'facebook' method='oauth2' %}" class="btn btn-neutral btn-facebook btn-just-icon">
+                <i class="fa fa-facebook-square"></i>
+              </a>
+              <a href="{% provider_login_url 'google' method='oauth2' %}" class="btn btn-neutral btn-google btn-just-icon">
+                <i class="fa fa-google-plus"></i>
+              </a>
+            </div>
+
+            <form class="login" method="POST">
+              {% csrf_token %}
+              
+              <p>
+              <label for="id_login">Iniciar sesión:</label>
+              <input type="text" class="form-control" name="login" placeholder="Nombre de usuario" autofocus="autofocus" required="" id="id_login">  
+              </p>
+              
+              <p>
+              <label for="id_password">Contraseña:</label>
+              <input type="password" class="form-control" name="password" placeholder="Contraseña" required="" id="id_password">
+              </p>
+
+              {% if redirect_field_value %}
+              <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+              {% endif %}
+              <a class="button" style="color:black" href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
+              <button class="btn btn-danger btn-block btn-round" type="submit">{% trans "Sign In" %}</button>
+            </form>
+            {{ form.non_field_errors }}
+            <div class="forgot">
+              <a  href="{{ signup_url }}" class="btn btn-link btn-danger">Registrase</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+   
+{% endblock account %}
+
+{% comment "" %}
 {% load static %}
 {% load i18n %}
 {% load account socialaccount %}
-
 {% block head_title %}{% trans "Sign In" %}{% endblock %}
 
 {% block content %}
@@ -44,3 +96,5 @@ for a {{ site_name }} account and sign in below:{% endblocktrans %}</p>
 </form>
 
 {% endblock %}
+{% endcomment %}
+

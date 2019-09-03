@@ -1,7 +1,78 @@
+{% extends "account/base.html" %}
+{% load i18n %}
+
+{% block account %}
+    <div class="filter">
+    </div>
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-4 ml-auto mr-auto">
+          <div class="card card-register">
+            <h4 class="title mx-auto">Registrate</h4>
+            <form class="signup" id="signup_form" method="post" >
+              {% csrf_token %}
+              <p>
+              <label style="display: inline;" for="id_username">Usuario:</label> 
+              <input type="text" class="form-control" name="username" placeholder="Usuario" autofocus="autofocus" minlength="1" maxlength="150" required id="id_username">
+              </p>
+              <p >{{ form.errors.username }}</p>
+              <p>
+              <label style="display: inline;" for="id_email">Correo electrónico:</label> 
+              <input type="email" class="form-control" name="email" placeholder="Correo electrónico" required id="id_email">
+              </p>
+              <p >{{ form.errors.email }}</p>
+              <p>
+              <label style="display: inline;" for="id_first_name">Nombre:</label> </p>
+              <input type="text" class="form-control" name="first_name" maxlength="30" placeholder="Nombre"  required id="id_first_name">
+              </p>
+              <p >{{ form.errors.first_name }}</p>
+
+              <p>
+              <label style="display: inline;" for="id_last_name">Apellido:</label> 
+              <input type="text" class="form-control" name="last_name" maxlength="30" placeholder="Apellido
+              "  required id="id_last_name">
+              </p>
+              <p >{{ form.errors.last_name }}</p>
+
+              <p>
+              <label style="display: inline;" for="id_password1">Contraseña:</label> 
+              <input type="password" class="form-control" name="password1" placeholder="Contraseña" required id="id_password1">
+              </p>
+              <p >{{ form.errors.password1 }}</p>
+
+              <p>
+              <label style="display: inline;" for="id_password2">Contraseña (de nuevo):</label>
+              <input type="password" class="form-control" name="password2" placeholder="Contraseña (de nuevo)" required id="id_password2">
+              </p>
+              <p >{{ form.errors.password2 }}</p>
+
+              <p>
+              <label style="display: inline;" for="id_bussines">Bussines:</label> 
+              <input type="checkbox"  name="bussines" id="id_bussines"> 
+              <span class="helptext">Cuenta para emprendedor</span>
+              </p>
+                          {% if redirect_field_value %}
+              <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+              {% endif %}
+              <button type="submit" class="btn btn-danger btn-block btn-round" >{% trans "Sign Up" %} &raquo;</button>
+            </form>
+            </div>
+          </div>
+        </div>
+      </div>
+ 
+{% endblock account %}
+
+{% comment "" %}
+
+
 {% extends "beautycalendar/base.html" %}
 {% load static %}
 
 {% load i18n %}
+
+{% comment "" %}
+
 
 {% block head_title %}{% trans "Signup" %}{% endblock %}
 
@@ -20,3 +91,4 @@
 </form>
 
 {% endblock %}
+{% endcomment %}

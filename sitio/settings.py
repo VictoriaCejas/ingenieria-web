@@ -26,7 +26,7 @@ SECRET_KEY = '&utu!&(452a)v%sa=m0^0^1ox!5(&840z^+#k^aeqw#yk&rs8v'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost','127.0.0.1','beautydaily.herokuapp.com'] #LocalHost para login social con Facebook
+ALLOWED_HOSTS = ['localhost','127.0.0.1'] #LocalHost para login social con Facebook
 
 
 # Application definition
@@ -143,20 +143,21 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+MEDIA_URL= '/media/'
+MEDIA_ROOT= os.path.join(BASE_DIR,'beautycalendar/media')
 LOGOUT_REDIRECT_URL='/'
 SITE_ID=1
 
-#EMAIL_USE_TLS = True
-
-#EMAIL_HOST = 'localhost' 
-#EMAIL_PORT = 1025
-#EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-
 EMAIL_USE_TLS = True
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_HOST_USER = DEFAULT_FROM_EMAIL = 'beautydailyadm@gmail.com'
-EMAIL_HOST_PASSWORD = '123456*a'
+EMAIL_HOST = 'localhost' 
+EMAIL_PORT = 1025
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+#EMAIL_USE_TLS = True
+#EMAIL_HOST = 'smtp.gmail.com'
+#EMAIL_PORT = 587
+#EMAIL_HOST_USER = DEFAULT_FROM_EMAIL = 'beautydailyadm@gmail.com'
+#EMAIL_HOST_PASSWORD = '123456*a'
 
 AUTHENTICATION_BACKENDS = (
     #'social_core.backends.google.GoogleOAuth2',

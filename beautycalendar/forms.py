@@ -28,6 +28,8 @@ class CustomSignupForm(SignupForm):
         user.save()
         return user
 
+
+
     
 '''
 class EmailValidationOnForgotPassword(ResetPasswordForm):

@@ -1,1 +1,14 @@
-{% extends 'beautycalendar/base.html' %}
+{% extends 'beautycalendar/head.html' %}
+{% load static %}
+
+{% block html %}
+    <div class="page-header section-dark" style="background-image: url('/static/assets/img/index.png')">
+        {% block account %}
+        
+        {% endblock account %}
+
+        <div class="footer register-footer text-center">
+        <h6> <i class="fa fa-heart heart"></i> <a style="color:white; font-weight: bold;" href="{% url 'home' %}" > Back to Home </a> </h6>
+        </div>
+    </div>
+{%endblock html%}

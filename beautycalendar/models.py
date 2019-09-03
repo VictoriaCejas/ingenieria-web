@@ -31,7 +31,9 @@ class Usuario(models.Model):
     apellido = models.CharField(max_length=50, blank=False,null=False)
     estado = models.ForeignKey(EstadosUsuario, on_delete=models.CASCADE)
     tipo = models.ForeignKey(TiposUsuario, on_delete=models.CASCADE)
-    reputacion= models.PositiveSmallIntegerField()
+    reputacion= models.PositiveSmallIntegerField(null=True)
+    imagenAvatar= models.ImageField(null=True,blank=True,upload_to='avatar_image')
+    imagenPortada= models.ImageField(null=True,blank=True,upload_to='front_image')
 
     def __str__(self):
         return self.nombre 
@@ -54,7 +56,6 @@ def sing_up(request,user,**kwargs):
     else:
         estado = EstadosUsuario.objects.get(descripcion='activo') 
         tipo = TiposUsuario.objects.get(descripcion='cliente')
-
 
     # import web_pdb; web_pdb.set_trace()
     us = Usuario(usuario=user, correo=user.email, nombre=nombre, apellido=apellido, estado=estado, tipo=tipo, reputacion=0)

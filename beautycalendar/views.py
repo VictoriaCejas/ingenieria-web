@@ -34,15 +34,20 @@ def Public(request):
     return render(request, 'beautycalendar/publico.html', {})
 
 
-@login_required(login_url="login")
+@login_required
 def Perfil(request):
-    try:
-        user = request.user
-        tipo = Usuario.objects.get(usuario=user).tipo.idTipoUsuario
-    except:
-        tipo = 2
+    user= request.user
+    usuario= Usuario.objects.get(usuario=user)
 
-    return render(request, 'beautycalendar/perfil.html', {'tipo': tipo})
+   # try:
+    #    user = request.user
+     #   Usuario= Usuario.objects.get(user=user)
+      #  form= UsuarioF
+    tipo = Usuario.objects.get(usuario=user).tipo.idTipoUsuario
+    #except:
+     #   tipo = 2
+
+    return render(request, 'beautycalendar/perfil.html', {'usuario': usuario,'user':user,'tipo':tipo})
 
 
 '''

@@ -1,4 +1,50 @@
 {% extends 'beautycalendar/base.html' %}
+{% block header %}
+{% if usuario.imagenPortada %}
+  <div class="page-header page-header-xs" data-parallax="true" style="background-image: url('{{ usuario.imagenPortada.url }}')">
+{% else %}
+  <div class="page-header page-header-xs" data-parallax="true" style="background-image: url('static/assets/img/fabio-mangione.jpg');">
+{% endif %}
+    <div class="filter"></div>
+  </div>
+  <div class="section profile-content">
+    <div class="container">
+      <div class="owner">
+        <div class="avatar">
+        {% if usuario.imagenAvatar %}
+          <img src='{{ usuario.imagenAvatar.url }}' width="240" alt="Circle Image" class="img-circle img-no-padding img-responsive">
+        {% else %}
+          <img src='static/assets/img/default-avatar.png'  alt="Circle Image" class="img-circle img-no-padding img-responsive">
+        {% endif %}
+        </div>
+        <div class="name">
+          <h4 class="title">{{usuario.nombre}}
+            <br />
+          </h4>
+          <h6 class="description">Music Producer</h6>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6 ml-auto mr-auto text-center">
+          <p>An artist of considerable range, Jane Faker — the name taken by Melbourne-raised, Brooklyn-based Nick Murphy — writes, performs and records all of his own music, giving it a warm, intimate feel with a solid groove structure. </p>
+          <br />
+          <btn class="btn btn-outline-default btn-round"><i class="fa fa-cog"></i> Settings</btn>
+        </div>
+      </div>
+      <br/>
+      <div class="nav-tabs-navigation">
+        <div class="nav-tabs-wrapper">
+          <ul class="nav nav-tabs" role="tablist">
+            <li class="nav-item">
+              <a class="nav-link active" data-toggle="tab" href="#follows" role="tab">Follows</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" data-toggle="tab" href="#following" role="tab">Following</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+{% endblock header %}
 {% block content %}
     {% if tipo == 1 %}
         <p>Hola! Bussines</p>
