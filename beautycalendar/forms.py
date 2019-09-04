@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, PasswordResetForm
 from django.contrib.auth.models import User
-from .models import Usuario
+from .models import User
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.tokens import default_token_generator
 from django.db.models import Q
@@ -19,7 +19,7 @@ class CustomSignupForm(SignupForm):
     bussines = forms.BooleanField(required=False, initial=False, label='Bussines', help_text='Cuenta para emprendedor',)
 
     class Meta:
-        model=Usuario
+        model=User
         fields=['bussines']
 
     def signup(self, request, user):

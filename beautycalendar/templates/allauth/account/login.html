@@ -24,6 +24,9 @@
             {% endif %}
             <form class="login" method="POST">
               {% csrf_token %}
+                {{ form.as_p }}
+              {% comment "" %}
+              
               <p>
               <label for="id_login">Iniciar sesión:</label>
               <input type="text" class="form-control" name="login" placeholder="Nombre de usuario" autofocus="autofocus" required="" id="id_login">  
@@ -33,12 +36,13 @@
               <label for="id_password">Contraseña:</label>
               <input type="password" class="form-control" name="password" placeholder="Contraseña" required="" id="id_password">
               </p>
-
+              {% endcomment %}              
               {% if redirect_field_value %}
               <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
               {% endif %}
               <a class="button" style="color:black" href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
               <button class="btn btn-danger btn-block btn-round" type="submit">{% trans "Sign In" %}</button>
+              
             </form>
               {{ form.non_field_errors }}
               <div class="forgot">

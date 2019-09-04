@@ -4,7 +4,7 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
-from .models import Usuario
+from .models import MyUser
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from .forms import CustomSignupForm, LoginForm
@@ -37,8 +37,8 @@ def Public(request):
 @login_required
 def Perfil(request):
     user= request.user
-    usuario= Usuario.objects.get(usuario=user)
-    tipo = Usuario.objects.get(usuario=user).tipo
+    usuario= MyUser.objects.get(email=user.email)
+    tipo = MyUser.objects.get(email=user.email).kind
 
 
     return render(request, 'beautycalendar/perfil.html', {'usuario': usuario,'user':user,'tipo':tipo})

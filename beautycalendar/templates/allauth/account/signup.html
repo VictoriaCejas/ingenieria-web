@@ -10,6 +10,10 @@
             <h4 class="title mx-auto">Registrate</h4>
             <form class="signup" id="signup_form" method="post" >
               {% csrf_token %}
+                {{ form.as_p }}
+
+              {% comment "" %}
+              
               <p>
               <label style="display: inline;" for="id_username">Usuario:</label> 
               <input type="text" class="form-control" name="username" placeholder="Usuario" autofocus="autofocus" minlength="1" maxlength="150" required id="id_username">
@@ -50,7 +54,9 @@
               <input type="checkbox"  name="bussines" id="id_bussines"> 
               <span class="helptext">Cuenta para emprendedor</span>
               </p>
-                          {% if redirect_field_value %}
+              {% endcomment %}
+
+              {% if redirect_field_value %}
               <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
               {% endif %}
               <button type="submit" class="btn btn-danger btn-block btn-round" >{% trans "Sign Up" %} &raquo;</button>
