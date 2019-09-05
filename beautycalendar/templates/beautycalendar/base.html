@@ -2,8 +2,9 @@
 {% load static %}
 {% block html %}
 
-<body class="profile-page sidebar-collapse" style='backgroud: black' >
+<body class="profile-page sidebar-collapse " style='backgroud: black' >
   <!-- Navbar -->
+  
   <nav class="navbar navbar-expand-lg fixed-top navbar-transparent " color-on-scroll="300">
     <div class="container">
       <div class="navbar-translate">
@@ -12,10 +13,10 @@
         </a>
 
       </div>
-      <div class="collapse navbar-collapse justify-content-end" id="navigation">
+      <div  id="navigation">
       {% if user.is_authenticated %}
 
-        <div class="btn-group dropleft">
+        <div class="btn-group">
           <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             hola {{ user.get_username }}
           </button>
@@ -48,5 +49,4 @@
 {% endblock %}
 </div>
 </div>
-
 {% endblock html %}
