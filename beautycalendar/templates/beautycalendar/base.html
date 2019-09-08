@@ -2,7 +2,7 @@
 {% load static %}
 {% block html %}
 
-<body class="profile-page sidebar-collapse " style='backgroud: black' >
+<body class="profile-page sidebar-collapse "  >
   <!-- Navbar -->
   
   <nav class="navbar navbar-expand-lg fixed-top navbar-transparent " color-on-scroll="300">
@@ -11,7 +11,6 @@
         <a class="navbar-brand"  href="{% url 'home' %}" rel="tooltip"  data-placement="bottom" >
           BeautyDaily
         </a>
-
       </div>
       <div  id="navigation">
       {% if user.is_authenticated %}
@@ -21,7 +20,7 @@
             hola {{ user.get_username }}
           </button>
           <div class="dropdown-menu">
-            <a class="dropdown-item" href="{% url 'perfil'%}">Mi perfil</a>
+            <a class="dropdown-item" href="{% url 'private_profile'%}">Mi perfil</a>
             <a class="dropdown-item" href="{% url 'account_change_password' %}">Cambiar contraseña</a>
             <a class="dropdown-item" href="{% url 'account_logout' %}">Cerrar sesion</a>
           </div>

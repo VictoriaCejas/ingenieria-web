@@ -1,0 +1,44 @@
+{% extends "beautycalendar/head.html" %}
+{% load static %}
+{% block html %}
+<body>
+  <!-- Navbar -->  
+    <nav class="navbar navbar-expand-lg fixed-top ">
+        <div class="container">
+            <div class="navbar-translate">
+                <a class="navbar-brand"  href="{% url 'home' %}" rel="tooltip"  data-placement="bottom" >
+                BeautyDaily
+                </a>
+            </div>
+            <div  id="navigation">
+                {% if user.is_authenticated %}
+
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            hola {{ user.get_username }}
+                        </button>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" href="{% url 'private_profile'%}">Mi perfil</a>
+                            <a class="dropdown-item" href="{% url 'account_change_password' %}">Cambiar contraseña</a>
+                            <a class="dropdown-item" href="{% url 'account_logout' %}">Cerrar sesion</a>
+                        </div>
+                    </div>
+                {% else %}
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a href="{% url 'account_login' %}?next={{ request.path|urlencode }}" class="nav-link"><i class="nc-icon nc-single-02"></i> Iniciar sesion</a>
+                        </li>
+                    </ul>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+  <!-- End Navbar -->
+    <div class="container body-without-image" style="margin-top:110px">
+    {% block content %}  
+
+    {% endblock %}
+    </div>
+</body>
+{% endblock html %}
+

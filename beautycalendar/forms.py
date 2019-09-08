@@ -1,7 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, PasswordResetForm
-from django.contrib.auth.models import User
-from .models import User
+from .models import User, ContentUser
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.tokens import default_token_generator
 from django.db.models import Q
@@ -18,9 +17,9 @@ class CustomSignupForm(SignupForm):
     Choices = [('bussines', 'Bussines')]
     bussines = forms.BooleanField(required=False, initial=False, label='Bussines', help_text='Cuenta para emprendedor',)
 
-    class Meta:
-        model=User
-        fields=['bussines']
+    #class Meta:
+     #   model=User
+      #  fields=['bussines']
 
     def signup(self, request, user):
         user.first_name = self.cleaned_data['first_name']
@@ -29,29 +28,10 @@ class CustomSignupForm(SignupForm):
         return user
 
 
+class ProductsForm(forms.ModelForm):
+    
+    class Meta:
+        model = ContentUser
+        fields = ['title','imageProduct','description']
 
     
-'''
-class EmailValidationOnForgotPassword(ResetPasswordForm):
-    username = forms.CharField(max_length=255, required=True)
-
-    class Meta:
-        model = User
-        fields = ('username', 'email')
-
-    def clean_email(self):
-        email = self.cleaned_data.get('email')
-        usernamef = self.cleaned_data.get('username')
-      #  if not User.objects.filter(email__iexact=email,username=usernamef, is_active=True).exists():
-      #      raise forms.ValidationError("Esta direccion no esta registrada!")
-      #  return email
-        try:
-            match = User.objects.get(email=email)
-        except User.DoesNotExist:   
-            raise forms.ValidationError("Datos mal ingresados!")
-        except MultipleObjectsReturned:
-            raise forms.ValidationError("Logueate con tu red social!")
-       
-        return email
-
-'''

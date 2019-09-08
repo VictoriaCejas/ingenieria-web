@@ -1,0 +1,38 @@
+{% extends "beautycalendar/basewithoutimage.html" %}
+{% load static %}
+{% block javascript %}
+  <script src="{% static 'content/products.js' %}"></script>
+{% endblock %}
+{% block content %}
+ 
+  <h1 >Productos</h1>
+  <p>
+      <button type="button" class="btn btn-primary js-create-product" data-url="{% url 'product_create' %}">
+        <span class="glyphicon glyphicon-plus"></span>
+        Nuevo producto
+      </button>
+    </p>
+  <table class="table" id="product-table">
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Image</th>
+        <th>Description</th>
+        <
+      </tr>
+    </thead>
+    <tbody>
+        {% include 'beautycalendar/includes/partial_product_list.html' %}
+    </tbody>
+  </table>
+
+  <div class="modal fade" id="modal-product">
+        <div class="modal-dialog">
+          <div class="modal-content">
+          </div>
+        </div>
+  </div>
+{% endblock %}
+
+
+

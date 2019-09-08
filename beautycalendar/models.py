@@ -1,5 +1,4 @@
 from django.db import models
-from django.contrib.auth.models import User
 from allauth.account.signals import email_confirmed, user_signed_up
 from allauth.socialaccount.signals import pre_social_login
 from django.dispatch import receiver
@@ -16,8 +15,8 @@ from allauth.account.utils import perform_login
 class MyUserManager(BaseUserManager):
     def create_user(self, email, kind, state, password=None):
         """
-        Creates and saves a User with the given email, date of
-        birth and password.
+        Creates and saves a User with the given email, kind,
+        state and password.
         """
         if not email:
             raise ValueError('Users must have an email address')
@@ -34,8 +33,9 @@ class MyUserManager(BaseUserManager):
 
     def create_superuser(self, email, password):
         """
-        Creates and saves a superuser with the given email, date of
-        birth and password.
+        Creates and saves a superuser with the given email and password.
+        Set by default kind and state.
+
         """
         user = self.create_user(
             email,
@@ -48,9 +48,10 @@ class MyUserManager(BaseUserManager):
         return user
 
 
-
-class MyUser(AbstractBaseUser):
-    #usuario modificado
+class User(AbstractBaseUser):
+    """
+    User created with abstractUser for replace the default.
+    """
     bussines=1
     client= 2
     administrator= 3
@@ -75,8 +76,6 @@ class MyUser(AbstractBaseUser):
         max_length=255,
         unique=True,
     )
-
-    #date_of_birth = models.DateField()
     
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
@@ -114,6 +113,26 @@ class MyUser(AbstractBaseUser):
         # Simplest possible answer: All admins are staff
         return self.is_admin
 
+class ContentUser(models.Model):
+    """
+    Products&Services 
+    """
+    product= 1
+    service= 2
+    categoryChoices= (
+        (product,'producto'),
+        (service,'servicio'),
+    )
+    user= models.ForeignKey('User',on_delete=models.CASCADE)
+    category= models.PositiveSmallIntegerField(choices=categoryChoices, blank=False, null=False)
+    title= models.CharField(max_length=50, blank=False, null=False)
+    imageProduct= models.ImageField(blank=True, null=True, upload_to='Products')
+    description= models.CharField(blank=True, null=True,max_length=100) #cambiar por precio
+       
+    def __str__(self):
+        return self.title 
+        
+#SEÑALES ALLAUTH
 @receiver(user_signed_up)
 def sing_up(request,user,**kwargs):
     #Cuando se recibe señal de registro exitoso, se guarda en usuario en el modelo Usuario.
@@ -147,7 +166,7 @@ def sing_up(request,user,**kwargs):
         #tipo = TiposUsuario.objects.get(descripcion='cliente')
 
     # import web_pdb; web_pdb.set_trace()
-    us=MyUser.objects.get(email=email)
+    us=User.objects.get(email=email)
     us.state= stateUser
     us.kind= kindUser
     us.save()
@@ -156,8 +175,8 @@ def sing_up(request,user,**kwargs):
 def confirm_user(request,email_address,**kwargs):
 #Cuando se recibe la señal de confirmacion de mail, cambia el estado del usuario
     try:
-        user = MyUser.objects.get(email=email_address.email)
-    except(TypeError, OverflowError, MyUser.DoesNotExist):
+        user = User.objects.get(email=email_address.email)
+    except(TypeError, OverflowError, User.DoesNotExist):
         user = None
     if user is not None:
         active= 1

@@ -18,15 +18,14 @@
         {% endif %}
         </div>
         <div class="name">
-          <h4 class="title">{{usuario.nombre}}
+          <h4 class="title">{{usuario.first_name}}
             <br />
           </h4>
-          <h6 class="description">Music Producer</h6>
         </div>
       </div>
       <div class="row">
         <div class="col-md-6 ml-auto mr-auto text-center">
-          <p>An artist of considerable range, Jane Faker — the name taken by Melbourne-raised, Brooklyn-based Nick Murphy — writes, performs and records all of his own music, giving it a warm, intimate feel with a solid groove structure. </p>
+          <p> {{usuario.description}} </p>
           <br />
           <btn class="btn btn-outline-default btn-round"><i class="fa fa-cog"></i> Settings</btn>
         </div>
@@ -40,15 +39,7 @@
       
 {% endblock header %}
 {% block content %}
-    {% if tipo == 1 %}
-        <p>Hola! Bussines</p>
-    {% endif %}
-    {% if tipo == 2 %}
-        <p>Hola! Cliente </p>
-    {% endif %}
-    {% if tipo == 3 %}
-        <p>Hola! Admin </p>
-        <a class="btn" href='admin/''>Administracion</a>
-        <a class="btn " href='admin/auth/user'>Administrar usuarios</a>
-    {% endif %}
+      {% block profile %}
+      
+      {% endblock %}
 {% endblock %}
