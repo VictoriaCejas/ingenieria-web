@@ -83,7 +83,7 @@ def save_product_form(request, form, template_name):
     data = dict()
     if request.method == 'POST':
         if form.is_valid():
-            import web_pdb;web_pdb.set_trace()
+            #import web_pdb;web_pdb.set_trace()
             form.save(commit=False)            
             user=request.user
             category= 1
@@ -110,8 +110,8 @@ def product_create(request):
         form = ProductsForm(request.POST, request.FILES)
     else:
         #import web_pdb; web_pdb.set_trace()
-        if (request.path == "/products/create/"):
-            form = ProductsForm()
+        #if (request.path == 'products/create/'):
+        form = ProductsForm()
 
     return save_product_form(request, form, 'beautycalendar/includes/partial_product_create.html')
 

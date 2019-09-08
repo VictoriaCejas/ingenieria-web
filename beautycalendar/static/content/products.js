@@ -20,9 +20,12 @@ $(function () {
 
   var saveForm = function () {
     var form = $(this);
+    var fd= new FormData(this);
     $.ajax({
       url: form.attr("action"),
-      data: form.serialize(),
+      data: fd,
+      processData:false,
+      contentType:false,
       type: form.attr("method"),
       dataType: 'json',
       success: function (data) {
