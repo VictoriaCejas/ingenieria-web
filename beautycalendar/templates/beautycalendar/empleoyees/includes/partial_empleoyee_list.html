@@ -1,0 +1,26 @@
+{% for content in mycontent %}
+  <tr>
+    <td>{{ content.first_name }}</td>
+    <td>{{ content.last_name }}</td>
+    <td>
+      {% if content.imageEmpleoyee %}
+        <img src="{{ content.imageEmpleoyee.url }}" width="50px">
+      {% else %}
+        <p>Sin imagen</p>
+      {% endif %}
+    </td>
+    
+    <td style="width: 150px">
+      <button style="margin: 2px" type="button" class="btn btn-warning btn-sm js-update-mycontent"data-url="{% url 'empleoyee_update' content.id %}">
+          <i class="fa fa-pencil"></i>Editar
+      </button>
+      <button type="button" style="margin: 2px" class="btn btn-danger btn-sm js-delete-mycontent" data-url="{% url 'empleoyee_delete' content.id %}">
+              <i class="fa fa-trash"></i> Eliminar
+      </button>
+    </td>
+  </tr>
+  {% empty %}
+  <tr>
+    <td colspan="8" class="text-center bg-warning">No existen empleados aun</td>
+  </tr>
+{% endfor %}

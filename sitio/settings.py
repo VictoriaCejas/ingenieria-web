@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
     #'registration',
+    'django_extensions',
     
     'allauth',
     'allauth.account',
@@ -175,7 +176,7 @@ ACCOUNT_FORMS = {
     'signup': 'beautycalendar.forms.CustomSignupForm',
 }
 
-AUTH_USER_MODEL = 'beautycalendar.User'
+AUTH_USER_MODEL = 'beautycalendar.Users'
 
 ACCOUNT_AUTHENTICATED_LOGIN_REDIRECTS =False
 ACCOUNT_AUTHENTICATION_METHOD = 'email'

@@ -1,0 +1,13 @@
+  
+{% for hidden in form.hidden_fields %}
+{{ hidden }}
+{% endfor %}
+{% for field in form.visible_fields  %}
+        {% if field.name != "imageProduct" %}
+          <p> {{ field.label }} </p>  
+          <p>{{ field }}</p>
+        {% endif %}
+
+{% endfor %}
+
+

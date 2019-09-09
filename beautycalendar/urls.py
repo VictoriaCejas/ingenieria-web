@@ -24,4 +24,10 @@ urlpatterns = [
     url(r'services/(?P<pk>\d+)/update/$', views.mycontent_update, name='service_update'),
     url(r'services/(?P<pk>\d+)/delete/$', views.mycontent_delete, name='service_delete'),
 
+    url(r'empleoyees/$', views.mycontent_list, name='empleoyee_list'),
+    url(r'empleoyees/create/$', views.mycontent_create, name='empleoyee_create'),
+    url(r'empleoyees/(?P<pk>\d+)/update/$', views.mycontent_update, name='empleoyee_update'),
+    url(r'empleoyees/(?P<pk>\d+)/delete/$', views.mycontent_delete, name='empleoyee_delete'),
+
+    url(r'privacy-policy-facebook/$',views.facebookprivacy, name= 'facebook-privacy')
 ]

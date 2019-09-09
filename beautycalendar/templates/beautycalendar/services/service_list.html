@@ -1,0 +1,38 @@
+{% extends "beautycalendar/basewithoutimage.html" %}
+{% load static %}
+{% block javascript %}
+  <script src="{% static 'content/content.js' %}"></script>
+{% endblock %}
+{% block content %}
+  <p>
+    <a href="{% url 'private_profile' %}" style="color: black"><i class="fa fa-angle-left" ></i> Back</a>
+  </p>
+  <h1 >Servicios</h1>
+  <p>
+      <button type="button" class="btn btn-primary js-create-mycontent" data-url="{% url 'service_create' %}">
+        <i class="fa fa-plus"></i>
+        Nuevo servicio
+      </button>
+    </p>
+  <table class="table" id="mycontent-table">
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Price</th>
+      </tr>
+    </thead>
+    <tbody>
+        {% include 'beautycalendar/services/includes/partial_service_list.html' %}
+    </tbody>
+  </table>
+
+  <div class="modal fade" id="modal-mycontent">
+        <div class="modal-dialog">
+          <div class="modal-content">
+          </div>
+        </div>
+  </div>
+{% endblock %}
+
+
+

@@ -50,7 +50,7 @@ class MyUserManager(BaseUserManager):
         return user
 
 
-class User(AbstractBaseUser):
+class Users(AbstractBaseUser):
     """
     User created with abstractUser for replace the default.
     """
@@ -114,8 +114,12 @@ class User(AbstractBaseUser):
         "Is the user a member of staff?"
         # Simplest possible answer: All admins are staff
         return self.is_admin
+   
+    class Meta:
+        verbose_name = 'Users'
+        verbose_name_plural = 'Users'
 
-class ContentUser(models.Model):
+class ContentUsers(models.Model):
     """
     Products&Services 
     """
@@ -125,7 +129,7 @@ class ContentUser(models.Model):
         (product,'producto'),
         (service,'servicio'),
     )
-    user= models.ForeignKey('User',on_delete=models.CASCADE)
+    user= models.ForeignKey('Users',on_delete=models.CASCADE)
     category= models.PositiveSmallIntegerField(choices=categoryChoices, blank=False, null=False)
     title= models.CharField(max_length=50, blank=False, null=False)
     imageProduct= models.ImageField(blank=True, null=True, upload_to='Products')
@@ -133,7 +137,61 @@ class ContentUser(models.Model):
        
     def __str__(self):
         return self.title 
-        
+    class Meta:
+        verbose_name = 'Content users'  
+        verbose_name_plural = 'Content users'
+
+
+class Empleoyees(models.Model):
+    boss= models.ForeignKey('Users', on_delete=models.CASCADE)
+    first_name= models.CharField(max_length=50, blank=False, null=False)
+    last_name= models.CharField(max_length=50, blank=False, null=False)
+    imageEmpleoyee= models.ImageField(blank=True, null=True, upload_to='Employees')
+    
+    def __str__(self):
+        return self.first_name
+    class Meta:
+        verbose_name = 'Empleoyees'
+        verbose_name_plural = 'Empleoyees'
+
+class WorkItems (models.Model):
+    item= models.CharField(max_length=50, blank=True,null=True)
+
+class BeautySalons(models.Model):
+    owner= models.ForeignKey('Users', on_delete=models.CASCADE)
+    items= models.ForeignKey('WorkItems', on_delete= models.CASCADE)
+
+class Publications(models.Model):
+    owner= models.ForeignKey('Users', on_delete=models.CASCADE)
+    publish_date= models.DateTimeField(blank=False, null=False) #Fecha y hora
+    imagePublication= models.ImageField(blank=False, null=False, upload_to='Publications')
+    description= models.CharField(max_length=250, blank=True, null=True)
+    score= models.PositiveIntegerField(blank=True, null=True)
+
+class LikesPublications(models.Model):
+    publication= models.ForeignKey('Publications', on_delete= models.CASCADE)
+    user= models.ForeignKey('Users', on_delete=models.CASCADE)
+    class Meta:
+        unique_together = (("publication", "user"),)
+
+class CommentsPublications(models.Model):
+    publication= models.ForeignKey('Publications',on_delete=models.CASCADE)
+    user= models.ForeignKey('Users', on_delete=models.CASCADE)
+    date= models.DateTimeField(blank=False, null=False)
+
+class WorkingHoursEmpleoyess(models.Model):
+    empleoyee= models.ForeignKey('Empleoyees',on_delete=models.CASCADE)
+    init_date= models.SmallIntegerField(blank=False, null=False,validators=[MaxValueValidator(6)]) #0 domingo.. 6 sabado
+    finish_date= models.SmallIntegerField(blank=False, null=False, validators=[MaxValueValidator(6)]) #0 domingo.. 6 sabado
+    init_time= models.TimeField(blank=False, null=False)
+    finish_time= models.TimeField(blank=False, null=False)
+
+class UserDates(models.Model):
+    user= models.ForeignKey('Users', on_delete=models.CASCADE)
+    date= models.DateTimeField(blank=False, null=False)
+    service= models.CharField(max_length=50,blank=True, null=True)
+    empleoyee= models.ForeignKey('Empleoyees', on_delete= models.CASCADE)
+
 #SEÑALES ALLAUTH
 @receiver(user_signed_up)
 def sing_up(request,user,**kwargs):
@@ -163,12 +221,7 @@ def sing_up(request,user,**kwargs):
         kindUser= client
         #import web_pdb; web_pdb.set_trace()
         email=user
-
-        #estado = EstadosUsuario.objects.get(descripcion='activo') 
-        #tipo = TiposUsuario.objects.get(descripcion='cliente')
-
-    # import web_pdb; web_pdb.set_trace()
-    us=User.objects.get(email=email)
+    us=Users.objects.get(email=email)
     us.state= stateUser
     us.kind= kindUser
     us.save()
@@ -177,8 +230,8 @@ def sing_up(request,user,**kwargs):
 def confirm_user(request,email_address,**kwargs):
 #Cuando se recibe la señal de confirmacion de mail, cambia el estado del usuario
     try:
-        user = User.objects.get(email=email_address.email)
-    except(TypeError, OverflowError, User.DoesNotExist):
+        user = Users.objects.get(email=email_address.email)
+    except(TypeError, OverflowError, Users.DoesNotExist):
         user = None
     if user is not None:
         active= 1

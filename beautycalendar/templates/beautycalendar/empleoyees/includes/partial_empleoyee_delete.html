@@ -1,0 +1,16 @@
+e<form method="post" action="{% url 'empleoyee_delete' mycontent.id %}" class="js-mycontent-delete-form">
+        {% csrf_token %}
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <h4 class="modal-title"> Confirmar eliminación de producto</h4>
+        </div>
+        <div class="modal-body">
+          <p class="lead">Esta seguro que desea eliminar al empleado <strong>{{ mycontent.name }}</strong>?</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+          <button type="submit" class="btn btn-danger">Eliminar</button>
+        </div>
+      </form>

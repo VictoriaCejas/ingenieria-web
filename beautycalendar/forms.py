@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, PasswordResetForm
-from .models import User, ContentUser
+from .models import Users, ContentUsers, Empleoyees
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.tokens import default_token_generator
 from django.db.models import Q
@@ -31,7 +31,7 @@ class CustomSignupForm(SignupForm):
 class ContentForm(forms.ModelForm):
     
     class Meta:
-        model = ContentUser
+        model = ContentUsers
         fields = ['user','category','title','imageProduct','price']
         widgets = {'user':forms.HiddenInput(),'category':forms.HiddenInput()}
     def __init__(self, *args, **kwargs):
@@ -39,4 +39,14 @@ class ContentForm(forms.ModelForm):
         self.fields['user'].required= False
         self.fields['category'].required= False
 
+class EmpleoyeesForm(forms.ModelForm):
+
+    class Meta:
+        model= Empleoyees
+        fields= ['boss','first_name','last_name','imageEmpleoyee']
+        widgets= {'boss':forms.HiddenInput(),}
+   
+    def __init__(self, *args, **kwargs):
+        super(self.__class__, self).__init__(*args, **kwargs)
+        self.fields['boss'].required= False
     

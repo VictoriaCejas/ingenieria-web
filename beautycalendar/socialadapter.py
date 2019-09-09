@@ -1,4 +1,4 @@
-from .models import User #custom user
+from .models import Users #custom user
 from allauth.exceptions import ImmediateHttpResponse
 from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
 from django.http import HttpResponse
@@ -11,8 +11,8 @@ class MyAdapter(DefaultSocialAccountAdapter):
         if user.id:  
             return          
         try:
-            myuser = User.objects.get(email=user.email)  # if user exists, connect the account to the existing account and login
+            myuser = Users.objects.get(email=user.email)  # if user exists, connect the account to the existing account and login
             sociallogin.state['process'] = 'connect'                
             perform_login(request, myuser, 'none')
-        except User.DoesNotExist:
-            pass
+        except Users.DoesNotExist:
+            pass 

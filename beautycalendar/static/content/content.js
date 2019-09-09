@@ -36,7 +36,9 @@ $(function () {
           if (window.location.pathname.indexOf("/services/")==0){
             $("#mycontent-table tbody").html(data.html_service_list);
           }
-          
+          if (window.location.pathname.indexOf("/empleoyees/")==0){
+            $("#mycontent-table tbody").html(data.html_empleoyee_list);
+          }
           $("#modal-mycontent").modal("hide");
         }
         else {
