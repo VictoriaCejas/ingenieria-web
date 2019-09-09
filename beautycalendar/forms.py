@@ -28,7 +28,7 @@ class CustomSignupForm(SignupForm):
         return user
 
 
-class ProductsForm(forms.ModelForm):
+class ContentForm(forms.ModelForm):
     
     class Meta:
         model = ContentUser

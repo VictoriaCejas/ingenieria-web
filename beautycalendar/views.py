@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 from .models import User, ContentUser
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
-from .forms import ProductsForm
+from .forms import ContentForm
 from django.contrib.sites.shortcuts import get_current_site
 from django.utils.encoding import force_bytes, force_text
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
@@ -73,70 +73,104 @@ def PublicProfile(request):
 
 
 """"""
-def product_list(request):
+def mycontent_list(request):
     user= request.user
-    products= ContentUser.objects.filter(user=user,category=1)
-    return render(request, 'beautycalendar/product_list.html', {'products': products})
+    if ('products' in request.path):
+        mycontent= ContentUser.objects.filter(user=user,category=1)
+        return render(request, 'beautycalendar/product_list.html', {'mycontent': mycontent})
+    if ('services' in request.path):
+        mycontent= ContentUser.objects.filter(user=user,category=2)
+        return render(request, 'beautycalendar/service_list.html', {'mycontent': mycontent})
 
-
-def save_product_form(request, form, template_name):
+def save_mycontent_form(request, form, template_name):
     data = dict()
     if request.method == 'POST':
-        if form.is_valid():            
+        if form.is_valid():     
+            if ('products' in request.path):
+                category= 1
+                img = form.cleaned_data['imageProduct']
+            if('services' in request.path):
+                category=2
+                img= None       
+            
             if('update' in request.path):
+                import web_pdb; web_pdb.set_trace()
                 form.save()
             else:
                 form.save(commit=False)            
                 user=request.user
-                category= 1
                 title= form.cleaned_data['title']
-                img = form.cleaned_data['imageProduct']
                 price= form.cleaned_data['price']    
-                product= ContentUser(user=user,category=category,title=title,imageProduct=img,price=price)
-                product.save()
+                content= ContentUser(user=user,category=category,title=title,imageProduct=img,price=price)
+                content.save()
             data['form_is_valid'] = True
-            products = ContentUser.objects.all()
-            data['html_product_list'] = render_to_string('beautycalendar/includes/partial_product_list.html', {
-                'products': products
-            })
+            mycontent = ContentUser.objects.filter(user=request.user,category=category)
+            if ('products' in request.path):
+                data['html_product_list'] = render_to_string('beautycalendar/includes/partial_product_list.html', {
+                    'mycontent': mycontent
+                })
+            if ('services' in request.path):
+                data['html_service_list'] = render_to_string('beautycalendar/includes/partial_service_list.html', {
+                    'mycontent': mycontent
+                })
         else:
             data['form_is_valid'] = False
     context = {'form': form}
     data['html_form'] = render_to_string(template_name, context, request=request)
     return JsonResponse(data)
 
-
-def product_create(request):
+def mycontent_create(request):
 
     if request.method =='POST':
+        form = ContentForm(request.POST,request.FILES or None)
+    else:
+        form = ContentForm()
+    if ('products' in request.path):
+        return save_mycontent_form(request, form, 'beautycalendar/includes/partial_product_create.html')
+    if ('services' in request.path):
+        return save_mycontent_form(request, form, 'beautycalendar/includes/partial_service_create.html')
+
+def mycontent_update(request, pk):
+    mycontent = get_object_or_404(ContentUser, pk=pk)
+   
+    if request.method == 'POST':  
+        if ('products' in request.path):  
+            form = ContentForm(request.POST,request.FILES, instance=mycontent)
+        if ('services' in request.path):
+            form = ContentForm(request.POST,request.FILES, instance=mycontent)
+            
+    else:
+        form = ContentForm(instance=mycontent)
+
+    if ('products' in request.path):
+        return save_mycontent_form(request, form, 'beautycalendar/includes/partial_product_update.html')
+    if ('services' in request.path):
+        return save_mycontent_form(request, form, 'beautycalendar/includes/partial_service_update.html')
         
-        form = ProductsForm(request.POST,request.FILES)
-    else:
-        form = ProductsForm()
 
-    return save_product_form(request, form, 'beautycalendar/includes/partial_product_create.html')
-
-
-def product_update(request, pk):
-    product = get_object_or_404(ContentUser, pk=pk)
-    if request.method == 'POST':
-        form = ProductsForm(request.POST,request.FILES, instance=product)
-    else:
-        form = ProductsForm(instance=product)
-    return save_product_form(request, form, 'beautycalendar/includes/partial_product_update.html')
-
-
-def product_delete(request, pk):
-    product = get_object_or_404(ContentUser, pk=pk)
+def mycontent_delete(request, pk):
+    mycontent = get_object_or_404(ContentUser, pk=pk)
     data = dict()
     if request.method == 'POST':
-        product.delete()
+        #import web_pdb; web_pdb.set_trace()
+        mycontent.delete()
         data['form_is_valid'] = True
-        products = ContentUser.objects.all()
-        data['html_product_list'] = render_to_string('beautycalendar/includes/partial_product_list.html', {
-            'products': products
-        })
+        #mycontent = ContentUser.objects.all()
+        if ('products' in request.path):
+            mycontent = ContentUser.objects.filter(user=request.user,category=1)        
+            data['html_product_list'] = render_to_string('beautycalendar/includes/partial_product_list.html', {
+                'mycontent': mycontent
+            })
+        if ('services' in request.path):
+            mycontent = ContentUser.objects.filter(user=request.user,category=2)        
+            data['html_service_list'] = render_to_string('beautycalendar/includes/partial_service_list.html', {
+                'mycontent': mycontent
+            })
     else:
-        context = {'product': product}
-        data['html_form'] = render_to_string('beautycalendar/includes/partial_product_delete.html', context, request=request)
+        context = {'mycontent': mycontent}
+        if ('products' in request.path):
+            data['html_form'] = render_to_string('beautycalendar/includes/partial_product_delete.html', context, request=request)
+        if ('services' in request.path):
+            data['html_form'] = render_to_string('beautycalendar/includes/partial_service_delete.html', context, request=request)
+            
     return JsonResponse(data)

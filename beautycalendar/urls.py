@@ -14,9 +14,14 @@ urlpatterns = [
     #path('createproducts',views.product_create, name='product_create'),
     #path('product-create', view.product_create, name='product_create')
     #path('poducts/create'),views.product_create, name='product_create'),
-    url(r'products/$', views.product_list, name='product_list'),
-    url(r'products/create/$', views.product_create, name='product_create'),
-    url(r'products/(?P<pk>\d+)/update/$', views.product_update, name='product_update'),
-    url(r'products/(?P<pk>\d+)/delete/$', views.product_delete, name='product_delete'),
+    url(r'products/$', views.mycontent_list, name='product_list'),
+    url(r'products/create/$', views.mycontent_create, name='product_create'),
+    url(r'products/(?P<pk>\d+)/update/$', views.mycontent_update, name='product_update'),
+    url(r'products/(?P<pk>\d+)/delete/$', views.mycontent_delete, name='product_delete'),
+
+    url(r'services/$', views.mycontent_list, name='service_list'),
+    url(r'services/create/$', views.mycontent_create, name='service_create'),
+    url(r'services/(?P<pk>\d+)/update/$', views.mycontent_update, name='service_update'),
+    url(r'services/(?P<pk>\d+)/delete/$', views.mycontent_delete, name='service_delete'),
 
 ]

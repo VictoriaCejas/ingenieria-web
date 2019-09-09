@@ -1,21 +1,20 @@
 {% for content in mycontent %}
   <tr>
     <td>{{ content.title }}</td>
-    <td>{{ content.imageProduct }}</td>
     <td>{{ content.price }}</td>
     <td style="width: 150px">
-      <button type="button" class="btn btn-warning btn-sm js-update-mycontent"data-url="{% url 'product_update' content.id %}">
+      <button type="button" class="btn btn-warning btn-sm js-update-mycontent"data-url="{% url 'service_update' content.id %}">
       <span class="glyphicon glyphicon-pencil"></span> Edit
       </button>
       <button type="button"
               class="btn btn-danger btn-sm js-delete-mycontent"
-              data-url="{% url 'product_delete' content.id %}">
+              data-url="{% url 'service_delete' content.id %}">
         <span class="glyphicon glyphicon-trash"></span> Delete
       </button>
     </td>
   </tr>
   {% empty %}
   <tr>
-    <td colspan="8" class="text-center bg-warning">No product</td>
+    <td colspan="8" class="text-center bg-warning">No service</td>
   </tr>
 {% endfor %}

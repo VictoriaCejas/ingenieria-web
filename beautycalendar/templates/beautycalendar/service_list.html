@@ -5,24 +5,22 @@
 {% endblock %}
 {% block content %}
  
-  <h1 >Productos</h1>
+  <h1 >Servicios</h1>
   <p>
-      <button type="button" class="btn btn-primary js-create-mycontent" data-url="{% url 'product_create' %}">
+      <button type="button" class="btn btn-primary js-create-mycontent" data-url="{% url 'service_create' %}">
         <span class="glyphicon glyphicon-plus"></span>
-        Nuevo producto
+        Nuevo servicio
       </button>
     </p>
   <table class="table" id="mycontent-table">
     <thead>
       <tr>
         <th>Title</th>
-        <th>Image</th>
         <th>Price</th>
-        <
       </tr>
     </thead>
     <tbody>
-        {% include 'beautycalendar/includes/partial_product_list.html' %}
+        {% include 'beautycalendar/includes/partial_service_list.html' %}
     </tbody>
   </table>
 
