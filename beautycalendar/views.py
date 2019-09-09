@@ -82,16 +82,18 @@ def product_list(request):
 def save_product_form(request, form, template_name):
     data = dict()
     if request.method == 'POST':
-        if form.is_valid():
-            #import web_pdb;web_pdb.set_trace()
-            form.save(commit=False)            
-            user=request.user
-            category= 1
-            title= form.cleaned_data['title']
-            img = form.cleaned_data['imageProduct']
-            description= form.cleaned_data['description']
-            product= ContentUser(user=user,category=category,title=title,imageProduct=img,description=description)
-            product.save()
+        if form.is_valid():            
+            if('update' in request.path):
+                form.save()
+            else:
+                form.save(commit=False)            
+                user=request.user
+                category= 1
+                title= form.cleaned_data['title']
+                img = form.cleaned_data['imageProduct']
+                price= form.cleaned_data['price']    
+                product= ContentUser(user=user,category=category,title=title,imageProduct=img,price=price)
+                product.save()
             data['form_is_valid'] = True
             products = ContentUser.objects.all()
             data['html_product_list'] = render_to_string('beautycalendar/includes/partial_product_list.html', {
@@ -107,10 +109,9 @@ def save_product_form(request, form, template_name):
 def product_create(request):
 
     if request.method =='POST':
-        form = ProductsForm(request.POST, request.FILES)
+        
+        form = ProductsForm(request.POST,request.FILES)
     else:
-        #import web_pdb; web_pdb.set_trace()
-        #if (request.path == 'products/create/'):
         form = ProductsForm()
 
     return save_product_form(request, form, 'beautycalendar/includes/partial_product_create.html')
@@ -119,8 +120,7 @@ def product_create(request):
 def product_update(request, pk):
     product = get_object_or_404(ContentUser, pk=pk)
     if request.method == 'POST':
-        form = ProductsForm(request.POST, instance=product)
-        form.save()
+        form = ProductsForm(request.POST,request.FILES, instance=product)
     else:
         form = ProductsForm(instance=product)
     return save_product_form(request, form, 'beautycalendar/includes/partial_product_update.html')

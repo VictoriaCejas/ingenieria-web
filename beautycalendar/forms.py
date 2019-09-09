@@ -32,6 +32,11 @@ class ProductsForm(forms.ModelForm):
     
     class Meta:
         model = ContentUser
-        fields = ['title','imageProduct','description']
+        fields = ['user','category','title','imageProduct','price']
+        widgets = {'user':forms.HiddenInput(),'category':forms.HiddenInput()}
+    def __init__(self, *args, **kwargs):
+        super(self.__class__, self).__init__(*args, **kwargs)
+        self.fields['user'].required= False
+        self.fields['category'].required= False
 
     

@@ -127,7 +127,7 @@ class ContentUser(models.Model):
     category= models.PositiveSmallIntegerField(choices=categoryChoices, blank=False, null=False)
     title= models.CharField(max_length=50, blank=False, null=False)
     imageProduct= models.ImageField(blank=True, null=True, upload_to='Products')
-    description= models.CharField(blank=True, null=True,max_length=100) #cambiar por precio
+    price= models.FloatField(blank=True, null=True) #cambiar por precio
        
     def __str__(self):
         return self.title 
