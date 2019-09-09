@@ -20,7 +20,8 @@
   <link href="{% static 'assets/demo/demo.css' %}" rel="stylesheet" />
   <link href="{% static 'css/login.css' %}" rel="stylesheet" type="text/css">
   <link href="{% static 'css/beautycalendar.css' %}" rel="stylesheet" type="text/css">
-
+  <link herf="{% static 'node_modules/cropperjs/dist/cropper.css' %}" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.5/cropper.css" rel="stylesheet">
 </head>
 
 {% block html %}
@@ -43,7 +44,7 @@
   <script src="{% static 'assets/js/plugins/bootstrap-datepicker.js' %}" type="text/javascript"></script>
   <!-- Control Center for Paper Kit: parallax effects, scripts for the example pages etc -->
   <script src="{% static 'assets/js/paper-kit.js?v=2.2.0' %}" type="text/javascript"></script>
-  <!--  Google Maps Plugin    
   <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=YOUR_KEY_HERE"></script> -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.5/cropper.js" type="text/javascript">
   {% block javascript %}
   {% endblock %}

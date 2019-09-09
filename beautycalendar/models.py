@@ -10,7 +10,6 @@ from allauth.account.adapter import DefaultAccountAdapter
 from allauth.socialaccount.signals import pre_social_login
 from allauth.account.utils import perform_login
 from django.core.validators import MaxValueValidator, MinValueValidator
-
 # Create your models here.
 
 

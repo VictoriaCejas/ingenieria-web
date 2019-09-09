@@ -18,33 +18,42 @@
 
 {% block content %}
 
-    <p> Bienvenido</p>
-        <p> Bienvenido</p>
+<div class="card mb-3" style="max-width: 900px;">
+    <div class="row no-gutters">
+      <div class="col-md-4" style="background-color: orange">
+      </div>
+      <div class="col-md-8">
+        <div class="card-body">
+          <h5 class="card-title">Quienes somos</h5>
+          <p class="card-text">
+              <a class="btn btn-primary " href="{% url 'public' %}">Acceso publico</a>
 
-    <p> Bienvenido</p>
+          </p>
+          <p class="card-text">Esto es un card de ejemplo</p>
+          <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+        </div>
+      </div>
+    </div>
+  </div>
 
-    <p> Bienvenido</p>
+  <div class="card mb-3" style="max-width: 900px;">
+      <div class="row no-gutters">
+        <div class="col-md-4" style="background-color: orange">
+        </div>
+        <div class="col-md-8">
+          <div class="card-body">
+            <h5 class="card-title">Contacto</h5>
+            <p class="card-text">
+                <a class="btn btn-primary " href="{%url 'private'%}">Acceso privado</a>
 
-    <p> Bienvenido</p>
-
-    <p> Bienvenido</p>
-
-    <p> Bienvenido</p>
-
-    <p> Bienvenido</p>
-
-    <p> Bienvenido</p>
-
-    <p> Bienvenido</p>
-
-    <p> Bienvenido</p>
-
-    <p> Bienvenido</p>
-
-    <p> Bienvenido</p>
+            </p>
+            <p class="card-text">Esto es un card de ejemplo</p>
+            <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+          </div>
+        </div>
+      </div>
+    </div>
 
 
-    <a class="btn btn-primary " href="{%url 'private'%}">Acceso privado</a>
-    <a class="btn btn-primary " href="{% url 'public' %}">Acceso publico</a>
 
 {% endblock %}

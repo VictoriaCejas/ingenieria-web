@@ -8,6 +8,7 @@ from beautycalendar.models import Users, ContentUsers, Empleoyees
 
 admin.site.register(ContentUsers)
 admin.site.register(Empleoyees)
+#admin.site.register(Users)
 
 class UserCreationForm(forms.ModelForm):
     """A form for creating new users. Includes all the required
@@ -70,14 +71,15 @@ class UserAdmin(BaseUserAdmin):
         ('State', {'fields': ('state',)}),
         ('Kind',{'fields':('kind',)}),
         ('Permissions', {'fields': ('is_admin',)}),
+        ('Images',{'fields':('imageAvatar','imageFront')})
     )
     # add_fieldsets is not a standard ModelAdmin attribute. UserAdmin
     # overrides get_fieldsets to use this attribute when creating a user.
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('email', 'firts_name','last_name', 'password1', 'password2')}
-        ),
+           'fields': ('email', 'password1', 'password2')}
+       ),
     )
     search_fields = ('email',)
     ordering = ('email',)

@@ -1,32 +1,47 @@
 {% extends 'beautycalendar/base.html' %}
+{% load static %}
+
+{% block javascript %}
+  <script src="{% static 'content/profile.js' %}"></script>
+{% endblock %}
+
 {% block header %}
-{% if usuario.imagenPortada %}
-  <div class="page-header page-header-xs" data-parallax="true" style="background-image: url('{{ usuario.imagenPortada.url }}')">
+{% if user.imageFront %}
+  <div class="page-header page-header-xs" data-parallax="true" style="background-image: url('{{ user.imageFront.url }}')">
 {% else %}
   <div class="page-header page-header-xs" data-parallax="true" style="background-image: url('static/assets/img/fabio-mangione.jpg');">
 {% endif %}
+
     <div class="filter"></div>
   </div>
   <div class="section profile-content">
-    <div class="container">
+      <button style="float: right;" type="button" class="btn btn-warning btn-sm js-update-photo"data-url="{% url 'front_update' pk=user.id %}">
+          <i class="fa fa-pencil"></i>Editar
+      </button>
+    <div class="container" id="crop-avatar">
       <div class="owner">
         <div class="avatar">
-        {% if usuario.imagenAvatar %}
-          <img src='{{ usuario.imagenAvatar.url }}' width="100" alt="Circle Image" class="img-circle img-no-padding img-responsive">
+        {% if user.imageAvatar %}
+          <img  src="{{ user.imageAvatar.url }}" width="100" alt="Circle Image" class="img-circle img-no-padding img-responsive myphoto-div">
         {% else %}
           <img src='static/assets/img/placeholder.jpg'  alt="Circle Image" class="img-circle img-no-padding img-responsive">
         {% endif %}
+        <button style="margin: 2px" type="button" class="btn btn-warning btn-sm js-update-photo"data-url="{% url 'avatar_update' pk=user.id %}">
+            <i class="fa fa-pencil"></i>Editar
+        </button>
         </div>
         <div class="name">
-          <h4 class="title">{{usuario.first_name}}
+          <h4 class="title">{{user.first_name}}
             <br />
           </h4>
         </div>
       </div>
       <div class="row">
         <div class="col-md-6 ml-auto mr-auto text-center">
-          <p> {{usuario.description}} </p>
-          <br />
+          {% if user.description %}
+            <p> {{user.description}} </p>  
+          {% endif %}
+          <br/>
           <btn class="btn btn-outline-default btn-round"><i class="fa fa-cog"></i> Settings</btn>
         </div>
       </div>
@@ -36,7 +51,13 @@
           
         </div>
       </div>
-      
+
+      <div class="modal fade" id="modal-photo">
+          <div class="modal-dialog">
+            <div class="modal-content">
+            </div>
+          </div>
+    </div>
 {% endblock header %}
 {% block content %}
       {% block profile %}

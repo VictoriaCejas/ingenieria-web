@@ -50,3 +50,13 @@ class EmpleoyeesForm(forms.ModelForm):
         super(self.__class__, self).__init__(*args, **kwargs)
         self.fields['boss'].required= False
     
+class AvatarForm(forms.ModelForm):
+    
+    class Meta:
+        model=Users
+        fields=['imageAvatar']
+
+class FrontForm(forms.ModelForm):
+    class Meta:
+        model= Users
+        fields=['imageFront']

@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 from .models import Users, ContentUsers,Empleoyees
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
-from .forms import ContentForm,EmpleoyeesForm
+from .forms import ContentForm,EmpleoyeesForm, AvatarForm, FrontForm
 from django.contrib.sites.shortcuts import get_current_site
 from django.utils.encoding import force_bytes, force_text
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
@@ -56,7 +56,7 @@ def PrivateProfile(request):
     if kind == 1:
         #bussines  
         #products= ContentUser.objects.filter(user=user,category=1)
-        return render(request, 'beautycalendar/private_profile_bussines.html', {})
+        return render(request, 'beautycalendar/private_profile_bussines.html', {'usaurio':myuser,'user':user})
     elif kind == 2:
         #client
         return render(request, 'beautycalendar/private_profile_client.html', {'usuario': myuser,'user':user})
@@ -141,7 +141,6 @@ def save_mycontent_form(request, form, template_name):
     context = {'form': form}
     data['html_form'] = render_to_string(template_name, context, request=request)
     return JsonResponse(data)
-
 
 @bussines_required
 def mycontent_create(request):
@@ -228,6 +227,63 @@ def mycontent_delete(request, pk):
     return JsonResponse(data)
 
 """"""
+@login_required
+def avatar_update(request,pk):
+    mycontent = get_object_or_404(Users, pk=pk)
+    if request.method == 'POST':  
+        form= AvatarForm(request.POST, request.FILES, instance=mycontent)
+    else:
+        if (mycontent== None):
+            form= AvatarForm()
+        else:
+            form= AvatarForm(instance=mycontent)
+    return save_myphotos_form(request, form, 'beautycalendar/profiles/partial_avatar_update.html')
+
+def front_update(request,pk):
+    mycontent = get_object_or_404(Users, pk=pk)
+    if request.method == 'POST':  
+        form= FrontForm(request.POST, request.FILES, instance=mycontent)
+    else:
+        if (mycontent== None):
+            form= FrontForm()
+        else:
+            form= FrontForm(instance=mycontent)
+    return save_myphotos_form(request, form, 'beautycalendar/profiles/partial_front_update.html')
+
+def save_myphotos_form(request,form,template_name):
+    data = dict()
+    if request.method == 'POST':
+        if form.is_valid():
+            form.save(commit=False)
+            data['form_is_valid'] = True
+            user= Users.objects.get(email=request.user)
+
+            if ('avatar' in request.path):
+                image=form.cleaned_data['imageAvatar']
+                if (image is False):
+                    image= None
+                user.imageAvatar= image
+
+            if ('front' in request.path):
+                image=form.cleaned_data['imageFront']
+                if (image is False):
+                    image= None
+                user.imageFront= image
+            
+            user.save()
+            usuario=user
+            if (user.kind == 1):
+                data['html_profile'] = render_to_string('beautycalendar/private_profile_bussines.html', {'user':user})
+            if (user.kind== 2):
+                data['html_profile'] = render_to_string('beautycalendar/private_profile_client.html', {'user':user})
+            if (user.kind== 3):
+                data['html_profile'] = render_to_string('beautycalendar/private_profile_admin.html', {'user':user})
+                
+        else:
+            data['form_is_valid'] = False
+    context = {'form': form}
+    data['html_form'] = render_to_string(template_name, context, request=request)
+    return JsonResponse(data)
 
 def facebookprivacy(request):
 

@@ -42,7 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     #'registration',
     'django_extensions',
-    
+
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
