@@ -173,11 +173,21 @@ class BeautySalons(models.Model):
 
 
 class Publications(models.Model):
+    active= 1
+    pendingactivation=2
+    suspend= 3
+    removed=4
+    statesChoices= (
+        (active,'active'),
+        (suspend,'pending activation'),
+        (removed, 'removed'),
+    )
     owner= models.ForeignKey('Users', on_delete=models.CASCADE)
     publish_date= models.DateTimeField(blank=False, null=False) #Fecha y hora
     imagePublication= models.ImageField(blank=False, null=False, upload_to='Publications')
     description= models.CharField(max_length=250, blank=True, null=True)
     score= models.PositiveIntegerField(blank=True, null=True)
+    state= models.PositiveSmallIntegerField(choices= statesChoices, blank=True, null=True)
 
 class LikesPublications(models.Model):
     publication= models.ForeignKey('Publications', on_delete= models.CASCADE)
