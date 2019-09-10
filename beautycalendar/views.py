@@ -23,6 +23,12 @@ from django.views.generic import TemplateView, View, DeleteView
 from django.http import JsonResponse
 from django.template.loader import render_to_string
 from .decorators import bussines_required
+from django.contrib.auth import update_session_auth_hash
+from django.contrib import messages
+from allauth.account.views import PasswordChangeView
+from allauth.account.adapter import get_adapter
+from allauth.account import signals
+
 # Create your views here.
 
 
@@ -30,7 +36,7 @@ def Home(request):
     return render(request, 'beautycalendar/home.html', {})
  
     
-@login_required(login_url='/accounts/login/')
+@login_required()
 def Private(request):
     return render(request, 'beautycalendar/privado.html', {})
 
@@ -313,3 +319,31 @@ def save_myphotos_form(request,form,template_name):
 def facebookprivacy(request):
 
     return render(request,'allauth/socialaccount/privacy.html')
+
+
+class MyPasswordChangeView(PasswordChangeView):
+    """
+    Custom class to override the password change view 
+    """
+
+    success_url = "/private_profile"
+
+    # Override form valid view to keep user logged i
+    def form_valid(self, form):
+
+        form.save()
+
+        # Update session to keep user logged in.
+        update_session_auth_hash(self.request, form.user)
+
+        get_adapter().add_message(self.request,
+                                            messages.SUCCESS,
+                                            'account/messages/password_changed.txt')
+
+        signals.password_changed.send(sender=self.request.user.__class__,
+                                            request=self.request,
+                                            user=self.request.user)
+
+        return super(PasswordChangeView, self).form_valid(form)
+
+password_change = login_required(MyPasswordChangeView.as_view())

@@ -1,5 +1,5 @@
 from django.db import models
-from allauth.account.signals import email_confirmed, user_signed_up
+from allauth.account.signals import email_confirmed, user_signed_up, password_reset
 from allauth.socialaccount.signals import pre_social_login
 from django.dispatch import receiver
 from django.dispatch import Signal
@@ -258,4 +258,5 @@ def confirm_user(request,email_address,**kwargs):
         active= 1
         user.state=active    
         user.save()
+
 

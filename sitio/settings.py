@@ -146,7 +146,6 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 MEDIA_URL= '/media/'
 MEDIA_ROOT= os.path.join(BASE_DIR,'beautycalendar/media')
-LOGOUT_REDIRECT_URL='/'
 SITE_ID=1
 
 EMAIL_USE_TLS = True
@@ -200,6 +199,8 @@ SOCIALACCOUNT_QUERY_EMAIL = True
 
 SOCIALACCOUNT_ADAPTER = 'beautycalendar.socialadapter.MyAdapter'
 LOGIN_REDIRECT_URL = 'private_profile'
+ACCOUNT_LOGOUT_ON_GET= True
+ACCOUNT_LOGOUT_REDIRECT_URL ='home'
 
 
 django_heroku.settings(locals())

@@ -5,9 +5,15 @@ from django.conf.urls import url
 
 urlpatterns = [
     path('', views.Home, name='home'),
+    
+    url(r'^accounts/password/change/$', views.password_change, name='password_change'),
+
+    url(r'^accounts/', include('allauth.urls')),
+
     path('private_profile', views.PrivateProfile, name='private_profile'),
     path('private',views.Private, name='private'),
     path('public', views.Public, name='public'),
+
 
     
     #path('products', views.product_list, name='product_list'),
