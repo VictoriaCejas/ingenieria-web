@@ -31,6 +31,7 @@ urlpatterns = [
 
     url(r'profile/(?P<pk>\d+)/update/avatar/$', views.avatar_update, name='avatar_update'),
     url(r'profile/(?P<pk>\d+)/update/front/$', views.front_update, name='front_update'),
+    url(r'profile/(?P<pk>\d+)/update/bio/$', views.bio_update, name='bio_update'),
 
     url(r'privacy-policy-facebook/$',views.facebookprivacy, name= 'facebook-privacy')
 ]

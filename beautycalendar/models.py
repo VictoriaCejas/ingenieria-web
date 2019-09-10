@@ -136,6 +136,7 @@ class ContentUsers(models.Model):
        
     def __str__(self):
         return self.title 
+    
     class Meta:
         verbose_name = 'Content users'  
         verbose_name_plural = 'Content users'
@@ -155,10 +156,21 @@ class Empleoyees(models.Model):
 
 class WorkItems (models.Model):
     item= models.CharField(max_length=50, blank=True,null=True)
+    def __str__(self):
+        return self.item
+    class Meta:
+        verbose_name = 'Work items'  
+        verbose_name_plural = 'Work items'
 
 class BeautySalons(models.Model):
     owner= models.ForeignKey('Users', on_delete=models.CASCADE)
     items= models.ForeignKey('WorkItems', on_delete= models.CASCADE)
+    #def __str__(self):
+    #    return self.items
+    class Meta:
+        verbose_name = 'Salons'  
+        verbose_name_plural = 'Salons'
+
 
 class Publications(models.Model):
     owner= models.ForeignKey('Users', on_delete=models.CASCADE)

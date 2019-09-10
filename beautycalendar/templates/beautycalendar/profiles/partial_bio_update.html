@@ -1,0 +1,27 @@
+<form  enctype="multipart/form-data" method="POST" action="{% url 'bio_update' form.instance.pk %}" class="js-photo-update-form">
+    {% csrf_token %}
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+      <h4 class="modal-title">Cargar biografia</h4>
+    </div>
+    <div class="modal-body">
+        {% if user.kind == 1 %}
+          {{form.as_p}}
+        {% else %}
+          {% for field in form.visible_fields  %}
+          {% if field.name != "items" %}
+            <p> {{ field.label }} </p>  
+            <p>{{ field }}</p>
+          {% endif %}
+          {% endfor %}
+        {% endif %}
+
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+      <button type="submit" class="btn btn-primary" >Cargar</button>
+    </div>
+</form>
+

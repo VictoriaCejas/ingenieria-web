@@ -13,6 +13,7 @@
 {% endif %}
 
     <div class="filter"></div>
+    
   </div>
   <div class="section profile-content">
       <button style="float: right;" type="button" class="btn btn-warning btn-sm js-update-photo"data-url="{% url 'front_update' pk=user.id %}">
@@ -41,8 +42,17 @@
           {% if user.description %}
             <p> {{user.description}} </p>  
           {% endif %}
+          {% if user.kind == 1 %}
+            {% if items %}
+            <p>RUBROS:</p>
+              {% for i in items %}
+                <p>{{ i.items }}</p>
+              {% endfor %}
+            {% endif %}
+          {% endif %}
+
           <br/>
-          <btn class="btn btn-outline-default btn-round"><i class="fa fa-cog"></i> Settings</btn>
+          <btn class="btn btn-outline-default btn-round js-update-photo"data-url="{% url 'bio_update' pk=user.id %}"><i class="fa fa-cog"></i> Settings</btn>
         </div>
       </div>
       <br/>

@@ -4,10 +4,12 @@ from django.contrib.auth.models import Group
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 
-from beautycalendar.models import Users, ContentUsers, Empleoyees
+from beautycalendar.models import Users, ContentUsers, Empleoyees, WorkItems, BeautySalons
 
-admin.site.register(ContentUsers)
-admin.site.register(Empleoyees)
+#admin.site.register(ContentUsers)
+#admin.site.register(Empleoyees)
+admin.site.register(WorkItems)
+
 #admin.site.register(Users)
 
 class UserCreationForm(forms.ModelForm):
@@ -85,8 +87,23 @@ class UserAdmin(BaseUserAdmin):
     ordering = ('email',)
     filter_horizontal = ()
 
+
+class AdminSalons(admin.ModelAdmin):
+    list_display=('owner','items')
+
+class AdminContent(admin.ModelAdmin):
+    list_display=('user','category','title','price')
+
+class AdminEmpleoyees(admin.ModelAdmin):
+    list_display=('boss','first_name','last_name')
+
+
 # Now register the new UserAdmin...
 admin.site.register(Users, UserAdmin)
+admin.site.register(BeautySalons,AdminSalons)
+admin.site.register(ContentUsers,AdminContent)
+admin.site.register(Empleoyees,AdminEmpleoyees)
+
 # ... and, since we're not using Django's built-in permissions,
 # unregister the Group model from admin.
 admin.site.unregister(Group)

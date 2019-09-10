@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, PasswordResetForm
-from .models import Users, ContentUsers, Empleoyees
+from .models import Users, ContentUsers, Empleoyees, WorkItems, BeautySalons
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.tokens import default_token_generator
 from django.db.models import Q
@@ -60,3 +60,19 @@ class FrontForm(forms.ModelForm):
     class Meta:
         model= Users
         fields=['imageFront']
+
+
+class BeautySalonsForm(forms.ModelForm):
+    class Meta:
+        model= BeautySalons
+        fields=['owner','items']
+    def __init__(self, *args, **kwargs):
+        super(self.__class__, self).__init__(*args, **kwargs)
+        self.fields['owner'].required= False
+
+class BioForm(forms.ModelForm):
+    items= forms.ModelMultipleChoiceField(queryset=WorkItems.objects.all(),required=False,widget=forms.CheckboxSelectMultiple)
+    class Meta:
+        model= Users
+        fields=['first_name','description']
+

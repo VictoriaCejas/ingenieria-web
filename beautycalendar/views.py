@@ -4,10 +4,10 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
-from .models import Users, ContentUsers,Empleoyees
+from .models import Users, ContentUsers,Empleoyees, BeautySalons, WorkItems
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
-from .forms import ContentForm,EmpleoyeesForm, AvatarForm, FrontForm
+from .forms import ContentForm,EmpleoyeesForm, AvatarForm, FrontForm, BeautySalonsForm,BioForm
 from django.contrib.sites.shortcuts import get_current_site
 from django.utils.encoding import force_bytes, force_text
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
@@ -54,9 +54,13 @@ def PrivateProfile(request):
         pass
 
     if kind == 1:
-        #bussines  
-        #products= ContentUser.objects.filter(user=user,category=1)
-        return render(request, 'beautycalendar/private_profile_bussines.html', {'usaurio':myuser,'user':user})
+        #bussines
+        #import web_pdb; web_pdb.set_trace()  
+        try:
+            items= BeautySalons.objects.filter(owner=myuser)
+        except:
+            items=""
+        return render(request, 'beautycalendar/private_profile_bussines.html', {'usaurio':myuser,'items':items,'user':user})
     elif kind == 2:
         #client
         return render(request, 'beautycalendar/private_profile_client.html', {'usuario': myuser,'user':user})
@@ -250,6 +254,19 @@ def front_update(request,pk):
             form= FrontForm(instance=mycontent)
     return save_myphotos_form(request, form, 'beautycalendar/profiles/partial_front_update.html')
 
+def bio_update(request,pk):
+
+    mycontent = get_object_or_404(Users, pk=pk)
+    if request.method == 'POST': 
+        form= BioForm(request.POST, instance= mycontent)
+    else:
+        if (mycontent== None):
+            form= BioForm()
+        else:
+            form= BioForm(instance=mycontent)
+    
+    return save_myphotos_form(request, form, 'beautycalendar/profiles/partial_bio_update.html')
+
 def save_myphotos_form(request,form,template_name):
     data = dict()
     if request.method == 'POST':
@@ -257,7 +274,7 @@ def save_myphotos_form(request,form,template_name):
             form.save(commit=False)
             data['form_is_valid'] = True
             user= Users.objects.get(email=request.user)
-
+        
             if ('avatar' in request.path):
                 image=form.cleaned_data['imageAvatar']
                 if (image is False):
@@ -270,6 +287,19 @@ def save_myphotos_form(request,form,template_name):
                     image= None
                 user.imageFront= image
             
+            if ('bio' in request.path):
+                #import web_pdb; web_pdb.set_trace()
+                name= form.cleaned_data['first_name']
+                user.first_name= name
+                user.description= form.cleaned_data['description']
+                items= form.cleaned_data['items']
+                delete= BeautySalons.objects.filter(owner=request.user).delete()
+                for i in items:
+                    try:
+                        salon= BeautySalons.objects.get(owner=request.user,items=i)
+                    except:
+                        salon= BeautySalons(owner= request.user, items= i)
+                        salon.save()
             user.save()
             usuario=user
             if (user.kind == 1):
@@ -281,6 +311,8 @@ def save_myphotos_form(request,form,template_name):
                 
         else:
             data['form_is_valid'] = False
+    #import web_pdb; web_pdb.set_trace()
+    
     context = {'form': form}
     data['html_form'] = render_to_string(template_name, context, request=request)
     return JsonResponse(data)
