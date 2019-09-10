@@ -55,7 +55,6 @@ def PrivateProfile(request):
 
     if kind == 1:
         #bussines
-        #import web_pdb; web_pdb.set_trace()  
         try:
             items= BeautySalons.objects.filter(owner=myuser)
         except:
@@ -95,8 +94,7 @@ def save_mycontent_form(request, form, template_name):
     data = dict()
     if request.method == 'POST':
         if form.is_valid():   
-            #import web_pdb; web_pdb.set_trace()
-            if (('products' or 'services') in request.path):  
+            if (('products' in request.path) or ('services' in request.path)):
                 if ('products' in request.path):
                     category= 1
                     img = form.cleaned_data['imageProduct']
@@ -128,7 +126,6 @@ def save_mycontent_form(request, form, template_name):
                     form.save()
                 else:
                     form.save(commit=False)
-                   # import web_pdb; web_pdb.set_trace()
                     boss= request.user
                     first_name= form.cleaned_data['first_name']
                     last_name= form.cleaned_data['last_name']
@@ -148,19 +145,17 @@ def save_mycontent_form(request, form, template_name):
 
 @bussines_required
 def mycontent_create(request):
-    if (('products' or 'services') in request.path):
+    if (('products' in request.path) or ('services' in request.path)):
         if request.method =='POST':
             form = ContentForm(request.POST,request.FILES or None)
         else:
             form = ContentForm()
-        
         if ('products' in request.path):
             return save_mycontent_form(request, form, 'beautycalendar/products/includes/partial_product_create.html')
         if ('services' in request.path):
             return save_mycontent_form(request, form, 'beautycalendar/services/includes/partial_service_create.html')
     
     if ('empleoyees' in request.path):
-        #import web_pdb; web_pdb.set_trace()
         if request.method =='POST':
             form = EmpleoyeesForm(request.POST,request.FILES or None)
         else:
@@ -170,7 +165,7 @@ def mycontent_create(request):
 @bussines_required
 def mycontent_update(request, pk):
     
-    if (('products' or 'services') in request.path):
+    if (('products' in request.path) or ('services' in request.path)):
         mycontent = get_object_or_404(ContentUsers, pk=pk)
         if request.method == 'POST':  
             form = ContentForm(request.POST,request.FILES, instance=mycontent)
@@ -192,17 +187,15 @@ def mycontent_update(request, pk):
 
 @bussines_required
 def mycontent_delete(request, pk):
-    if (('products' or 'services') in request.path):
+    if (('products' in request.path) or ('services' in request.path)):
         mycontent = get_object_or_404(ContentUsers, pk=pk)
     if ('empleoyees' in request.path):
         mycontent= get_object_or_404(Empleoyees, pk=pk)
     
     data = dict()
     if request.method == 'POST':
-        #import web_pdb; web_pdb.set_trace()
         mycontent.delete()
         data['form_is_valid'] = True
-        #mycontent = ContentUser.objects.all()
         if ('products' in request.path):
             mycontent = ContentUsers.objects.filter(user=request.user,category=1)        
             data['html_product_list'] = render_to_string('beautycalendar/products/includes/partial_product_list.html', {
@@ -243,6 +236,7 @@ def avatar_update(request,pk):
             form= AvatarForm(instance=mycontent)
     return save_myphotos_form(request, form, 'beautycalendar/profiles/partial_avatar_update.html')
 
+@login_required
 def front_update(request,pk):
     mycontent = get_object_or_404(Users, pk=pk)
     if request.method == 'POST':  
@@ -254,6 +248,7 @@ def front_update(request,pk):
             form= FrontForm(instance=mycontent)
     return save_myphotos_form(request, form, 'beautycalendar/profiles/partial_front_update.html')
 
+@login_required
 def bio_update(request,pk):
 
     mycontent = get_object_or_404(Users, pk=pk)
@@ -288,7 +283,6 @@ def save_myphotos_form(request,form,template_name):
                 user.imageFront= image
             
             if ('bio' in request.path):
-                #import web_pdb; web_pdb.set_trace()
                 name= form.cleaned_data['first_name']
                 user.first_name= name
                 user.description= form.cleaned_data['description']
@@ -311,7 +305,6 @@ def save_myphotos_form(request,form,template_name):
                 
         else:
             data['form_is_valid'] = False
-    #import web_pdb; web_pdb.set_trace()
     
     context = {'form': form}
     data['html_form'] = render_to_string(template_name, context, request=request)
