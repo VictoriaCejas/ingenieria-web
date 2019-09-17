@@ -48,20 +48,31 @@ $(function () {
     });
     return false;
   };
-
+  
+  var pause = function () {
+    var btn = $(this);
+    $.ajax({
+      url: btn.attr("data-url"),
+      type: 'get',
+      dataType: 'json',
+    });
+  };
 
   /* Binding */
 
-  // Create book
+  // Create content
   $(".js-create-mycontent").click(loadForm);
   $("#modal-mycontent").on("submit", ".js-mycontent-create-form", saveForm);
 
-  // Update book
+  // Update content
   $("#mycontent-table").on("click", ".js-update-mycontent", loadForm);
   $("#modal-mycontent").on("submit", ".js-mycontent-update-form", saveForm);
 
-  // Delete book
+  // Delete content
   $("#mycontent-table").on("click", ".js-delete-mycontent", loadForm);
   $("#modal-mycontent").on("submit", ".js-mycontent-delete-form", saveForm);
+
+  // Pause content
+  $("#mycontent-table").on("click", ".js-pause-mycontent", pause);
 
 });

@@ -9,6 +9,13 @@
       {% endif %}
     </td>
     <td>{{ content.price }}</td>
+    <td>
+      {% if content.state == 1 %}
+        <input type="checkbox" class="js-pause-mycontent"  data-url="{% url 'product_pause' content.id %}">
+      {% else %}
+        <input type="checkbox" name='checkbox' class="js-pause-mycontent"  data-url="{% url 'product_pause' content.id %}" checked>
+      {% endif %}
+    </td>
     <td style="width: 150px">
       <button style="margin: 2px" type="button" class="btn btn-warning btn-sm js-update-mycontent"data-url="{% url 'product_update' content.id %}">
           <i class="fa fa-pencil"></i>Editar
@@ -17,6 +24,7 @@
               <i class="fa fa-trash"></i> Eliminar
       </button>
     </td>
+    
   </tr>
   {% empty %}
   <tr>

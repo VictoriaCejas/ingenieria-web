@@ -29,22 +29,23 @@ class CustomSignupForm(SignupForm):
 
 
 class ContentForm(forms.ModelForm):
-    
+    paused= forms.BooleanField(required=False)
     class Meta:
         model = ContentUsers
-        fields = ['user','category','title','imageProduct','price']
-        widgets = {'user':forms.HiddenInput(),'category':forms.HiddenInput()}
+        fields = ['user','category','title','imageProduct','price','state']
+        widgets = {'user':forms.HiddenInput(),'category':forms.HiddenInput(), 'state':forms.HiddenInput()}
     def __init__(self, *args, **kwargs):
         super(self.__class__, self).__init__(*args, **kwargs)
         self.fields['user'].required= False
         self.fields['category'].required= False
+ 
 
 class EmpleoyeesForm(forms.ModelForm):
-
+    paused= forms.BooleanField(required=False)
     class Meta:
         model= Empleoyees
-        fields= ['boss','first_name','last_name','imageEmpleoyee']
-        widgets= {'boss':forms.HiddenInput(),}
+        fields= ['boss','first_name','last_name','imageEmpleoyee','state']
+        widgets= {'boss':forms.HiddenInput(),'state':forms.HiddenInput()}
    
     def __init__(self, *args, **kwargs):
         super(self.__class__, self).__init__(*args, **kwargs)

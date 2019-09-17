@@ -24,16 +24,20 @@ urlpatterns = [
     url(r'products/create/$', views.mycontent_create, name='product_create'),
     url(r'products/(?P<pk>\d+)/update/$', views.mycontent_update, name='product_update'),
     url(r'products/(?P<pk>\d+)/delete/$', views.mycontent_delete, name='product_delete'),
+    url(r'products/(?P<pk>\d+)/pause/$', views.mycontent_pause, name='product_pause'),
+
 
     url(r'services/$', views.mycontent_list, name='service_list'),
     url(r'services/create/$', views.mycontent_create, name='service_create'),
     url(r'services/(?P<pk>\d+)/update/$', views.mycontent_update, name='service_update'),
     url(r'services/(?P<pk>\d+)/delete/$', views.mycontent_delete, name='service_delete'),
+    url(r'services/(?P<pk>\d+)/pause/$', views.mycontent_pause, name='service_pause'),
 
     url(r'empleoyees/$', views.mycontent_list, name='empleoyee_list'),
     url(r'empleoyees/create/$', views.mycontent_create, name='empleoyee_create'),
     url(r'empleoyees/(?P<pk>\d+)/update/$', views.mycontent_update, name='empleoyee_update'),
     url(r'empleoyees/(?P<pk>\d+)/delete/$', views.mycontent_delete, name='empleoyee_delete'),
+    url(r'empleoyees/(?P<pk>\d+)/pause/$', views.mycontent_pause, name='empleoyee_pause'),
 
     url(r'profile/(?P<pk>\d+)/update/avatar/$', views.avatar_update, name='avatar_update'),
     url(r'profile/(?P<pk>\d+)/update/front/$', views.front_update, name='front_update'),

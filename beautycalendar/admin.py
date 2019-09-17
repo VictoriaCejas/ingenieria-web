@@ -92,10 +92,12 @@ class AdminSalons(admin.ModelAdmin):
     list_display=('owner','items')
 
 class AdminContent(admin.ModelAdmin):
-    list_display=('user','category','title','price')
+    list_display=('user','category','title','price','state')
+    list_filter = ('user','category','state')
 
 class AdminEmpleoyees(admin.ModelAdmin):
-    list_display=('boss','first_name','last_name')
+    list_display=('boss','first_name','last_name','state')
+    list_filter = ('boss','state')
 
 
 # Now register the new UserAdmin...

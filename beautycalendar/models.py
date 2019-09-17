@@ -48,7 +48,6 @@ class MyUserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-
 class Users(AbstractBaseUser):
     """
     User created with abstractUser for replace the default.
@@ -125,15 +124,24 @@ class ContentUsers(models.Model):
     product= 1
     service= 2
     categoryChoices= (
-        (product,'producto'),
-        (service,'servicio'),
+        (product,'product'),
+        (service,'service'),
+    )
+    active= 1
+    paused=2
+    removed=3
+    statesChoices= (
+        (active,'active'),
+        (paused,'paused'),
+        (removed,'removed'),
     )
     user= models.ForeignKey('Users',on_delete=models.CASCADE)
     category= models.PositiveSmallIntegerField(choices=categoryChoices, blank=False, null=False)
     title= models.CharField(max_length=50, blank=False, null=False)
     imageProduct= models.ImageField(blank=True, null=True, upload_to='Products')
     price= models.FloatField(blank=True, null=True) #cambiar por precio
-       
+    state= models.PositiveSmallIntegerField(choices= statesChoices, blank=True, null=True)
+      
     def __str__(self):
         return self.title 
     
@@ -141,13 +149,21 @@ class ContentUsers(models.Model):
         verbose_name = 'Content users'  
         verbose_name_plural = 'Content users'
 
-
 class Empleoyees(models.Model):
+    active= 1
+    paused=2
+    removed=3
+    statesChoices= (
+        (active,'active'),
+        (paused,'paused'),
+        (removed,'removed'),
+    )
     boss= models.ForeignKey('Users', on_delete=models.CASCADE)
     first_name= models.CharField(max_length=50, blank=False, null=False)
     last_name= models.CharField(max_length=50, blank=False, null=False)
     imageEmpleoyee= models.ImageField(blank=True, null=True, upload_to='Employees')
-    
+    state= models.PositiveSmallIntegerField(choices= statesChoices, blank=True, null=True)
+
     def __str__(self):
         return self.first_name
     class Meta:
@@ -171,16 +187,14 @@ class BeautySalons(models.Model):
         verbose_name = 'Salons'  
         verbose_name_plural = 'Salons'
 
-
 class Publications(models.Model):
     active= 1
-    pendingactivation=2
-    suspend= 3
-    removed=4
+    locked=2
+    removed=3
     statesChoices= (
         (active,'active'),
-        (suspend,'pending activation'),
-        (removed, 'removed'),
+        (locked,'locked'),
+        (removed,'removed'),
     )
     owner= models.ForeignKey('Users', on_delete=models.CASCADE)
     publish_date= models.DateTimeField(blank=False, null=False) #Fecha y hora
@@ -199,6 +213,7 @@ class CommentsPublications(models.Model):
     publication= models.ForeignKey('Publications',on_delete=models.CASCADE)
     user= models.ForeignKey('Users', on_delete=models.CASCADE)
     date= models.DateTimeField(blank=False, null=False)
+    comment= models.CharField(max_length=250,blank=False,null=False)
 
 class WorkingHoursEmpleoyess(models.Model):
     empleoyee= models.ForeignKey('Empleoyees',on_delete=models.CASCADE)
@@ -208,10 +223,20 @@ class WorkingHoursEmpleoyess(models.Model):
     finish_time= models.TimeField(blank=False, null=False)
 
 class UserDates(models.Model):
+    confirmed= 1
+    cancelled=2
+    finalized=3
+    statesChoices= (
+        (confirmed,'confirmed'),
+        (cancelled,'cancel'),
+        (finalized,'finalized'),
+    )
     user= models.ForeignKey('Users', on_delete=models.CASCADE)
     date= models.DateTimeField(blank=False, null=False)
     service= models.CharField(max_length=50,blank=True, null=True)
     empleoyee= models.ForeignKey('Empleoyees', on_delete= models.CASCADE)
+    state= models.PositiveSmallIntegerField(choices= statesChoices, blank=True, null=True)
+
 
 #SEÑALES ALLAUTH
 @receiver(user_signed_up)
