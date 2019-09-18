@@ -85,7 +85,7 @@ def PublicProfile(request):
 @bussines_required
 def mycontent_list(request):
     user= request.user
-    if request.method == 'POST':
+    
     if ('products' in request.path):
         mycontent= ContentUsers.objects.filter(user=user,category=1).exclude(state=3)
         return render(request, 'beautycalendar/products/product_list.html', {'mycontent': mycontent})
