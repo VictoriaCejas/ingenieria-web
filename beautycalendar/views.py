@@ -86,7 +86,6 @@ def PublicProfile(request):
 def mycontent_list(request):
     user= request.user
     if request.method == 'POST':
-        import web_pdb; web_pdb.set_trace()
     if ('products' in request.path):
         mycontent= ContentUsers.objects.filter(user=user,category=1).exclude(state=3)
         return render(request, 'beautycalendar/products/product_list.html', {'mycontent': mycontent})
@@ -117,25 +116,13 @@ def save_mycontent_form(request, form, template_name):
                 
                 if('update' in request.path):
                     obj = form.save(commit=False)
-#                    state= request.POST.get("paused", None)
-#                    if state == 'on':
-#                        state=2
-#                    else:
-#                        state=1
                     obj.state = state
                     obj.save()
-                    #form.save()
                 else:
                     form.save(commit=False)            
                     user=request.user
                     title= form.cleaned_data['title']
                     price= form.cleaned_data['price'] 
-                    #import web_pdb; web_pdb.set_trace() 
-#                    state = request.POST.get("paused", None)
-#                    if state == 'on':
-#                        state = 2
-#                    else:
-#                        state = 1
                     content= ContentUsers(user=user,category=category,title=title,imageProduct=img,price=price, state=state)
                     content.save()
                 data['form_is_valid'] = True
