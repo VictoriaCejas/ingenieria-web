@@ -1,0 +1,60 @@
+{% extends 'beautycalendar/base.html' %}
+{% load static %}
+
+{% block header %}
+{% if myuser.imageFront %}
+  <div class="page-header page-header-xs" data-parallax="true" style="background-image: url('{{ myuser.imageFront.url }}')">
+{% else %}
+  <div class="page-header page-header-xs" data-parallax="true" style="background-image: url('/static/assets/img/fabio-mangione.jpg');">
+{% endif %}
+
+    <div class="filter"></div>
+    
+  </div>
+  <div class="section profile-content">
+    <div class="container" id="crop-avatar">
+      <div class="owner">
+        <div class="avatar">
+        {% if myuser.imageAvatar %}
+          <img  src="{{ myuser.imageAvatar.url }}" width="100" alt="Circle Image" class="img-circle img-no-padding img-responsive myphoto-div">
+        {% else %}
+          <img src='{% static "assets/img/placeholder.jpg" %}' alt="Circle Image" class="img-circle img-no-padding img-responsive">
+        {% endif %}
+     
+        </div>
+        <div class="name">
+          <h4 class="title">{{myuser.first_name}}
+            <br />
+          </h4>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6 ml-auto mr-auto text-center">
+          {% if myuser.description %}
+            <p> {{myuser.description}} </p>  
+          {% endif %}
+          {% if myuser.kind == 1 %}
+            {% if items %}
+            <p>RUBROS:</p>
+              {% for i in items %}
+                <p>{{ i.items }}</p>
+              {% endfor %}
+            {% endif %}
+          {% endif %}
+
+          <br/>
+        </div>
+      </div>
+      <br/>
+      <div class="nav-tabs-navigation">
+        <div class="nav-tabs-wrapper">
+          
+        </div>
+      </div>
+
+{% endblock header %}
+{% block content %}
+      {% block profile %}
+      
+      {% endblock %}
+{% endblock %}

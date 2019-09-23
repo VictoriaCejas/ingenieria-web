@@ -1,7 +1,7 @@
 from django.urls import path, include
 from . import views
 from django.conf.urls import url
-
+from django.conf.urls import handler404
 
 urlpatterns = [
     path('', views.Home, name='home'),
@@ -43,5 +43,8 @@ urlpatterns = [
     url(r'profile/(?P<pk>\d+)/update/front/$', views.front_update, name='front_update'),
     url(r'profile/(?P<pk>\d+)/update/bio/$', views.bio_update, name='bio_update'),
 
-    url(r'privacy-policy-facebook/$',views.facebookprivacy, name= 'facebook-privacy')
+    url(r'privacy-policy-facebook/$',views.facebookprivacy, name= 'facebook-privacy'),
+
+    url(r'profile/(?P<email>[\w.@+-]+)/$', views.PublicProfile, name= 'public_profile'),
 ]
+handler404 = views.mi_error_404

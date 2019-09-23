@@ -28,6 +28,7 @@ from django.contrib import messages
 from allauth.account.views import PasswordChangeView
 from allauth.account.adapter import get_adapter
 from allauth.account import signals
+from django.views.defaults import page_not_found
 
 # Create your views here.
 
@@ -50,7 +51,8 @@ def PrivateProfile(request):
     
     user= request.user
     myuser= Users.objects.get(email=user.email)
-    kind = Users.objects.get(email=user.email).kind
+    #kind = Users.objects.get(email=user.email).kind
+    kind= myuser.kind
     if request.method=="POST":
         pass
     else:
@@ -77,8 +79,31 @@ def PrivateProfile(request):
 
 
 
-def PublicProfile(request):
-    pass
+def PublicProfile(request, email):
+    myuser = Users.objects.get(email=email)
+    kind= myuser.kind
+
+    if kind == 1:
+        #bussines
+        products= ContentUsers.objects.filter(user=myuser,category=1, state=1)
+        services= ContentUsers.objects.filter(user=myuser,category=2, state=1)
+        empleoyees= Empleoyees.objects.filter(boss=myuser, state=1)
+        try:
+            items= BeautySalons.objects.filter(owner=myuser)
+        except:
+            items=""
+        return render(request, 'beautycalendar/public_profile_bussines.html', {'myuser':myuser,'items':items,'products':products,'services':services,'empleoyees':empleoyees})
+    elif kind == 2:
+        #client
+        return render(request, 'beautycalendar/public_profile_client.html', {'myuser': myuser})
+    else:
+        #administrator
+        return HttpResponse('Error handler content', status=404)
+
+
+  #  return render(request, 'beautycalendar/private_profile.html', {'usuario': myuser,'user':user})
+
+
 
 
 """CRUD"""
@@ -366,7 +391,6 @@ def facebookprivacy(request):
 
     return render(request,'allauth/socialaccount/privacy.html')
 
-
 class MyPasswordChangeView(PasswordChangeView):
     """
     Custom class to override the password change view 
@@ -393,3 +417,7 @@ class MyPasswordChangeView(PasswordChangeView):
         return super(PasswordChangeView, self).form_valid(form)
 
 password_change = login_required(MyPasswordChangeView.as_view())
+
+def mi_error_404(request,Exception):
+    nombre_template = 'beautycalendar/404.html'
+    return page_not_found(request, template_name=nombre_template)

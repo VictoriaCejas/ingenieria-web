@@ -1,0 +1,126 @@
+{% extends "beautycalendar/public_profile_base.html" %}
+{% block profile %}
+    
+  <div class="accordion" id="accordionExample">
+    <div class="card">
+      <div class="card-header" id="headingOne">
+        <h2 class="mb-0">
+          <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="false" aria-controls="collapseTwo">
+            PRODUCTOS
+          </button>
+        </h2>
+      </div>
+      <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordionExample">  
+        <div class="card-body">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th scope="col"></th>
+                <th scope="col">Producto</th>
+                <th scope="col">Precio</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for product in products %}
+                <tr>
+                  <td>
+                    {% if product.imageProduct %}
+                      <img src="{{ product.imageProduct.url }}" width="50px">
+                    {% else %}
+                      <p>Sin imagen</p>
+                    {% endif %}
+                  </td>
+                  <td>{{product.title}}</td>
+                  <td>{{product.price}}</td>
+                </tr>  
+                {% empty %}
+                <tr>
+                  <td colspan="8" class="text-center ">Vacio</td>
+                </tr>
+              {% endfor %}
+              
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header" id="headingTwo">
+        <h2 class="mb-0">
+          <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+            SERVICIOS
+          </button>
+        </h2>
+      </div>
+      <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">      
+        <div class="card-body">
+            <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th scope="col">Servicio</th>
+                    <th scope="col">Precio</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for service in services %}
+                    <tr>
+                      <td>{{service.title}}</td>
+                      <td>{{service.price}}</td>
+                    </tr>  
+                    {% empty %}
+                    <tr>
+                      <td colspan="8" class="text-center ">Vacio</td>
+                    </tr>
+                  {% endfor %}
+                  
+                </tbody>
+              </table>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header" id="headingThree">
+        <h2 class="mb-0">
+          <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+            EMPLEADOS
+          </button>
+        </h2>
+      </div>
+      <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordionExample">
+        <div class="card-body">
+            <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th scope="col"></th>
+                    <th scope="col">Nombre</th>
+                    <th scope="col">Apellido</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for empleoyee in empleoyees %}
+                    <tr>
+                      <td>
+                        {% if empleoyee.imageEmpleoyee %}
+                            <img src="{{ empleoyee.imageEmpleoyee.url }}" width="50px">
+                        {% else %}
+                            <p>Sin imagen</p>
+                        {% endif %}
+                      </td>
+                      <td>{{empleoyee.first_name}}</td>
+                      <td>{{empleoyee.last_name}}</td>
+                      
+                    </tr>  
+                    {% empty %}
+                    <tr>
+                      <td colspan="8" class="text-center ">Vacio</td>
+                    </tr>
+                  {% endfor %}
+                  
+                </tbody>
+              </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+{% endblock profile %}
