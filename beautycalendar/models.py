@@ -2,14 +2,8 @@ from django.db import models
 from allauth.account.signals import email_confirmed, user_signed_up, password_reset
 from allauth.socialaccount.signals import pre_social_login
 from django.dispatch import receiver
-from django.dispatch import Signal
-from django.contrib.auth.models import ( BaseUserManager, AbstractBaseUser)
-from allauth.socialaccount.signals import pre_social_login
-from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
-from allauth.account.adapter import DefaultAccountAdapter
-from allauth.socialaccount.signals import pre_social_login
-from allauth.account.utils import perform_login
-from django.core.validators import MaxValueValidator, MinValueValidator
+from django.contrib.auth.models import  BaseUserManager, AbstractBaseUser
+from django.core.validators import MaxValueValidator
 # Create your models here.
 
 

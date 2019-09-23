@@ -1,7 +1,5 @@
 from .models import Users #custom user
-from allauth.exceptions import ImmediateHttpResponse
 from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
-from django.http import HttpResponse
 from allauth.account.utils import perform_login
 
 

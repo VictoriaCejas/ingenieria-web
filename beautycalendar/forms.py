@@ -1,14 +1,6 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm, PasswordResetForm
 from .models import Users, ContentUsers, Empleoyees, WorkItems, BeautySalons
-from django.contrib.auth import authenticate, login
-from django.contrib.auth.tokens import default_token_generator
-from django.db.models import Q
-from django.core.exceptions import MultipleObjectsReturned
-from allauth.account.forms import LoginForm, SignupForm, ResetPasswordForm, UserForm
-from allauth.account.signals import email_confirmed, user_signed_up
-from django.dispatch import receiver
-from allauth.account.adapter import DefaultAccountAdapter
+from allauth.account.forms import SignupForm
 
 
 class CustomSignupForm(SignupForm):

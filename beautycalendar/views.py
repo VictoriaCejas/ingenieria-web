@@ -1,30 +1,13 @@
 from django.http import HttpResponse, HttpResponseRedirect, HttpRequest
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 from .models import Users, ContentUsers,Empleoyees, BeautySalons, WorkItems
-from django.http import HttpResponse
-from django.shortcuts import render, redirect
 from .forms import ContentForm,EmpleoyeesForm, AvatarForm, FrontForm, BeautySalonsForm,BioForm
-from django.contrib.sites.shortcuts import get_current_site
-from django.utils.encoding import force_bytes, force_text
-from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.template.loader import render_to_string
-from django.core.mail import EmailMessage
-from allauth.account.signals import email_confirmed
-from django.dispatch import receiver
-from allauth.account.utils import send_email_confirmation
 from django.contrib import messages
-from django.contrib.messages.views import SuccessMessageMixin
-from django.views.generic.edit import DeleteView
-from django.views.generic import TemplateView, View, DeleteView
 from django.http import JsonResponse
-from django.template.loader import render_to_string
 from .decorators import bussines_required
 from django.contrib.auth import update_session_auth_hash
-from django.contrib import messages
 from allauth.account.views import PasswordChangeView
 from allauth.account.adapter import get_adapter
 from allauth.account import signals
