@@ -48,8 +48,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'allauth.socialaccount.providers.facebook',
     'allauth.socialaccount.providers.google',
-
-    #'social_django',  con django-social # <--
+    
 
 ]
 
@@ -79,13 +78,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                
-                'django.template.context_processors.request',
-
-
-        
-                #'social_django.context_processors.backends',  # <--
-                #'social_django.context_processors.login_redirect', # <--
+                        
             ],
         },
     },
@@ -148,16 +141,16 @@ MEDIA_URL= '/media/'
 MEDIA_ROOT= os.path.join(BASE_DIR,'beautycalendar/media')
 SITE_ID=1
 
-# EMAIL_USE_TLS = True
-# EMAIL_HOST = 'localhost' 
-# EMAIL_PORT = 1025
-# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-
 EMAIL_USE_TLS = True
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_HOST_USER = DEFAULT_FROM_EMAIL = 'beautydailyadm@gmail.com'
-EMAIL_HOST_PASSWORD = '123456*a'
+EMAIL_HOST = 'localhost' 
+EMAIL_PORT = 1025
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# EMAIL_USE_TLS = True
+# EMAIL_HOST = 'smtp.gmail.com'
+# EMAIL_PORT = 587
+# EMAIL_HOST_USER = DEFAULT_FROM_EMAIL = 'beautydailyadm@gmail.com'
+# EMAIL_HOST_PASSWORD = '123456*a'
 
 AUTHENTICATION_BACKENDS = (
     #'social_core.backends.google.GoogleOAuth2',
@@ -202,6 +195,13 @@ LOGIN_REDIRECT_URL = 'private_profile'
 ACCOUNT_LOGOUT_ON_GET= True
 ACCOUNT_LOGOUT_REDIRECT_URL ='home'
 
+JANGORESIZED_DEFAULT_SIZE = [1920, 1080]
+DJANGORESIZED_DEFAULT_QUALITY = 75
+DJANGORESIZED_DEFAULT_KEEP_META = True
+DJANGORESIZED_DEFAULT_FORCE_FORMAT = 'JPEG'
+DJANGORESIZED_DEFAULT_FORMAT_EXTENSIONS = {'JPEG': ".jpg"}
+DJANGORESIZED_DEFAULT_NORMALIZE_ROTATION = True
 
 django_heroku.settings(locals())
+
 

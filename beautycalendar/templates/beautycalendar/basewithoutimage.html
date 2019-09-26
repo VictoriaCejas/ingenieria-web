@@ -2,7 +2,7 @@
 {% load static %}
 {% block html %}
 <body>
-  <!-- Navbar -->  
+  <!--- Navbar --->  
     <nav class="navbar navbar-expand-lg fixed-top ">
         <div class="container">
             <div class="navbar-translate">
@@ -23,7 +23,6 @@
                             <a class="dropdown-item" href="{% url 'account_logout' %}">Cerrar sesion</a>
                         </div>
                     </div>
-                    {% comment %}
                       
                 {% else %}
                     <ul class="navbar-nav">
@@ -31,7 +30,6 @@
                             <a href="{% url 'account_login' %}?next={{ request.path|urlencode }}" class="nav-link"><i class="nc-icon nc-single-02"></i> Iniciar sesion</a>
                         </li>
                     </ul>
-                    {% endcomment %}
                 {% endif %}
             </div>
         </div>

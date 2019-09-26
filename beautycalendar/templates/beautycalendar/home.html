@@ -18,43 +18,22 @@
 
 {% block content %}
 
+{% for i in items  %}
 <div class="row" style="margin: 10px"></div>
-<div class="card mb-3" style="max-width: 900px;">
+<div class="card mb-3" >
     <div class="row no-gutters">
-      <div class="col-md-4" style="background-color: orange">
-      </div>
-      <div class="col-md-8">
+      <div class="col">
         <div class="card-body">
-          <h5 class="card-title">Quienes somos</h5>
+          <h5 class="card-title">{{i.item}}</h5>
           <p class="card-text">
-              <a class="btn btn-primary " href="{% url 'public' %}">Acceso publico</a>
-
+              <p></p>
+              <a class="btn btn-primary " name={{i.id}} value={{i.id}} href="{% url 'filter_professional' i.id %}">Buscar</a>
           </p>
-          <p class="card-text">Esto es un card de ejemplo</p>
-          <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+         
         </div>
       </div>
     </div>
   </div>
+{% endfor %}
 
-  <div class="card mb-3" style="max-width: 900px;">
-      <div class="row no-gutters">
-        <div class="col-md-4" style="background-color: orange">
-        </div>
-        <div class="col-md-8">
-          <div class="card-body">
-            <h5 class="card-title">Contacto</h5>
-            <p class="card-text">
-                <a class="btn btn-primary " href="{%url 'private'%}">Acceso privado</a>
-
-            </p>
-            <p class="card-text">Esto es un card de ejemplo</p>
-            <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
-          </div>
-        </div>
-      </div>
-    </div>
-    <p>ssjs</p>
-    <o></o>
-    <p></p>
 {% endblock %}

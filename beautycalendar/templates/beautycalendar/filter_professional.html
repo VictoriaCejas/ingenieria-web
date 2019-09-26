@@ -1,0 +1,44 @@
+{% extends "beautycalendar/basewithoutimage.html" %}
+{% load static %}
+{% block content %}
+
+<div class="container-fluid">
+    <div class="row">
+      <div class="col">
+      </div>
+      <div class="col-6">
+            <h3>Resultados:</h3>
+            {% for owner in owners  %}
+                <div class="row" style="margin: 10px"></div>
+                <div class="card mb-3" style="max-width: 900px;">
+                    <div class="row no-gutters">
+                        {% if owner.imageAvatar %}
+                            <div class="col-md-4" style="background-image: url('{{ owner.imageAvatar.url }}')"></div>    
+                        {% else %}
+                            <div class="col-md-4" style="background-color: orange"></div>                    
+                        {% endif %}
+                        <div class="col-md-8">
+                            <div class="card-body">
+                                {% if owner.name_salon %}
+                                    <h5 class="card-title">{{owner.name_salon}}</h5>
+                                {% else %}
+                                    <h5 class="card-title">{{owner.first_name}} {{owner.last_name}} </h5>                          
+                                {% endif %}
+                                    <p class="card-text">
+                                        <a class="btn btn-primary "  href="{% url 'public_profile' owner.email %}">Visitar</a>
+                                    </p>
+                                    
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <h4 class="text-center">No hay nada aquí aún</h4>
+            {% endfor %}
+        </div>
+      <div class="col">
+
+      </div>
+    </div>
+  </div>
+{% endblock content %}

@@ -5,7 +5,6 @@ from django.conf.urls import handler404
 
 urlpatterns = [
     path('', views.Home, name='home'),
-    
     url(r'^accounts/password/change/$', views.password_change, name='password_change'),
 
     url(r'^accounts/', include('allauth.urls')),
@@ -14,6 +13,7 @@ urlpatterns = [
     path('private',views.Private, name='private'),
     path('public', views.Public, name='public'),
 
+    url(r'filter_professional/(?P<pk>\d+)/$', views.filter_professional, name="filter_professional"),
 
     
     #path('products', views.product_list, name='product_list'),

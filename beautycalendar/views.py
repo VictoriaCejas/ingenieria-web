@@ -12,14 +12,26 @@ from allauth.account.views import PasswordChangeView
 from allauth.account.adapter import get_adapter
 from allauth.account import signals
 from django.views.defaults import page_not_found
-
+from PIL import Image
 # Create your views here.
 
 
 def Home(request):
-    return render(request, 'beautycalendar/home.html', {})
+    items= WorkItems.objects.all()
+    return render(request, 'beautycalendar/home.html', {'items':items})
  
+def filter_professional(request, pk):
+  #  import web_pdb; web_pdb.set_trace()
+    item= WorkItems.objects.get(id=pk)
+    salons= BeautySalons.objects.filter(items=item)
+    owners=[]
+    for salon in salons:  
+        owners.append(salon.owner)
     
+    return render(request, 'beautycalendar/filter_professional.html',{'owners':owners})
+
+
+
 @login_required()
 def Private(request):
     return render(request, 'beautycalendar/privado.html', {})
@@ -36,14 +48,7 @@ def PrivateProfile(request):
     myuser= Users.objects.get(email=user.email)
     #kind = Users.objects.get(email=user.email).kind
     kind= myuser.kind
-    if request.method=="POST":
-        pass
-    else:
-        """
-        Es un GET
-        """
-        pass
-
+    
     if kind == 1:
         #bussines
         try:
@@ -134,7 +139,7 @@ def save_mycontent_form(request, form, template_name):
                     content= ContentUsers(user=user,category=category,title=title,imageProduct=img,price=price, state=state)
                     content.save()
                 data['form_is_valid'] = True
-                mycontent = ContentUsers.objects.filter(user=request.user,category=category)
+                mycontent = ContentUsers.objects.filter(user=request.user,category=category).exclude(state=3)
                 if ('products' in request.path):
                     data['html_product_list'] = render_to_string('beautycalendar/products/includes/partial_product_list.html', {
                         'mycontent': mycontent
@@ -159,7 +164,7 @@ def save_mycontent_form(request, form, template_name):
                     empleoyee= Empleoyees(boss=boss,first_name=first_name,last_name=last_name,imageEmpleoyee=imageEmpleoyee,state=state)
                     empleoyee.save()
                 data['form_is_valid'] = True
-                mycontent = Empleoyees.objects.filter(boss=request.user)
+                mycontent = Empleoyees.objects.filter(boss=request.user).exclude(state=3)
                 data['html_empleoyee_list'] = render_to_string('beautycalendar/empleoyees/includes/partial_empleoyee_list.html', {
                     'mycontent': mycontent
                 })
@@ -229,12 +234,12 @@ def mycontent_delete(request, pk):
                 'mycontent': mycontent
             })
         if ('services' in request.path):
-            mycontent = ContentUsers.objects.filter(user=request.user,category=2)        
+            mycontent = ContentUsers.objects.filter(user=request.user,category=2).exclude(state=3)       
             data['html_service_list'] = render_to_string('beautycalendar/services/includes/partial_service_list.html', {
                 'mycontent': mycontent
             })
         if ('empleoyees' in request.path):
-            mycontent = Empleoyees.objects.filter(boss=request.user)        
+            mycontent = Empleoyees.objects.filter(boss=request.user).exclude(state=3)        
             data['html_empleoyee_list'] = render_to_string('beautycalendar/empleoyees/includes/partial_empleoyee_list.html', {
                 'mycontent': mycontent
             })
@@ -267,23 +272,23 @@ def mycontent_pause(request, pk):
     mycontent.save()
     data['form_is_valid'] = True
     if ('products' in request.path):
-        mycontent = ContentUsers.objects.filter(user=request.user,category=1)        
+        mycontent = ContentUsers.objects.filter(user=request.user,category=1).exclude(state=3)       
         data['html_product_list'] = render_to_string('beautycalendar/products/includes/partial_product_list.html', {
             'mycontent': mycontent
         })
     if ('services' in request.path):
-        mycontent = ContentUsers.objects.filter(user=request.user,category=2)        
+        mycontent = ContentUsers.objects.filter(user=request.user,category=2).exclude(state=3)      
         data['html_service_list'] = render_to_string('beautycalendar/services/includes/partial_service_list.html', {
             'mycontent': mycontent
         })
     if ('empleoyees' in request.path):
-        mycontent = Empleoyees.objects.filter(boss=request.user)        
+        mycontent = Empleoyees.objects.filter(boss=request.user).exclude(state=3)    
         data['html_empleoyee_list'] = render_to_string('beautycalendar/empleoyees/includes/partial_empleoyee_list.html', {
             'mycontent': mycontent
         })
     return JsonResponse(data)
 
-""""""
+
 @login_required
 def avatar_update(request,pk):
     mycontent = get_object_or_404(Users, pk=pk)
@@ -294,7 +299,7 @@ def avatar_update(request,pk):
             form= AvatarForm()
         else:
             form= AvatarForm(instance=mycontent)
-    return save_myphotos_form(request, form, 'beautycalendar/profiles/partial_avatar_update.html')
+    return save_my_profile_update_form(request, form, 'beautycalendar/profiles/partial_avatar_update.html')
 
 @login_required
 def front_update(request,pk):
@@ -306,7 +311,7 @@ def front_update(request,pk):
             form= FrontForm()
         else:
             form= FrontForm(instance=mycontent)
-    return save_myphotos_form(request, form, 'beautycalendar/profiles/partial_front_update.html')
+    return save_my_profile_update_form(request, form, 'beautycalendar/profiles/partial_front_update.html')
 
 @login_required
 def bio_update(request,pk):
@@ -320,9 +325,9 @@ def bio_update(request,pk):
         else:
             form= BioForm(instance=mycontent)
     
-    return save_myphotos_form(request, form, 'beautycalendar/profiles/partial_bio_update.html')
+    return save_my_profile_update_form(request, form, 'beautycalendar/profiles/partial_bio_update.html')
 
-def save_myphotos_form(request,form,template_name):
+def save_my_profile_update_form(request,form,template_name):
     data = dict()
     if request.method == 'POST':
         if form.is_valid():
@@ -343,8 +348,12 @@ def save_myphotos_form(request,form,template_name):
                 user.imageFront= image
             
             if ('bio' in request.path):
-                name= form.cleaned_data['first_name']
-                user.first_name= name
+                if user.kind==1:
+                    name=form.cleaned_data['name_salon']
+                    user.name_salon= name     
+                else:                     
+                    name= form.cleaned_data['first_name']              
+                    user.first_name= name
                 user.description= form.cleaned_data['description']
                 items= form.cleaned_data['items']
                 delete= BeautySalons.objects.filter(owner=request.user).delete()
@@ -365,7 +374,6 @@ def save_myphotos_form(request,form,template_name):
                 
         else:
             data['form_is_valid'] = False
-    
     context = {'form': form}
     data['html_form'] = render_to_string(template_name, context, request=request)
     return JsonResponse(data)

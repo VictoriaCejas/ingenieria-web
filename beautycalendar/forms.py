@@ -54,7 +54,6 @@ class FrontForm(forms.ModelForm):
         model= Users
         fields=['imageFront']
 
-
 class BeautySalonsForm(forms.ModelForm):
     class Meta:
         model= BeautySalons
@@ -67,5 +66,9 @@ class BioForm(forms.ModelForm):
     items= forms.ModelMultipleChoiceField(queryset=WorkItems.objects.all(),required=False,widget=forms.CheckboxSelectMultiple)
     class Meta:
         model= Users
-        fields=['first_name','description']
-
+        fields=['first_name','name_salon','description',"items"]
+   
+    def __init__(self, *args, **kwargs):
+        super(self.__class__, self).__init__(*args, **kwargs)
+        self.fields['first_name'].required= False
+        self.fields['name_salon'].required= False

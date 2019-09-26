@@ -16,14 +16,23 @@
       <div class="owner">
         <div class="avatar">
         {% if myuser.imageAvatar %}
-          <img  src="{{ myuser.imageAvatar.url }}" width="100" alt="Circle Image" class="img-circle img-no-padding img-responsive myphoto-div">
+          <img  src="{{ myuser.imageAvatar.url }}" width="200" alt="Circle Image" class="img-circle img-no-padding img-responsive myphoto-div">
         {% else %}
           <img src='{% static "assets/img/placeholder.jpg" %}' alt="Circle Image" class="img-circle img-no-padding img-responsive">
         {% endif %}
      
         </div>
         <div class="name">
-          <h4 class="title">{{myuser.first_name}}
+          <h4 class="title">
+            {% if user.kind == 1 %}
+              {% if myuser.name_salon %}
+                {{myuser.name_salon}}
+              {% else %}
+                <p>{{myuser.first_name}} {{myuser.last_name}}</p>
+              {% endif %}
+            {% else %}
+              {{myuser.first_name}}
+            {% endif %}
             <br />
           </h4>
         </div>

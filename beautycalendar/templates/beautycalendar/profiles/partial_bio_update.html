@@ -8,12 +8,22 @@
     </div>
     <div class="modal-body">
         {% if user.kind == 1 %}
-          {{form.as_p}}
+          <p>Salon</p>
+          <p> {{form.name_salon}} </p>
+          <p>Descripcion</p>
+          <p>{{form.description}}</p>
+          <p>Rubros</p>
+          {% for i in form.items  %}
+            {{i}}
+          {% endfor %}
         {% else %}
+          {{ form.name_salon.as_hidden }}
           {% for field in form.visible_fields  %}
           {% if field.name != "items" %}
-            <p> {{ field.label }} </p>  
-            <p>{{ field }}</p>
+            {% if field.name != "name_salon" %}
+              <p> {{ field.label }} </p>  
+              <p>{{ field }}</p>
+            {% endif %}
           {% endif %}
           {% endfor %}
         {% endif %}

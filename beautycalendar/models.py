@@ -4,6 +4,8 @@ from allauth.socialaccount.signals import pre_social_login
 from django.dispatch import receiver
 from django.contrib.auth.models import  BaseUserManager, AbstractBaseUser
 from django.core.validators import MaxValueValidator
+from django_resized import ResizedImageField
+
 # Create your models here.
 
 
@@ -79,9 +81,12 @@ class Users(AbstractBaseUser):
     state= models.PositiveSmallIntegerField(choices=statesChoices, blank=True, null=True)
     kind= models.PositiveSmallIntegerField(choices=kindsChoices, blank=True, null=True)
     score= models.PositiveSmallIntegerField(null=True)
-    imageAvatar= models.ImageField(null=True,blank=True,upload_to='avatar_image')
-    imageFront= models.ImageField(null=True,blank=True,upload_to='front_image')
+   # imageAvatar= models.ImageField(null=True,blank=True,upload_to='avatar_image')
+    imageAvatar = ResizedImageField(size=[150, 150], quality=90, crop=['middle', 'center'], upload_to='avatar_image',blank=True, null=True)
+   # imageFront= models.ImageField(null=True,blank=True,upload_to='front_image')
+    imageFront = ResizedImageField(size=[1281, 236], quality=90, crop=['middle', 'center'], upload_to='front_image',blank=True, null=True)    
     description= models.CharField(max_length=250,blank=True, null=True)
+    name_salon= models.CharField(max_length=50, blank=True, null=True)
 
     objects = MyUserManager()
 
@@ -132,7 +137,9 @@ class ContentUsers(models.Model):
     user= models.ForeignKey('Users',on_delete=models.CASCADE)
     category= models.PositiveSmallIntegerField(choices=categoryChoices, blank=False, null=False)
     title= models.CharField(max_length=50, blank=False, null=False)
-    imageProduct= models.ImageField(blank=True, null=True, upload_to='Products')
+    #imageProduct= models.ImageField(blank=True, null=True, upload_to='Products')
+    imageProduct = ResizedImageField(size=[100, 100], quality=90, crop=['middle', 'center'], upload_to='Products',blank=True, null=True)
+    
     price= models.FloatField(blank=True, null=True) #cambiar por precio
     state= models.PositiveSmallIntegerField(choices= statesChoices, blank=True, null=True)
       
@@ -155,7 +162,9 @@ class Empleoyees(models.Model):
     boss= models.ForeignKey('Users', on_delete=models.CASCADE)
     first_name= models.CharField(max_length=50, blank=False, null=False)
     last_name= models.CharField(max_length=50, blank=False, null=False)
-    imageEmpleoyee= models.ImageField(blank=True, null=True, upload_to='Employees')
+#    imageEmpleoyee= models.ImageField(blank=True, null=True, upload_to='Employees')
+    imageEmpleoyee = ResizedImageField(size=[100, 100], quality=90, crop=['middle', 'center'], upload_to='Employees',blank=True, null=True)
+
     state= models.PositiveSmallIntegerField(choices= statesChoices, blank=True, null=True)
 
     def __str__(self):
@@ -175,8 +184,6 @@ class WorkItems (models.Model):
 class BeautySalons(models.Model):
     owner= models.ForeignKey('Users', on_delete=models.CASCADE)
     items= models.ForeignKey('WorkItems', on_delete= models.CASCADE)
-    #def __str__(self):
-    #    return self.items
     class Meta:
         verbose_name = 'Salons'  
         verbose_name_plural = 'Salons'
@@ -193,6 +200,7 @@ class Publications(models.Model):
     owner= models.ForeignKey('Users', on_delete=models.CASCADE)
     publish_date= models.DateTimeField(blank=False, null=False) #Fecha y hora
     imagePublication= models.ImageField(blank=False, null=False, upload_to='Publications')
+    
     description= models.CharField(max_length=250, blank=True, null=True)
     score= models.PositiveIntegerField(blank=True, null=True)
     state= models.PositiveSmallIntegerField(choices= statesChoices, blank=True, null=True)
@@ -237,20 +245,19 @@ class UserDates(models.Model):
 def sing_up(request,user,**kwargs):
     #Cuando se recibe señal de registro exitoso, se guarda en usuario en el modelo Usuario.
     #import web_pdb; web_pdb.set_trace()
+    """Cuando se recive la señal de registro exitoso, se guarda en usuarios el modelo
+    de usuario, ademas, si el usuario es bussines, crea el salon correspondiente a este"""
     active= 1
     pendingactivation=2
     bussines= 1
     client= 2
     stateUser=0
     kindUser=0
-   # import web_pdb; web_pdb.set_trace()
     if request.method=="POST":
         form= request.POST
-        #estado = EstadosUsuario.objects.get(descripcion='pendiente activacion') 
         try:
             form['bussines']
             kindUser= bussines
-            #tipo = TiposUsuario.objects.get(descripcion='bussines')
         except:
             kindUser=client
             #tipo = TiposUsuario.objects.get(descripcion='cliente')
