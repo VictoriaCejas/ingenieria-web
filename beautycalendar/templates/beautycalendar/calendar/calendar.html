@@ -1,28 +1,114 @@
-{% extends "base.html" %}
+{% extends "beautycalendar/basewithoutimage.html" %}
+{% load static %}
 
+{% block javascript %}
 
-{% load i18n static %}
-
-{% block head_title %}{% trans "Fullcalendar" %}{% endblock %}
-
-{% block tab_id %}id="home_tab"{% endblock %}
-
-{% block extra_head %}
-<link rel='stylesheet' type='text/css' href="{% static 'fullcalendar/dist/fullcalendar.css' %}" />
-<script type='text/javascript' src="{% static 'moment/moment.js' %}"></script>
-<script type='text/javascript' src="{% static 'fullcalendar/dist/fullcalendar.js' %}"></script>
-{% endblock %}
-
-{% block body %}
-<div id="calendar"></div>
-<script type='text/javascript'>
-$(document).ready(function() {
-    // page is now ready, initialize the calendar...
-    $('#calendar').fullCalendar({
-        // put your options and callbacks here
-      events: '/schedule/api/occurrences?calendar_slug=example'
-    })
-});
+<script>
+    $(function () {
+      $("#id_date").datepicker({
+        format:'dd/mm/yyyy',
+      });
+    });
 </script>
+<script src="{% static 'calendar/calendar.js' %}"></script>
+<script>
+    $('#id_services').change(function () {
+     var optionSelected = $(this).find("option:selected");
+     var valueSelected  = optionSelected.val();
+     var textSelected   = optionSelected.text();
+     $('#p-service').val(textSelected);
+     $('#h-service').val(valueSelected)
+     });
+</script>
+<script>
+   $(document).ready(function () {
+     var optionSelected = $('#id_services').find("option:selected");
+     var valueSelected  = optionSelected.val();
+     var textSelected   = optionSelected.text();
+     $('#p-service').val(textSelected);
+     $('#h-service').val(valueSelected)
+     
+     var optionSelected = $('#id_empleoyees').find("option:selected");
+     var valueSelected  = optionSelected.val();
+     var textSelected   = optionSelected.text();
+     $('#p-professional').val(textSelected);
+     $('#h-professional').val(valueSelected)
 
+     $('#p-day').val($('#id_date').datepicker('getDate', true));
+
+    });
+</script>
+<script>
+     $('#id_empleoyees').change(function () {
+     var optionSelected = $(this).find("option:selected");
+     var valueSelected  = optionSelected.val();
+     var textSelected   = optionSelected.text();
+     $('#p-professional').val(textSelected);
+     $('#h-professional').val(valueSelected)
+     
+     });
+</script>
+<script>
+    
+    function timeFunction(elmt) {
+            $('#p-time').val(elmt.value)
+    }
+</script>
+<script>
+     $('#id_date').on('change', function () {
+	    $('#p-day').val($('#id_date').datepicker('getDate', true));
+     });
+</script>
 {% endblock %}
+{% block content %}
+
+  <div class="row">
+    <div  class="col-md-4">
+      <form method="POST" data-url="{url 'calendar' salon.id}">
+        {% csrf_token %}
+        {{form.as_p}}
+        <button class="js-create-times">Buscar</button>
+      </form>
+    </div>
+
+    <div class="col-md-8">
+      <form method="POST" action="{% url 'confirm-date' salon.id %}" >
+        {% csrf_token %}
+        <row>
+          <p >Servicio: </p>
+          <input id="p-service" name="nom_service" >
+          <input id="h-service" type="hidden" name="val_service">
+        </row>
+        <row>
+          <p >Profesional: </p>
+          <input id="p-professional"  name="nom_professional"> 
+          <input id="h-professional" type="hidden" name="val_professional">
+
+        </row>
+        <row>
+          <p>Dia: </p>
+          <input id="p-day" name="nom_day">
+        </row>
+        <row>
+          <p>Hora: </p>
+          <input id="p-time" name="nom_time">
+        </row>
+        <button>Confirmar</button>
+      </form>     
+    </div>
+  </div>
+  <div class="row" id="my-div">
+    <table class="table" id="mycontent-table">
+        <thead>
+        <tr>
+          <th>Disponibles</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% include 'beautycalendar/calendar/partial.html' %}
+      </tbody>
+    </table>  
+  </div>
+
+  {% endblock content %}
+

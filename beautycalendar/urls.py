@@ -46,5 +46,15 @@ urlpatterns = [
     url(r'privacy-policy-facebook/$',views.facebookprivacy, name= 'facebook-privacy'),
 
     url(r'profile/(?P<email>[\w.@+-]+)/$', views.PublicProfile, name= 'public_profile'),
+
+    url(r'calendar/(?P<pk>\d+)/$',views.Calendar, name='calendar'),
+    url(r'calendar/(?P<pk>\d+)/confirm/$', views.confirmarTurno, name='confirm-date'),
+    url(r'calendar/(?P<pk>\d+)/empleoyee_calendar/$', views.getCalendarBussines, name='empleoyee_calendar'),
+    url(r'dates-private/$', views.getDatesPrivate, name='dates-private'),
+
+    url(r'publications/$', views.listPublication, name='publications'),
+    url(r'publications/create/$', views.createPublication, name='publications_create'),
+    url(r'publications/(?P<pk>\d+)/$', views.getPublication, name='publication_get'),
+    url(r'publications/(?P<pk>\d+)/comment/$', views.getPublication, name='save-comment')
 ]
 handler404 = views.mi_error_404

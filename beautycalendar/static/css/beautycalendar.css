@@ -4,7 +4,7 @@
 }
 
 
-#id_title,#id_category ,#id_description, #id_name_salon
+#id_title,#id_category ,#id_description, #id_name_salon, #id_empleoyees
 {
    display: block;
    width: 100%;
@@ -52,4 +52,11 @@ label{
     -o-transition: transform 300ms cubic-bezier(0.34, 2, 0.6, 1), box-shadow 200ms ease;
     -ms-transition: transform 300ms cubic-bezier(0.34, 2, 0.6, 1), box-shadow 200ms ease;
     transition: transform 300ms cubic-bezier(0.34, 2, 0.6, 1), box-shadow 200ms ease;
+}
+
+#list-comments .list-group{
+   max-height: 300px;
+   margin-bottom: 10px;
+   overflow:scroll;
+   -webkit-overflow-scrolling: touch;
 }

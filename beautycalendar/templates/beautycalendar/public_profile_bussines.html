@@ -1,6 +1,6 @@
 {% extends "beautycalendar/public_profile_base.html" %}
 {% block profile %}
-    
+
   <div class="accordion" id="accordionExample">
     <div class="card">
       <div class="card-header" id="headingOne">
@@ -120,6 +120,20 @@
               </table>
         </div>
       </div>
+    </div>
+    <div class="card">
+        <div class="card-header" id="headingFour">
+          <h2 class="mb-0">
+            <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+              PUBLICACIONES
+            </button>
+          </h2>
+        </div>
+        <div id="collapseFour" class="collapse" aria-labelledby="headingFour" data-parent="#accordionExample">
+          <div class="card-body">
+            <a href="{% url 'publications' %}" class="btn btn-primary">GO</a>
+          </div>
+        </div>
     </div>
   </div>
 

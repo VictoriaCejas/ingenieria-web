@@ -1,0 +1,39 @@
+{% extends "beautycalendar/basewithoutimage.html" %}
+{% load static %}
+
+{% block content %}
+<div>
+    <div class="row">
+    <div class="col-md-8">
+        {% if publication.imagePublication %}
+            <img src="{{ publication.imagePublication.url }}" width="400px">
+        {% endif %}
+        <p> </p>
+        <p>{{publication.description}}</p>
+    </div>
+    <div class="col-md-4">
+            <div style="overflow: scroll; max-height: 400px;overflow-x: hidden;">
+            <p>Comentarios</p>
+            <ul id="list-comments" class="list-group">
+                {% for c in comments %}
+                <li class="list-group-item">
+                    <p>{{c.user.first_name}} {{c.user.last_name}} dice:</p>
+                    <p>{{c.comment}}</p>
+                </li>
+                {% empty %}
+                <li class="text-danger">No existen comentarios aun</li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div>
+            <form method="POST" action="{% url 'publication_get' publication.id %}" >
+                {% csrf_token %}
+                <textarea id="pub-comment" class="form-control z-depth-1" name="textarea-pub" rows="3" placeholder="Write something here..."></textarea>
+                <input id='pub-id' hidden value="{{ publication.id }}"></p>
+                <button id='btn-comentario'>Comentar</button>
+            </form>
+        </div>
+    </div>
+</div>
+</div>
+{% endblock content %}

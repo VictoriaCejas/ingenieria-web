@@ -142,7 +142,8 @@ class ContentUsers(models.Model):
     
     price= models.FloatField(blank=True, null=True) #cambiar por precio
     state= models.PositiveSmallIntegerField(choices= statesChoices, blank=True, null=True)
-      
+    attention_time= models.IntegerField(blank=True, null=True)
+    
     def __str__(self):
         return self.title 
     
@@ -162,7 +163,6 @@ class Empleoyees(models.Model):
     boss= models.ForeignKey('Users', on_delete=models.CASCADE)
     first_name= models.CharField(max_length=50, blank=False, null=False)
     last_name= models.CharField(max_length=50, blank=False, null=False)
-#    imageEmpleoyee= models.ImageField(blank=True, null=True, upload_to='Employees')
     imageEmpleoyee = ResizedImageField(size=[100, 100], quality=90, crop=['middle', 'center'], upload_to='Employees',blank=True, null=True)
 
     state= models.PositiveSmallIntegerField(choices= statesChoices, blank=True, null=True)
@@ -199,8 +199,8 @@ class Publications(models.Model):
     )
     owner= models.ForeignKey('Users', on_delete=models.CASCADE)
     publish_date= models.DateTimeField(blank=False, null=False) #Fecha y hora
-    imagePublication= models.ImageField(blank=False, null=False, upload_to='Publications')
-    
+  #  imagePublication= models.ImageField(blank=False, null=False, upload_to='Publications')
+    imagePublication= ResizedImageField(size=[300, 300], quality=90, crop=['middle', 'center'], upload_to='Publications',blank=True, null=True)
     description= models.CharField(max_length=250, blank=True, null=True)
     score= models.PositiveIntegerField(blank=True, null=True)
     state= models.PositiveSmallIntegerField(choices= statesChoices, blank=True, null=True)
@@ -217,12 +217,34 @@ class CommentsPublications(models.Model):
     date= models.DateTimeField(blank=False, null=False)
     comment= models.CharField(max_length=250,blank=False,null=False)
 
-class WorkingHoursEmpleoyess(models.Model):
-    empleoyee= models.ForeignKey('Empleoyees',on_delete=models.CASCADE)
-    init_date= models.SmallIntegerField(blank=False, null=False,validators=[MaxValueValidator(6)]) #0 domingo.. 6 sabado
-    finish_date= models.SmallIntegerField(blank=False, null=False, validators=[MaxValueValidator(6)]) #0 domingo.. 6 sabado
+class WorkingHoursSalons(models.Model):
+    sunday=1
+    monday=2
+    tuesday=3
+    wednesday=4
+    thursday=5
+    friday=6
+    saturday=7
+    daysChoices= (
+        (sunday,'domingo'),
+        (monday,'lunes'),
+        (tuesday,'martes'),
+        (wednesday,'miercoles'),
+        (thursday,'jueves'),
+        (friday,'viernes'),
+        (saturday,'sabado'),
+    )
+
+    #empleoyee= models.ForeignKey('Empleoyees',on_delete=models.CASCADE)
+    salon= models.ForeignKey('Users',on_delete=models.CASCADE)
+    init_date= models.PositiveSmallIntegerField(choices=daysChoices, blank=False, null=False,validators=[MaxValueValidator(6)]) #0 domingo.. 6 sabado
+    finish_date= models.PositiveSmallIntegerField(choices=daysChoices, blank=False, null=False, validators=[MaxValueValidator(6)]) #0 domingo.. 6 sabado
     init_time= models.TimeField(blank=False, null=False)
     finish_time= models.TimeField(blank=False, null=False)
+
+    class Meta:
+        verbose_name = 'Working hours salons'
+        verbose_name_plural = 'Workin hours salons'
 
 class UserDates(models.Model):
     confirmed= 1
@@ -233,12 +255,14 @@ class UserDates(models.Model):
         (cancelled,'cancel'),
         (finalized,'finalized'),
     )
-    user= models.ForeignKey('Users', on_delete=models.CASCADE)
-    date= models.DateTimeField(blank=False, null=False)
-    service= models.CharField(max_length=50,blank=True, null=True)
+    client= models.ForeignKey('Users', on_delete=models.CASCADE)
+    date= models.DateField(blank=False, null=False)
+    service= models.ForeignKey('ContentUsers', on_delete=models.CASCADE)
     empleoyee= models.ForeignKey('Empleoyees', on_delete= models.CASCADE)
+    salon= models.CharField(max_length=50)
     state= models.PositiveSmallIntegerField(choices= statesChoices, blank=True, null=True)
-
+    init_time= models.IntegerField()
+    finish_time= models.IntegerField()
 
 #SEÑALES ALLAUTH
 @receiver(user_signed_up)
@@ -275,7 +299,7 @@ def sing_up(request,user,**kwargs):
 
 @receiver(email_confirmed)
 def confirm_user(request,email_address,**kwargs):
-#Cuando se recibe la señal de confirmacion de mail, cambia el estado del usuario
+    #Cuando se recibe la señal de confirmacion de mail, cambia el estado del usuario
     try:
         user = Users.objects.get(email=email_address.email)
     except(TypeError, OverflowError, Users.DoesNotExist):

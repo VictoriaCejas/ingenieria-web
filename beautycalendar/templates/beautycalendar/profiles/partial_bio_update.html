@@ -16,19 +16,48 @@
           {% for i in form.items  %}
             {{i}}
           {% endfor %}
+            <div class="row">
+          <div class="col-sm-4">
+            <p>Dia apertura</p>
+            <p>{{form.initDay}}</p>
+          </div>
+          <div class="col-sm-3">
+            <p>Dia cierre</p>
+            <p>{{form.endDay}}</p>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-4">
+            <p>Hora apertura</p>
+            <input type="time" name="initHour" value="initHour" min="07:00" max="24:00" required>
+          </div>
+          <div class="col-sm-4">
+            <p>Hora cierre</p>
+            <input type="time" name="endHour" value="endHour" min="07:00" max="24:00" required>
+          </div>
         {% else %}
-          {{ form.name_salon.as_hidden }}
+          <p>Nombre</p>
+          <p>{{form.first_name}}</p>
+          <p>Descripcion</p>
+          <p>{{form.description}}</p>
+<!--
           {% for field in form.visible_fields  %}
-          {% if field.name != "items" %}
-            {% if field.name != "name_salon" %}
-              <p> {{ field.label }} </p>  
-              <p>{{ field }}</p>
+            {% if field.name != "items" %}
+              {% if field.name != "name_salon" %}
+                {% if field.name != "initDay" %}
+                  {% if field.name != "endDay" %}
+                    <p> {{ field.label }} </p>   
+                    <p>{{ field }}</p>
+                  {% endif %}
+                {% endif %}
+                {% endif %}
             {% endif %}
-          {% endif %}
-          {% endfor %}
-        {% endif %}
+            {% endfor %}
+-->      
+      {% endif %}
 
-    </div>
+      </div>
+      </div>
     <div class="modal-footer">
       <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
       <button type="submit" class="btn btn-primary" >Cargar</button>

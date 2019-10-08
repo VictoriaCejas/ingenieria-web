@@ -1,8 +1,8 @@
 from django.http import HttpResponse, HttpResponseRedirect, HttpRequest
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404, render_to_response
 from django.contrib.auth.decorators import login_required
-from .models import Users, ContentUsers,Empleoyees, BeautySalons, WorkItems
-from .forms import ContentForm,EmpleoyeesForm, AvatarForm, FrontForm, BeautySalonsForm,BioForm
+from .models import Users, ContentUsers,Empleoyees, BeautySalons, WorkItems, WorkingHoursSalons,UserDates, Publications, CommentsPublications, LikesPublications
+from .forms import ContentForm,EmpleoyeesForm, AvatarForm, FrontForm, BeautySalonsForm,BioForm,DatesUserForm, PublicationForm, PublForm
 from django.template.loader import render_to_string
 from django.contrib import messages
 from django.http import JsonResponse
@@ -13,6 +13,8 @@ from allauth.account.adapter import get_adapter
 from allauth.account import signals
 from django.views.defaults import page_not_found
 from PIL import Image
+from django.views.generic import ListView
+from datetime import datetime, date, time, timedelta
 # Create your views here.
 
 
@@ -21,7 +23,6 @@ def Home(request):
     return render(request, 'beautycalendar/home.html', {'items':items})
  
 def filter_professional(request, pk):
-  #  import web_pdb; web_pdb.set_trace()
     item= WorkItems.objects.get(id=pk)
     salons= BeautySalons.objects.filter(items=item)
     owners=[]
@@ -30,8 +31,256 @@ def filter_professional(request, pk):
     
     return render(request, 'beautycalendar/filter_professional.html',{'owners':owners})
 
+def Calendar(request,pk):
+    salon= Users.objects.get(id=pk)
+    services= ContentUsers.objects.filter(user=salon,category=2,state=1)
+    services_list= []
+    for s in services:
+        atencion= str(s.attention_time)
+        name= s.title+ ' duracion:'+ atencion
+        services_list.append((s.id,name),)
+    empleoyees= Empleoyees.objects.filter(boss=salon,state=1)
+    empleoyees_list=[]
+    for e in empleoyees:
+        name= e.first_name + ' '+ e.last_name
+        empleoyees_list.append((e.id , name),)
+
+    if request.method == 'POST':
+        data = dict()
+        service= request.POST['services']
+        date= request.POST['date']
+        empleoyee= request.POST['empleoyees']
+        hours_salon= WorkingHoursSalons.objects.get(salon=salon)
+        
+        init=  hours_salon.init_time.hour * 60 + hours_salon.init_time.minute
+        finish= hours_salon.finish_time.hour*60 + hours_salon.finish_time.minute
+        
+        serv= ContentUsers.objects.get(id=service)
+       # serv_tiempo= serv.attention_time.hour*60+serv.attention_time.minute
+        serv_tiempo= serv.attention_time
+        empl= Empleoyees.objects.get(id=empleoyee)
+        disponibles=[]
+        
+        try:
+            from django.utils.dateparse import parse_date
+            date=datetime.strptime(date, '%d/%m/%Y' )
+            t= UserDates.objects.all()
+            ocupados= UserDates.objects.filter(date=date,empleoyee=empleoyee,state=1).order_by('init_time')
+            #Calculo huecos
+            #huecos[inicio,fin,duracion]
+    
+            huecos=[]
+            i=0
+            last=""
+            for turno in ocupados:
+                inicio_turno= turno.init_time
+                fin_turno= turno.finish_time
+                if i==0:
+                    if inicio_turno != init:
+                        resta= inicio_turno-init
+                        huecos.append((init,inicio_turno,resta),)
+                    i=1
+                    last= fin_turno
+                else:
+                    if inicio_turno != last:
+                        resta= inicio_turno-last
+                        huecos.append((last,inicio_turno,resta))
+                        last= inicio_turno
+                    else:
+                        last=fin_turno
+            #import web_pdb; web_pdb.set_trace()
+
+            for h in huecos: 
+                if serv_tiempo <= h[2]:
+                    divi= int(h[2]/serv_tiempo)
+                    i=0
+                    while( i<divi):
+                        inicio= h[0]+ i*serv_tiempo
+                        h_str=str(timedelta(minutes=inicio))
+                        disponibles.append(h_str)
+                        i=i+1
+            last= last+serv_tiempo
+            if last != finish:
+                time= last
+                resta= finish-serv_tiempo
+                while resta > 0:
+                    h_str=str(timedelta(minutes=time))
+                    disponibles.append(h_str)
+                    time= time+serv_tiempo
+                    resta= finish - time
+                lista=disponibles
+
+            if disponibles is not None:
+                lista= disponibles
+            else:
+                lista= None
+        except:
+            #Ningun turno agendado aun
+            import math
+            time= init
+            resta= finish-serv_tiempo
+            while resta > 0:
+                h_str=str(timedelta(minutes=time))
+                disponibles.append(h_str)
+                time= time+serv_tiempo
+                resta= finish - time
+            lista=disponibles
+        #lista=Users.objects.all()
+        mycontent= lista
+        data['html_time_list'] = render_to_string('beautycalendar/calendar/partial.html', {
+            'mycontent': mycontent
+        })        
+        JsonResponse(data)
+        
+        form= DatesUserForm(empleoyees_list,services_list, request.POST)
+        return render(request,'beautycalendar/calendar/calendar.html',{'form':form,'salon':salon,'mycontent':mycontent})
+
+    else:
+        form= DatesUserForm(empleoyees_list, services_list)
+        return render(request,'beautycalendar/calendar/calendar.html',{'form':form,'salon':salon})
+
+def confirmarTurno(request,pk):
+
+    if request.method == 'POST':
+       # import web_pdb; web_pdb.set_trace()        
+        professional= request.POST['val_professional']
+        prf= Empleoyees.objects.get(id=professional)
+        service= request.POST['val_service']
+        srv= ContentUsers.objects.get(id=service)
+        client= request.user
+        date= request.POST["nom_day"]
+        time= request.POST["nom_time"]
+        time=time.split(":")
+        h= int(time[0])
+        m= int(time[1])
+        time_frm= (h*60)+m
+        #att_time= str(datetime.timedelta(minutes=srv.attention_time))
+
+        date=datetime.strptime(date, '%d/%m/%Y' )
+        
+        att_time=srv.attention_time
+        nuevaCita= UserDates()
+        nuevaCita.client= client
+        nuevaCita.date= date
+        nuevaCita.service= srv
+        nuevaCita.empleoyee= prf
+        nuevaCita.salon= pk
+        nuevaCita.state= 1
+        nuevaCita.init_time= time_frm
+        finish= time_frm+ att_time
+        nuevaCita.finish_time= finish
+        nuevaCita.save()
+
+    return redirect(PrivateProfile)
+#    return PrivateProfile(request)
+@login_required
+def getCalendarBussines(request,pk):
+    user=request.user
+    import web_pdb; web_pdb.set_trace()   
+    
+    dates= UserDates.objects.filter(client=user,state=1)
+    events=[]
+    for d in dates:
+        itime= d.init_time
+        ftime= d.finish_time
+        time_parse= str(timedelta(minutes=itime))
+        d.init_time= time_parse
+        event= dict()
+        #event['id']=d.id
+        event['title']= d.service.title
+        event['start']= str(d.date)+ 'T' + str(timedelta(minutes=itime))
+        event['end']= str(d.date)+ 'T' +str(timedelta(minutes=ftime))
+        events.append(event)
+    return render(request,'beautycalendar/calendar/calendar_bussines.html',{'eventos':events})            
+
+@login_required
+def getDatesPrivate(request):
+    user=request.user
+    try:
+        import web_pdb; web_pdb.set_trace()
+        dates= UserDates.objects.filter(client=user,state=1)
+        for d in dates:
+            time= d.init_time
+            time_parse= str(timedelta(minutes=time))
+            d.init_time= time_parse
+       
+        return render(request,'beautycalendar/calendar/dates.html',{'dates':dates})
+    except:
+        dates=None
+    return render(request,'beautycalendar/calendar/dates.html',{'dates':dates})
 
 
+@login_required
+def listPublication(request):
+    user=request.user
+    try:
+        lista= Publications.objects.filter(owner=user)
+        #return render(request,'beautycalendar/calendar/dates.html',{'lista':lista})
+    except:
+        lista=None    
+
+    return render(request,'beautycalendar/publications/publications.html',{'lista':lista})
+
+@login_required    
+def createPublication(request):
+   # import web_pdb; web_pdb.set_trace()    
+    if request.method== 'POST':
+      #  import web_pdb; web_pdb.set_trace()
+        #form = PublicationForm(request.POST,request.FILES or None)
+        form= PublForm(request.POST, request.FILES)
+        if form.is_valid():
+            owner= request.user
+            publish_date= datetime.now()
+            image=form.cleaned_data['imgPublication']
+            desc= form.cleaned_data['description']
+            publication= Publications(owner=owner,publish_date=publish_date,imagePublication=image,description=desc,)
+            publication.save()
+           
+            return redirect(listPublication)
+    else:
+        form= PublForm()
+        return render(request,'beautycalendar/publications/publication_create.html',{'form':form})
+    
+def getPublication(request,pk):
+   # import web_pdb; web_pdb.set_trace()
+    if request.method == 'POST':
+        form=request.POST
+        comment= request.POST['textarea-pub']
+        user= request.user
+        publication= Publications.objects.get(id=pk)
+        date= datetime.now()
+        publicationComment= CommentsPublications()
+        publicationComment.publication= publication
+        publicationComment.date= date
+        publicationComment.comment= comment
+        publicationComment.user= user
+        publicationComment.save()
+
+    publication= Publications.objects.get(id=pk)
+    comments= CommentsPublications.objects.filter(publication=publication)
+    return render(request,'beautycalendar/publications/publication.html',{'publication':publication, 'comments':comments})
+
+def saveComment(request,pk):
+
+    if request.method == 'POST':
+        form=request.POST
+        comment= request.POST['textarea-pub']
+        user= request.user
+        publication= Publications.objects.get(id=pk)
+        date= datetime.now()
+        publicationComment= CommentsPublications()
+        publicationComment.publication= publication
+        publicationComment.date= date
+        publicationComment.comment= comment
+        publicationComment.user= user
+        publicationComment.save()
+# publication= models.ForeignKey('Publications',on_delete=models.CASCADE)
+#     user= models.ForeignKey('Users', on_delete=models.CASCADE)
+#     date= models.DateTimeField(blank=False, null=False)
+#     comment= models.CharField(max_length=250,blank=False,null=False)
+    comments= publicationComment.objects.get(publication=publication)
+    return Response(comments)
+     
 @login_required()
 def Private(request):
     return render(request, 'beautycalendar/privado.html', {})
@@ -39,7 +288,6 @@ def Private(request):
 
 def Public(request):
     return render(request, 'beautycalendar/publico.html', {})
-
 
 @login_required
 def PrivateProfile(request):
@@ -92,8 +340,6 @@ def PublicProfile(request, email):
   #  return render(request, 'beautycalendar/private_profile.html', {'usuario': myuser,'user':user})
 
 
-
-
 """CRUD"""
 @bussines_required
 def mycontent_list(request):
@@ -123,20 +369,28 @@ def save_mycontent_form(request, form, template_name):
                 if ('products' in request.path):
                     category= 1
                     img = form.cleaned_data['imageProduct']
+                    time= None
                 if('services' in request.path):
                     category=2
-                    img= None       
+                    img= None   
+                    #import web_pdb; web_pdb.set_trace()
+                    time=request.POST.get("attentionTime") 
+                    time=time.split(":")
+                    h= int(time[0])
+                    m= int(time[1])
+                    time= (h*60)+m
                 
                 if('update' in request.path):
                     obj = form.save(commit=False)
                     obj.state = state
+                    obj.attention_time=time
                     obj.save()
                 else:
                     form.save(commit=False)            
                     user=request.user
                     title= form.cleaned_data['title']
                     price= form.cleaned_data['price'] 
-                    content= ContentUsers(user=user,category=category,title=title,imageProduct=img,price=price, state=state)
+                    content= ContentUsers(user=user,category=category,title=title,imageProduct=img,price=price, state=state, attention_time=time)
                     content.save()
                 data['form_is_valid'] = True
                 mycontent = ContentUsers.objects.filter(user=request.user,category=category).exclude(state=3)
@@ -364,6 +618,20 @@ def save_my_profile_update_form(request,form,template_name):
                         salon= BeautySalons(owner= request.user, items= i)
                         salon.save()
             user.save()
+            initDay= request.POST['initDay']
+            endDay= request.POST['endDay']
+            initHour= request.POST['initHour']
+            endHour= request.POST['endHour']
+            salon=user
+            try:
+                timeExist = WorkingHoursSalons.objects.get(salon=salon)
+                timeExist.delete()
+                times = WorkingHoursSalons(salon=salon,init_date=initDay,finish_date=endDay,init_time=initHour,finish_time=endHour)
+
+            except:
+                times = WorkingHoursSalons(salon=salon,init_date=initDay,finish_date=endDay,init_time=initHour,finish_time=endHour)            
+            finally:
+                times.save()
             usuario=user
             if (user.kind == 1):
                 data['html_profile'] = render_to_string('beautycalendar/private_profile_bussines.html', {'user':user})

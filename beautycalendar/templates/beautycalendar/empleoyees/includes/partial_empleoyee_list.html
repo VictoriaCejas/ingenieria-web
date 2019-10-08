@@ -23,6 +23,10 @@
       <button type="button" style="margin: 2px" class="btn btn-danger btn-sm js-delete-mycontent" data-url="{% url 'empleoyee_delete' content.id %}">
               <i class="fa fa-trash"></i> Eliminar
       </button>
+      <a type="button" style="margin: 2px" class="btn btn-sm " href="{% url 'empleoyee_calendar' content.id %}">
+          <i class="fa fa-calendar"></i> Calendario
+       </button>
+
     </td>
   </tr>
   {% empty %}

@@ -1,6 +1,7 @@
 from django import forms
-from .models import Users, ContentUsers, Empleoyees, WorkItems, BeautySalons
+from .models import Users, ContentUsers, Empleoyees, WorkItems, BeautySalons, Publications
 from allauth.account.forms import SignupForm
+from django_resized import ResizedImageField
 
 
 class CustomSignupForm(SignupForm):
@@ -30,8 +31,7 @@ class ContentForm(forms.ModelForm):
         super(self.__class__, self).__init__(*args, **kwargs)
         self.fields['user'].required= False
         self.fields['category'].required= False
- 
-
+         
 class EmpleoyeesForm(forms.ModelForm):
     paused= forms.BooleanField(required=False)
     class Meta:
@@ -63,12 +63,56 @@ class BeautySalonsForm(forms.ModelForm):
         self.fields['owner'].required= False
 
 class BioForm(forms.ModelForm):
+    sunday=1
+    monday=2
+    tuesday=3
+    wednesday=4
+    thursday=5
+    friday=6
+    saturday=7
+    daysChoices= (
+        (sunday,'domingo'),
+        (monday,'lunes'),
+        (tuesday,'martes'),
+        (wednesday,'miercoles'),
+        (thursday,'jueves'),
+        (friday,'viernes'),
+        (saturday,'sabado'),
+    )
     items= forms.ModelMultipleChoiceField(queryset=WorkItems.objects.all(),required=False,widget=forms.CheckboxSelectMultiple)
+    initDay= forms.ChoiceField(choices=daysChoices)
+    endDay= forms.ChoiceField(choices=daysChoices)
     class Meta:
         model= Users
-        fields=['first_name','name_salon','description',"items"]
+        fields=['first_name','name_salon','description',"items","initDay","endDay",]
    
     def __init__(self, *args, **kwargs):
         super(self.__class__, self).__init__(*args, **kwargs)
         self.fields['first_name'].required= False
         self.fields['name_salon'].required= False
+
+class DatesUserForm(forms.Form):
+    #service= forms.CharField(max_length=50)
+   
+    services= forms.ChoiceField(choices=(),required=True, initial="Seleccione")
+    date= forms.DateTimeField(input_formats=['%d/%m/%Y'])
+
+    def __init__(self, empleoyees_choices,services_choices, *args, **kwargs):
+        super(DatesUserForm, self).__init__(*args, **kwargs)
+        self.fields['empleoyees'].choices = empleoyees_choices
+        self.fields['services'].choices= services_choices
+    empleoyees = forms.ChoiceField(choices=(), required=True,initial="Seleccione")
+
+class PublicationForm(forms.ModelForm):
+    class Meta:
+        model=Publications
+        fields=['owner','publish_date','imagePublication','description','score','state']
+        widgets={'owner':forms.HiddenInput(),'publish_date':forms.HiddenInput(),'score':forms.HiddenInput(),'state':forms.HiddenInput()}
+    def __init__(self, *args, **kwargs):
+        super(self.__class__, self).__init__(*args, **kwargs)
+        self.fields['owner'].required= False
+        self.fields['publish_date'].required= False
+
+class PublForm(forms.Form):
+    description= forms.CharField(max_length=250)
+    imgPublication= forms.FileField()

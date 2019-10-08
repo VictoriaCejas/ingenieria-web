@@ -2,6 +2,7 @@
   <tr>
     <td>{{ content.title }}</td>
     <td>{{ content.price }}</td>
+    <td>{{ content.attencion_time }}</td>
     <td>
       {% if content.state == 1 %}
         <input type="checkbox" class="js-pause-mycontent"  data-url="{% url 'service_pause' content.id %}">

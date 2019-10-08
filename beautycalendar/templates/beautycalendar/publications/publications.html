@@ -1,0 +1,8 @@
+{% extends "beautycalendar/basewithoutimage.html" %}
+{% load static %}
+
+{% block content %}
+  <a href="{% url 'publications_create' %}">CREAR</a>
+  
+  {% include "beautycalendar/publications/publications_list.html" %}
+{% endblock content %}

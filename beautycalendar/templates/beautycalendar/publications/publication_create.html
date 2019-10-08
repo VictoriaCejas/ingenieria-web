@@ -1,0 +1,11 @@
+{% extends "beautycalendar/basewithoutimage.html" %}
+{% load static %}
+
+{% block content %}
+<form enctype="multipart/form-data" method="POST" action="{% url 'publications_create' %}" >
+    {% csrf_token %}        
+    {{form.as_p}}
+    <button>Cargar</button>
+</form>
+
+{% endblock content %}

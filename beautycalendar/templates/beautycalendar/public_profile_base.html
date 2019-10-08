@@ -24,7 +24,7 @@
         </div>
         <div class="name">
           <h4 class="title">
-            {% if user.kind == 1 %}
+            {% if myuser.kind == 1 %}
               {% if myuser.name_salon %}
                 {{myuser.name_salon}}
               {% else %}
@@ -49,6 +49,9 @@
                 <p>{{ i.items }}</p>
               {% endfor %}
             {% endif %}
+            <div>
+              <a class="btn btn-primary "  href="{% url 'calendar' myuser.id %}">Turno</a>
+            </div>
           {% endif %}
 
           <br/>
