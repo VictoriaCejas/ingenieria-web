@@ -15,6 +15,12 @@ from django.views.defaults import page_not_found
 from PIL import Image
 from django.views.generic import ListView
 from datetime import datetime, date, time, timedelta
+from .serializers import eventsSerializer
+from rest_framework import response
+from rest_framework.renderers import JSONRenderer
+from rest_framework.reverse import reverse
+
+
 # Create your views here.
 
 
@@ -36,7 +42,9 @@ def Calendar(request,pk):
     services= ContentUsers.objects.filter(user=salon,category=2,state=1)
     services_list= []
     for s in services:
-        atencion= str(s.attention_time)
+        h= s.attention_time.hour
+        m=s.attention_time.minute
+        atencion= str(timedelta(hours=h,minutes=m))
         name= s.title+ ' duracion:'+ atencion
         services_list.append((s.id,name),)
     empleoyees= Empleoyees.objects.filter(boss=salon,state=1)
@@ -44,88 +52,78 @@ def Calendar(request,pk):
     for e in empleoyees:
         name= e.first_name + ' '+ e.last_name
         empleoyees_list.append((e.id , name),)
+   
 
     if request.method == 'POST':
         data = dict()
         service= request.POST['services']
-        date= request.POST['date']
+        datef= request.POST['date']
         empleoyee= request.POST['empleoyees']
         hours_salon= WorkingHoursSalons.objects.get(salon=salon)
         
-        init=  hours_salon.init_time.hour * 60 + hours_salon.init_time.minute
-        finish= hours_salon.finish_time.hour*60 + hours_salon.finish_time.minute
-        
+        init= hours_salon.init_time
+        finish= hours_salon.finish_time
+
         serv= ContentUsers.objects.get(id=service)
-       # serv_tiempo= serv.attention_time.hour*60+serv.attention_time.minute
         serv_tiempo= serv.attention_time
         empl= Empleoyees.objects.get(id=empleoyee)
         disponibles=[]
+
+        from django.utils.dateparse import parse_date
+        datef=datetime.strptime(datef, '%d/%m/%Y' )
+        t= UserDates.objects.all()
+        ocupados= UserDates.objects.filter(date=datef,empleoyee=empleoyee,state=1).order_by('init_time')
         
-        try:
-            from django.utils.dateparse import parse_date
-            date=datetime.strptime(date, '%d/%m/%Y' )
-            t= UserDates.objects.all()
-            ocupados= UserDates.objects.filter(date=date,empleoyee=empleoyee,state=1).order_by('init_time')
-            #Calculo huecos
-            #huecos[inicio,fin,duracion]
-    
-            huecos=[]
-            i=0
-            last=""
-            for turno in ocupados:
-                inicio_turno= turno.init_time
-                fin_turno= turno.finish_time
-                if i==0:
-                    if inicio_turno != init:
-                        resta= inicio_turno-init
-                        huecos.append((init,inicio_turno,resta),)
-                    i=1
-                    last= fin_turno
-                else:
-                    if inicio_turno != last:
-                        resta= inicio_turno-last
-                        huecos.append((last,inicio_turno,resta))
-                        last= inicio_turno
-                    else:
-                        last=fin_turno
-            #import web_pdb; web_pdb.set_trace()
-
-            for h in huecos: 
-                if serv_tiempo <= h[2]:
-                    divi= int(h[2]/serv_tiempo)
-                    i=0
-                    while( i<divi):
-                        inicio= h[0]+ i*serv_tiempo
-                        h_str=str(timedelta(minutes=inicio))
-                        disponibles.append(h_str)
-                        i=i+1
-            last= last+serv_tiempo
-            if last != finish:
-                time= last
-                resta= finish-serv_tiempo
-                while resta > 0:
-                    h_str=str(timedelta(minutes=time))
-                    disponibles.append(h_str)
-                    time= time+serv_tiempo
-                    resta= finish - time
-                lista=disponibles
-
-            if disponibles is not None:
-                lista= disponibles
+        #Calculo huecos
+        #huecos[inicio,fin,duracion]
+        huecos=[]
+        i=0
+        last=init
+        for turno in ocupados:
+            inicio_turno= turno.init_time
+            fin_turno= turno.finish_time
+            if i==0:
+                if inicio_turno.time() != init.time():
+                    resta= (timedelta(hours=inicio_turno.hour, minutes=inicio_turno.minute)-timedelta(hours=init.hour,minutes=init.minute)).seconds/3600
+                    huecos.append((init,inicio_turno,resta,))
+                i=1
+                last= fin_turno
             else:
-                lista= None
-        except:
-            #Ningun turno agendado aun
-            import math
-            time= init
-            resta= finish-serv_tiempo
+
+                if inicio_turno.time() != last.time():
+                    resta= (timedelta(hours=inicio_turno.hour,minutes=inicio_turno.minute)-timedelta(hours=last.hour,minutes=last.minute)).seconds/3600
+                    huecos.append((last,inicio_turno,resta,))
+                last=fin_turno
+
+        serv_tiempo_to_hour= int(serv_tiempo.hour)+(int(serv_tiempo.minute))/60
+        for h in huecos: 
+            if serv_tiempo_to_hour <=  h[2]:
+                divi= int(h[2]/serv_tiempo_to_hour)
+                i=0
+                while( i<divi):
+                    inicio= (timedelta(hours=h[0].hour, minutes=h[0].minute)) + i * (timedelta(hours=serv_tiempo.hour, minutes=serv_tiempo.minute))
+                    h_str=str(inicio)[:-3]
+                    disponibles.append((h_str))
+                    i=i+1
+
+        serv_tiempo_delta=timedelta(hours=serv_tiempo.hour, minutes=serv_tiempo.minute)
+
+        #Minimo tiempo = 30
+        if last.time() != finish.time():
+            time= last
+            resta= (timedelta(hours=finish.hour,minutes=finish.minute)-timedelta(hours=time.hour,minutes=time.minute)).seconds/3600
             while resta > 0:
-                h_str=str(timedelta(minutes=time))
+                h_str=time.time()
                 disponibles.append(h_str)
-                time= time+serv_tiempo
-                resta= finish - time
+                time=time+timedelta(minutes=30)
+                resta= (timedelta(hours=finish.hour,minutes=finish.minute)-timedelta(hours=time.hour,minutes=time.minute)).seconds/3600
             lista=disponibles
-        #lista=Users.objects.all()
+
+        if disponibles is not None:
+            lista= disponibles
+        else:
+            lista= None
+       
         mycontent= lista
         data['html_time_list'] = render_to_string('beautycalendar/calendar/partial.html', {
             'mycontent': mycontent
@@ -142,7 +140,6 @@ def Calendar(request,pk):
 def confirmarTurno(request,pk):
 
     if request.method == 'POST':
-       # import web_pdb; web_pdb.set_trace()        
         professional= request.POST['val_professional']
         prf= Empleoyees.objects.get(id=professional)
         service= request.POST['val_service']
@@ -153,12 +150,14 @@ def confirmarTurno(request,pk):
         time=time.split(":")
         h= int(time[0])
         m= int(time[1])
-        time_frm= (h*60)+m
+        #time_frm= (h*60)+m
         #att_time= str(datetime.timedelta(minutes=srv.attention_time))
 
         date=datetime.strptime(date, '%d/%m/%Y' )
-        
+        i_time= datetime(year=date.year, month=date.month, day=date.day,hour=h,minute=m)
         att_time=srv.attention_time
+        f_time= i_time+ timedelta(hours=att_time.hour, minutes=att_time.minute)
+
         nuevaCita= UserDates()
         nuevaCita.client= client
         nuevaCita.date= date
@@ -166,43 +165,34 @@ def confirmarTurno(request,pk):
         nuevaCita.empleoyee= prf
         nuevaCita.salon= pk
         nuevaCita.state= 1
-        nuevaCita.init_time= time_frm
-        finish= time_frm+ att_time
-        nuevaCita.finish_time= finish
+        nuevaCita.init_time= i_time
+        nuevaCita.finish_time= f_time
         nuevaCita.save()
 
     return redirect(PrivateProfile)
 #    return PrivateProfile(request)
 @login_required
-def getCalendarBussines(request,pk):
+def getCalendarBussines(request,pk): 
+    return render(request,'beautycalendar/calendar/calendar_bussines.html',{})            
+
+def getEvents(request):
+
+    #Ver lo del serializer
     user=request.user
-    import web_pdb; web_pdb.set_trace()   
-    
-    dates= UserDates.objects.filter(client=user,state=1)
-    events=[]
-    for d in dates:
-        itime= d.init_time
-        ftime= d.finish_time
-        time_parse= str(timedelta(minutes=itime))
-        d.init_time= time_parse
-        event= dict()
-        #event['id']=d.id
-        event['title']= d.service.title
-        event['start']= str(d.date)+ 'T' + str(timedelta(minutes=itime))
-        event['end']= str(d.date)+ 'T' +str(timedelta(minutes=ftime))
-        events.append(event)
-    return render(request,'beautycalendar/calendar/calendar_bussines.html',{'eventos':events})            
+
+    queryset= UserDates.objects.filter(client=user,state=1)
+    serializer_data= eventsSerializer(queryset, many=True)
+    return JsonResponse( serializer_data.data, safe=False)
 
 @login_required
 def getDatesPrivate(request):
     user=request.user
     try:
-        import web_pdb; web_pdb.set_trace()
         dates= UserDates.objects.filter(client=user,state=1)
-        for d in dates:
-            time= d.init_time
-            time_parse= str(timedelta(minutes=time))
-            d.init_time= time_parse
+        # # for d in dates:
+        # #     time= d.init_time.time
+        # #     time_parse= str(timedelta(minutes=time))
+        # #     d.init_time= time_parse
        
         return render(request,'beautycalendar/calendar/dates.html',{'dates':dates})
     except:
@@ -223,10 +213,7 @@ def listPublication(request):
 
 @login_required    
 def createPublication(request):
-   # import web_pdb; web_pdb.set_trace()    
     if request.method== 'POST':
-      #  import web_pdb; web_pdb.set_trace()
-        #form = PublicationForm(request.POST,request.FILES or None)
         form= PublForm(request.POST, request.FILES)
         if form.is_valid():
             owner= request.user
@@ -242,7 +229,6 @@ def createPublication(request):
         return render(request,'beautycalendar/publications/publication_create.html',{'form':form})
     
 def getPublication(request,pk):
-   # import web_pdb; web_pdb.set_trace()
     if request.method == 'POST':
         form=request.POST
         comment= request.POST['textarea-pub']
@@ -373,12 +359,10 @@ def save_mycontent_form(request, form, template_name):
                 if('services' in request.path):
                     category=2
                     img= None   
-                    #import web_pdb; web_pdb.set_trace()
                     time=request.POST.get("attentionTime") 
-                    time=time.split(":")
-                    h= int(time[0])
-                    m= int(time[1])
-                    time= (h*60)+m
+                    time= time.split(':')
+                    time= datetime(year=1901,month=1,day=1, hour=int(time[0]), minute=int(time[1]))
+
                 
                 if('update' in request.path):
                     obj = form.save(commit=False)
@@ -618,11 +602,16 @@ def save_my_profile_update_form(request,form,template_name):
                         salon= BeautySalons(owner= request.user, items= i)
                         salon.save()
             user.save()
+            ihour=request.POST['initHour']
+            fhour=request.POST['endHour']
+            ihour=ihour.split(':')
+            fhour=fhour.split(':')
             initDay= request.POST['initDay']
             endDay= request.POST['endDay']
-            initHour= request.POST['initHour']
-            endHour= request.POST['endHour']
+            initHour= datetime(year=1901,month=1,day=1,hour=int(ihour[0]),minute=int(ihour[1]))
+            endHour= datetime(year=1901,month=1,day=1,hour=int(fhour[0]),minute=int(fhour[1]))
             salon=user
+
             try:
                 timeExist = WorkingHoursSalons.objects.get(salon=salon)
                 timeExist.delete()

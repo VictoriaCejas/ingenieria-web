@@ -55,6 +55,8 @@ urlpatterns = [
     url(r'publications/$', views.listPublication, name='publications'),
     url(r'publications/create/$', views.createPublication, name='publications_create'),
     url(r'publications/(?P<pk>\d+)/$', views.getPublication, name='publication_get'),
-    url(r'publications/(?P<pk>\d+)/comment/$', views.getPublication, name='save-comment')
+    url(r'publications/(?P<pk>\d+)/comment/$', views.getPublication, name='save-comment'),
+
+    url(r'events-calendar/', views.getEvents, name='events-calendar')
 ]
 handler404 = views.mi_error_404

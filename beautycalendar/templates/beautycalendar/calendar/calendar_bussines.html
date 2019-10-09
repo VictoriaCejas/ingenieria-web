@@ -1,15 +1,19 @@
 {% extends "beautycalendar/basewithoutimage.html" %}
 {% load static %}
+
+
+{% block content %}
+<div style="width: 100%; height:80%">
+    <div  id='calendar' class="fc fc-ltr fc-unthemed container-fluid"> </div>
+  </div>
+{% endblock content %}
 {% block javascript %}
 
 <script type="text/javascript">
-
-    // document.addEventListener('DOMContentLoaded', function(){
-    //     var calendarEL= document.getElementById('calendar');
-    //     var calendar= new FullCalendar.Calendar(calendarEL,{ calendar_config_options });
-    //     calendar.render();
-    // });
+    
     document.addEventListener('DOMContentLoaded', function() {
+    
+    
     var calendarEl = document.getElementById('calendar');
 
     var calendar = new FullCalendar.Calendar(calendarEl, {
@@ -19,23 +23,71 @@
         center: 'title',
         right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
       },
-      defaultDate: '2019-08-12',
       navLinks: true, // can click day/week names to navigate views
-
+      timeZone:'UTC',
+      locale: 'es',
       weekNumbers: true,
       weekNumbersWithinDays: true,
       weekNumberCalculation: 'ISO',
-
       editable: false,
       eventLimit: true, // allow "more" link when too many events
-      events: [],
+      events: {
+        url:"{% url 'events-calendar' %}",
+        color: "orange",
+        textColor: "black"
+      },
+
+      
     });
     calendar.render();
   });
 
 </script>
-{% endblock javascript %}
 
-{% block content %}
-    <div id='calendar' class="fc fc-ltr fc-unthemed"> </div>
-{% endblock content %}
+<!-- <script>
+        $(document).ready(function () {
+            var events = [];
+            var selectedEvent = null;
+            FetchEventAndRenderCalendar();
+            function FetchEventAndRenderCalendar() {
+                events = [];
+                $.ajax({
+                    type: "GET",
+                    url: "{% url 'events-calendar' %}",
+                    success: function (data) {
+                        $.each(data, function (i, v) {
+                            events.push({
+                                title: v.title,
+                                start: moment(v.start),
+                                end: v.End,
+                            });
+                        })
+                            GenerateCalender(events);
+                    },
+                    error: function (error) {
+                        alert('failed');
+                    }
+                })
+            }
+
+            function GenerateCalender(events) {
+                $('#calender').fullCalendar('destroy');
+                $('#calender').fullCalendar({
+                    locale: 'es',
+                    firstDay: 0,
+                    theme: 'bootstrap4',
+                    defaultDate: new Date(),
+                    aspectRatio: 2.50,
+                    timeFormat: 'h(:mm)a',
+                    header: {
+                        left: 'prev,next today',
+                        center: 'title',
+                        right: 'month,basicWeek,listWeek'
+                    },
+                    eventLimit: true,
+                    eventColor: '#FA1F8C',
+                    events: events,
+                  });
+</script> -->
+
+{% endblock javascript %}

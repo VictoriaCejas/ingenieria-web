@@ -1,6 +1,8 @@
 .body-without-image
 {
-   margin-top:110px
+   margin-top:110px;
+   width:100%;
+   height: 100%;
 }
 
 
