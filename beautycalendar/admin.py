@@ -92,7 +92,9 @@ class AdminSalons(admin.ModelAdmin):
     list_display=('owner','items')
 
 class AdminContent(admin.ModelAdmin):
-    list_display=('user','category','title','price','state','attention_time')
+#    list_display=('user','category','title','price','state','attention_time')
+    list_display=('user','category','title','price','state')
+
     list_filter = ('user','category','state')
 
 class AdminEmpleoyees(admin.ModelAdmin):
