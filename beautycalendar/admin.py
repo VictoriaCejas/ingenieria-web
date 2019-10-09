@@ -92,8 +92,7 @@ class AdminSalons(admin.ModelAdmin):
     list_display=('owner','items')
 
 class AdminContent(admin.ModelAdmin):
-#    list_display=('user','category','title','price','state','attention_time')
-    list_display=('user','category','title','price','state')
+    list_display=('user','category','title','price','state','attention_time')
 
     list_filter = ('user','category','state')
 
@@ -102,13 +101,11 @@ class AdminEmpleoyees(admin.ModelAdmin):
     list_filter = ('boss','state')
 
 class AdminWorkingHours(admin.ModelAdmin):
-  #  list_display=('salon','init_date','finish_date','init_time','finish_time')
-    list_display=('salon','init_date','finish_date')
+   list_display=('salon','init_date','finish_date','init_time','finish_time')
 
 
 class AdminUserDater(admin.ModelAdmin):
-    #list_display=('client','date','service','empleoyee','state','salon','init_time','finish_time')
-    list_display=('client','date','service','empleoyee','state','salon',)
+    list_display=('client','date','service','empleoyee','state','salon','init_time','finish_time')
 
 class AdminPublications(admin.ModelAdmin):
     list_display=('owner','publish_date','description','score','state')
