@@ -142,7 +142,7 @@ class ContentUsers(models.Model):
     
     price= models.FloatField(blank=True, null=True) #cambiar por precio
     state= models.PositiveSmallIntegerField(choices= statesChoices, blank=True, null=True)
-    attention_time= models.DateTimeField(blank=True, null=True)
+   # attention_time= models.DateTimeField(blank=True, null=True)
     
     def __str__(self):
         return self.title 
