@@ -239,8 +239,8 @@ class WorkingHoursSalons(models.Model):
     salon= models.ForeignKey('Users',on_delete=models.CASCADE)
     init_date= models.PositiveSmallIntegerField(choices=daysChoices, blank=False, null=False,validators=[MaxValueValidator(6)]) #0 domingo.. 6 sabado
     finish_date= models.PositiveSmallIntegerField(choices=daysChoices, blank=False, null=False, validators=[MaxValueValidator(6)]) #0 domingo.. 6 sabado
-    init_time= models.DateTimeField(blank=False, null=False)
-    finish_time= models.DateTimeField(blank=False, null=False)
+    #init_time= models.DateTimeField(blank=False, null=False)
+    #finish_time= models.DateTimeField(blank=False, null=False)
 
     class Meta:
         verbose_name = 'Working hours salons'
@@ -261,8 +261,8 @@ class UserDates(models.Model):
     empleoyee= models.ForeignKey('Empleoyees', on_delete= models.CASCADE)
     salon= models.CharField(max_length=50)
     state= models.PositiveSmallIntegerField(choices= statesChoices, blank=True, null=True)
-    init_time= models.DateTimeField()
-    finish_time= models.DateTimeField()
+  #  init_time= models.DateTimeField()
+   # finish_time= models.DateTimeField()
 
 #SEÑALES ALLAUTH
 @receiver(user_signed_up)
