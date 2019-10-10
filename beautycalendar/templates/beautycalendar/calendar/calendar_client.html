@@ -25,7 +25,7 @@
       editable: false,
       eventLimit: true, // allow "more" link when too many events
       events: {
-        url:'{% url "events_bussines" empleoyee.id %}',
+        url:'{% url "events_client" %}',
         color: "orange",
         textColor: "black"
       },
@@ -42,6 +42,9 @@
 {% endblock javascript %}
 
 {% block content %}
+<p>
+  <a href="{% url 'private_profile' %}" style="color: black"><i class="fa fa-angle-left" ></i> Back</a>
+</p>
 <div style="width: 100%; height:80%">
     <div  id='calendar' class="fc fc-ltr fc-unthemed container-fluid"> </div>
     <p>{{id}}</p>

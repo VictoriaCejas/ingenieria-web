@@ -50,13 +50,16 @@ urlpatterns = [
     url(r'calendar/(?P<pk>\d+)/$',views.Calendar, name='calendar'),
     url(r'calendar/(?P<pk>\d+)/confirm/$', views.confirmarTurno, name='confirm-date'),
     url(r'calendar/(?P<pk>\d+)/empleoyee_calendar/$', views.getCalendarBussines, name='empleoyee_calendar'),
-    url(r'dates-private/$', views.getDatesPrivate, name='dates-private'),
-
+    url(r'calendar/client',views.getCalendarClient, name='client_calendar'),
+    
     url(r'publications/$', views.listPublication, name='publications'),
     url(r'publications/create/$', views.createPublication, name='publications_create'),
     url(r'publications/(?P<pk>\d+)/$', views.getPublication, name='publication_get'),
     url(r'publications/(?P<pk>\d+)/comment/$', views.getPublication, name='save-comment'),
 
-    url(r'events-calendar/', views.getEvents, name='events-calendar')
+    # url(r'events/$',views.getEvents, name='events'),
+    url(r'events/(?P<pk>\d+)/empleoyee', views.getEventsBussines, name='events_bussines'),
+    url(r'events/client',views.getEventsClient, name='events_client')
+    
 ]
 handler404 = views.mi_error_404

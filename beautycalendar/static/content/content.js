@@ -59,6 +59,7 @@ $(function () {
   };
 
   /* Binding */
+  $('#mycontent-table').DataTable( {  } );
 
   // Create content
   $(".js-create-mycontent").click(loadForm);

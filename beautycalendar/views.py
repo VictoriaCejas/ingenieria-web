@@ -60,7 +60,7 @@ def Calendar(request,pk):
         datef= request.POST['date']
         empleoyee= request.POST['empleoyees']
         hours_salon= WorkingHoursSalons.objects.get(salon=salon)
-        
+       # import web_pdb; web_pdb.set_trace()
         init= hours_salon.init_time
         finish= hours_salon.finish_time
 
@@ -137,6 +137,7 @@ def Calendar(request,pk):
         form= DatesUserForm(empleoyees_list, services_list)
         return render(request,'beautycalendar/calendar/calendar.html',{'form':form,'salon':salon})
 
+@login_required
 def confirmarTurno(request,pk):
 
     if request.method == 'POST':
@@ -173,31 +174,30 @@ def confirmarTurno(request,pk):
 #    return PrivateProfile(request)
 @login_required
 def getCalendarBussines(request,pk): 
-    return render(request,'beautycalendar/calendar/calendar_bussines.html',{})            
+    empleoyee= get_object_or_404(Empleoyees,pk=pk)
+    return render(request,'beautycalendar/calendar/calendar_bussines.html',{'empleoyee':empleoyee})            
 
-def getEvents(request):
+@login_required
+def getEventsBussines(request,pk):
 
     #Ver lo del serializer
     user=request.user
-
-    queryset= UserDates.objects.filter(client=user,state=1)
+    empleoyee= get_object_or_404(Empleoyees,pk=pk)
+    
+    queryset= UserDates.objects.filter(empleoyee=empleoyee,state=1)
     serializer_data= eventsSerializer(queryset, many=True)
     return JsonResponse( serializer_data.data, safe=False)
 
 @login_required
-def getDatesPrivate(request):
+def getCalendarClient(request): 
+    return render(request,'beautycalendar/calendar/calendar_client.html',{})
+
+@login_required
+def getEventsClient(request):    
     user=request.user
-    try:
-        dates= UserDates.objects.filter(client=user,state=1)
-        # # for d in dates:
-        # #     time= d.init_time.time
-        # #     time_parse= str(timedelta(minutes=time))
-        # #     d.init_time= time_parse
-       
-        return render(request,'beautycalendar/calendar/dates.html',{'dates':dates})
-    except:
-        dates=None
-    return render(request,'beautycalendar/calendar/dates.html',{'dates':dates})
+    queryset= UserDates.objects.filter(client=user,state=1)
+    serialer_data= eventsSerializer(queryset,many=True)
+    return JsonResponse(serialer_data.data, safe=False)
 
 
 @login_required
