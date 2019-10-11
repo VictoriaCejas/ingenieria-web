@@ -1,66 +1,95 @@
 <form  enctype="multipart/form-data" method="POST" action="{% url 'bio_update' form.instance.pk %}" class="js-photo-update-form">
-    {% csrf_token %}
-    <div class="modal-header">
-      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-      </button>
-      <h4 class="modal-title">Cargar biografia</h4>
-    </div>
-    <div class="modal-body">
-        {% if user.kind == 1 %}
-          <p>Salon</p>
-          <p> {{form.name_salon}} </p>
-          <p>Descripcion</p>
-          <p>{{form.description}}</p>
-          <p>Rubros</p>
+  {% csrf_token %}
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+    <h4 class="modal-title">Cargar biografia</h4>
+  </div>
+  <div class="modal-body">
+      {% if user.kind == 1 %}
+        <p>Salon</p>
+        <p> {{form.name_salon}} </p>
+        <p>Descripcion</p>
+        <p>{{form.description}}</p>
+        <p>Rubros</p>
           {% for i in form.items  %}
             {{i}}
           {% endfor %}
-            <div class="row">
-          <div class="col-sm-4">
-            <p>Dia apertura</p>
-            <p>{{form.initDay}}</p>
-          </div>
-          <div class="col-sm-3">
-            <p>Dia cierre</p>
-            <p>{{form.endDay}}</p>
-          </div>
-        </div>
         <div class="row">
-          <div class="col-sm-4">
-            <p>Hora apertura</p>
-            <input type="time" name="initHour" value="initHour" min="07:00" max="24:00" required>
-          </div>
-          <div class="col-sm-4">
-            <p>Hora cierre</p>
-            <input type="time" name="endHour" value="endHour" min="07:00" max="24:00" required>
-          </div>
-        {% else %}
-          <p>Nombre</p>
-          <p>{{form.first_name}}</p>
-          <p>Descripcion</p>
-          <p>{{form.description}}</p>
+        <div class="col-sm-4">
+          <p>Dia apertura</p>
+          <p>{{form.initDay}}</p>
+        </div>
+        <div class="col-sm-3">
+          <p>Dia cierre</p>
+          <p>{{form.endDay}}</p>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-4">
+          <p>Hora apertura</p>
+          <input type="time" id="init_time" name="initHour" value="initHour" min="07:00" max="24:00" required>
+        </div>
+        <div class="col-sm-4">
+          <p>Hora cierre</p>
+          <input type="time" id="finish_time" name="endHour" value="endHour" min="07:00" max="24:00" required>
+        </div>
+      {% else %}
+        <p>Nombre</p>
+        <p>{{form.first_name}}</p>
+        <p>Descripcion</p>
+        <p>{{form.description}}</p>
 <!--
-          {% for field in form.visible_fields  %}
-            {% if field.name != "items" %}
-              {% if field.name != "name_salon" %}
-                {% if field.name != "initDay" %}
-                  {% if field.name != "endDay" %}
-                    <p> {{ field.label }} </p>   
-                    <p>{{ field }}</p>
-                  {% endif %}
+        {% for field in form.visible_fields  %}
+          {% if field.name != "items" %}
+            {% if field.name != "name_salon" %}
+              {% if field.name != "initDay" %}
+                {% if field.name != "endDay" %}
+                  <p> {{ field.label }} </p>   
+                  <p>{{ field }}</p>
                 {% endif %}
-                {% endif %}
-            {% endif %}
-            {% endfor %}
+              {% endif %}
+              {% endif %}
+          {% endif %}
+          {% endfor %}
 -->      
-      {% endif %}
+    {% endif %}
 
-      </div>
-      </div>
-    <div class="modal-footer">
-      <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
-      <button type="submit" class="btn btn-primary" >Cargar</button>
     </div>
+    </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+    <button type="submit" class="btn btn-primary" >Cargar</button>
+  </div>
 </form>
 
+<script>
+
+    $.ajax({
+      url:'/bio/daysandhours',
+      dataType:'json',
+      success: function(data){
+          var init_day=data.init_date
+          var end_day= data.finish_date
+          var init_time= data.itime
+          var finish_time=data.ftime
+          $("#id_initDay").val(init_day);
+          $("#id_endDay").val(end_day);
+          $("#init_time").val(init_time);
+          $("#finish_time").val(finish_time)
+      }
+    });
+
+    $.ajax({
+      url:'bio/items',
+      dataType:'json',
+      success: function(data){
+        // $('#birth_month option[value="'+data.month+'"]').prop('selected', true);
+        $.each(data, function(index, item){
+            $("input[value="+item.items+"]").prop("checked",true)
+        })
+      }
+    });
+
+</script>

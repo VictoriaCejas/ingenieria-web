@@ -15,7 +15,7 @@ from django.views.defaults import page_not_found
 from PIL import Image
 from django.views.generic import ListView
 from datetime import datetime, date, time, timedelta
-from .serializers import eventsSerializer
+from .serializers import eventsSerializer,wkHoursSerializer,itemsSelectedSerialezer
 from rest_framework import response
 from rest_framework.renderers import JSONRenderer
 from rest_framework.reverse import reverse
@@ -60,7 +60,6 @@ def Calendar(request,pk):
         datef= request.POST['date']
         empleoyee= request.POST['empleoyees']
         hours_salon= WorkingHoursSalons.objects.get(salon=salon)
-       # import web_pdb; web_pdb.set_trace()
         init= hours_salon.init_time
         finish= hours_salon.finish_time
 
@@ -172,12 +171,12 @@ def confirmarTurno(request,pk):
 
     return redirect(PrivateProfile)
 #    return PrivateProfile(request)
-@login_required
+@bussines_required
 def getCalendarBussines(request,pk): 
     empleoyee= get_object_or_404(Empleoyees,pk=pk)
     return render(request,'beautycalendar/calendar/calendar_bussines.html',{'empleoyee':empleoyee})            
 
-@login_required
+@bussines_required
 def getEventsBussines(request,pk):
 
     #Ver lo del serializer
@@ -198,7 +197,6 @@ def getEventsClient(request):
     queryset= UserDates.objects.filter(client=user,state=1)
     serialer_data= eventsSerializer(queryset,many=True)
     return JsonResponse(serialer_data.data, safe=False)
-
 
 @login_required
 def listPublication(request):
@@ -260,10 +258,7 @@ def saveComment(request,pk):
         publicationComment.comment= comment
         publicationComment.user= user
         publicationComment.save()
-# publication= models.ForeignKey('Publications',on_delete=models.CASCADE)
-#     user= models.ForeignKey('Users', on_delete=models.CASCADE)
-#     date= models.DateTimeField(blank=False, null=False)
-#     comment= models.CharField(max_length=250,blank=False,null=False)
+
     comments= publicationComment.objects.get(publication=publication)
     return Response(comments)
      
@@ -298,7 +293,6 @@ def PrivateProfile(request):
         return render(request, 'beautycalendar/private_profile_admin.html', {'usuario': myuser,'user':user})
 
   #  return render(request, 'beautycalendar/private_profile.html', {'usuario': myuser,'user':user})
-
 
 
 def PublicProfile(request, email):
@@ -553,7 +547,7 @@ def front_update(request,pk):
 
 @login_required
 def bio_update(request,pk):
-
+    
     mycontent = get_object_or_404(Users, pk=pk)
     if request.method == 'POST': 
         form= BioForm(request.POST, instance= mycontent)
@@ -562,9 +556,24 @@ def bio_update(request,pk):
             form= BioForm()
         else:
             form= BioForm(instance=mycontent)
-    
+
     return save_my_profile_update_form(request, form, 'beautycalendar/profiles/partial_bio_update.html')
 
+def get_HoursandDays(request):
+    
+    user=request.user
+    queryset= get_object_or_404(WorkingHoursSalons,salon=user)
+    if queryset:
+        serialer_data= wkHoursSerializer(queryset,many=False)
+        
+    return JsonResponse(serialer_data.data, safe=False)
+  
+def get_items(request):
+    user=request.user
+    querysey= BeautySalons.objects.filter(owner=user)
+    serialer_data= itemsSelectedSerialezer(querysey, many=True)
+    return JsonResponse(serialer_data.data, safe=False)
+      
 def save_my_profile_update_form(request,form,template_name):
     data = dict()
     if request.method == 'POST':
@@ -601,26 +610,26 @@ def save_my_profile_update_form(request,form,template_name):
                     except:
                         salon= BeautySalons(owner= request.user, items= i)
                         salon.save()
+                ihour=request.POST['initHour']
+                fhour=request.POST['endHour']
+                ihour=ihour.split(':')
+                fhour=fhour.split(':')
+                initDay= request.POST['initDay']
+                endDay= request.POST['endDay']
+                initHour= datetime(year=1901,month=1,day=1,hour=int(ihour[0]),minute=int(ihour[1]))
+                endHour= datetime(year=1901,month=1,day=1,hour=int(fhour[0]),minute=int(fhour[1]))
+                salon=user
+                try:
+                    timeExist = WorkingHoursSalons.objects.get(salon=salon)
+                    timeExist.delete()
+                    times = WorkingHoursSalons(salon=salon,init_date=initDay,finish_date=endDay,init_time=initHour,finish_time=endHour)
+
+                except:
+                    times = WorkingHoursSalons(salon=salon,init_date=initDay,finish_date=endDay,init_time=initHour,finish_time=endHour)            
+                finally:
+                    times.save()
             user.save()
-            ihour=request.POST['initHour']
-            fhour=request.POST['endHour']
-            ihour=ihour.split(':')
-            fhour=fhour.split(':')
-            initDay= request.POST['initDay']
-            endDay= request.POST['endDay']
-            initHour= datetime(year=1901,month=1,day=1,hour=int(ihour[0]),minute=int(ihour[1]))
-            endHour= datetime(year=1901,month=1,day=1,hour=int(fhour[0]),minute=int(fhour[1]))
-            salon=user
-
-            try:
-                timeExist = WorkingHoursSalons.objects.get(salon=salon)
-                timeExist.delete()
-                times = WorkingHoursSalons(salon=salon,init_date=initDay,finish_date=endDay,init_time=initHour,finish_time=endHour)
-
-            except:
-                times = WorkingHoursSalons(salon=salon,init_date=initDay,finish_date=endDay,init_time=initHour,finish_time=endHour)            
-            finally:
-                times.save()
+            
             usuario=user
             if (user.kind == 1):
                 data['html_profile'] = render_to_string('beautycalendar/private_profile_bussines.html', {'user':user})

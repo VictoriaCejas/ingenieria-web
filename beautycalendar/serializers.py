@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import UserDates, ContentUsers
+from .models import UserDates, ContentUsers, WorkingHoursSalons, BeautySalons
 
 
 class servicesSerializer(serializers.ModelSerializer):
@@ -16,3 +16,16 @@ class eventsSerializer(serializers.ModelSerializer):
         model= UserDates
         fields=('title','start','end')
 
+
+class wkHoursSerializer(serializers.ModelSerializer):
+    itime=serializers.DateTimeField(format="%H:%M",source='init_time')
+    ftime=serializers.DateTimeField(format="%H:%M",source="finish_time")
+    class Meta:
+        model= WorkingHoursSalons
+        fields= ['init_date','finish_date','itime','ftime']
+
+        
+class itemsSelectedSerialezer(serializers.ModelSerializer):
+    class Meta:
+        model= BeautySalons
+        fields=['items']

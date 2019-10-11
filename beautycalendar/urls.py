@@ -59,7 +59,9 @@ urlpatterns = [
 
     # url(r'events/$',views.getEvents, name='events'),
     url(r'events/(?P<pk>\d+)/empleoyee', views.getEventsBussines, name='events_bussines'),
-    url(r'events/client',views.getEventsClient, name='events_client')
+    url(r'events/client',views.getEventsClient, name='events_client'),
     
+    url(r'bio/daysandhours', views.get_HoursandDays, name='wkhours'),
+    url(r'bio/items',views.get_items, name='get_items')
 ]
 handler404 = views.mi_error_404
