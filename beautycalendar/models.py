@@ -264,6 +264,19 @@ class UserDates(models.Model):
     init_time= models.DateTimeField(blank=True, null=True)
     finish_time= models.DateTimeField(blank=True, null=True)
 
+class Reports(models.Model):
+    
+    choices_report=(
+        (1,'Mal servicio'),
+        (2,'Precios desactualizados'),
+        (3,'No cumple con los turnos'),
+        (4,'Otro'),
+    )
+    informer = models.EmailField(blank=False, null=False)
+    informed= models.EmailField(blank=False, null=False)
+    options= models.PositiveSmallIntegerField(choices=choices_report,blank=False, null=False)
+    other= models.CharField(max_length=50,blank=True, null=True)
+
 #SEÑALES ALLAUTH
 @receiver(user_signed_up)
 def sing_up(request,user,**kwargs):

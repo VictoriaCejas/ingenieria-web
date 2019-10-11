@@ -2,24 +2,6 @@ $(function () {
 
   /* Functions */
 
-  // var putInfo= function(){
-    
-    // $.ajax({
-    //   url:'/bio/daysandhours',
-    //   dataType:'json',
-    //   success: function(data){
-    //       var init_day=data.init_date
-    //       var end_day= data.finish_date
-    //       var init_time= data.itime
-    //       var finish_time=data.ftime
-    //       $("#id_initDay").val(init_day);
-    //       $("#id_endDay").val(end_day);
-    //       $("#init_time").val(init_time);
-    //       $("#finish_time").val(finish_time)
-  // }
-  // });
-  // };
-
   var loadForm = function () {
     var btn = $(this);
     $.ajax({
@@ -53,6 +35,8 @@ $(function () {
           location.reload();
 
           $("#modal-photo").modal("hide");
+          alert('Denuncia recibida!');
+
         }
         else {
           $("#modal-photo .modal-content").html(data.html_form);

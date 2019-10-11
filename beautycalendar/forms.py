@@ -1,5 +1,5 @@
 from django import forms
-from .models import Users, ContentUsers, Empleoyees, WorkItems, BeautySalons, Publications
+from .models import Users, ContentUsers, Empleoyees, WorkItems, BeautySalons, Publications,Reports
 from allauth.account.forms import SignupForm
 from django_resized import ResizedImageField
 
@@ -116,3 +116,22 @@ class PublicationForm(forms.ModelForm):
 class PublForm(forms.Form):
     description= forms.CharField(max_length=250)
     imgPublication= forms.FileField()
+    
+
+class ReportsForm(forms.ModelForm):
+    
+    choices_report=(
+        (1,'Mal servicio'),
+        (2,'Precios desactualizados'),
+        (3,'No cumple con los turnos'),
+        (4,'Otro'),
+    )
+    
+    options= forms.ChoiceField(choices=choices_report,required=True, initial="Seleccione")
+    
+    class Meta:
+        model= Reports
+        fields=['options','other']
+        # widgets={'other':forms.HiddenInput()}
+    
+    

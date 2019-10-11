@@ -1,8 +1,8 @@
 from django.http import HttpResponse, HttpResponseRedirect, HttpRequest
 from django.shortcuts import render, redirect, get_object_or_404, render_to_response
 from django.contrib.auth.decorators import login_required
-from .models import Users, ContentUsers,Empleoyees, BeautySalons, WorkItems, WorkingHoursSalons,UserDates, Publications, CommentsPublications, LikesPublications
-from .forms import ContentForm,EmpleoyeesForm, AvatarForm, FrontForm, BeautySalonsForm,BioForm,DatesUserForm, PublicationForm, PublForm
+from .models import Users, ContentUsers,Empleoyees, BeautySalons, WorkItems, WorkingHoursSalons,UserDates, Publications, CommentsPublications, LikesPublications, Reports
+from .forms import ContentForm,EmpleoyeesForm, AvatarForm, FrontForm, BeautySalonsForm,BioForm,DatesUserForm, PublicationForm, PublForm, ReportsForm
 from django.template.loader import render_to_string
 from django.contrib import messages
 from django.http import JsonResponse
@@ -262,14 +262,6 @@ def saveComment(request,pk):
     comments= publicationComment.objects.get(publication=publication)
     return Response(comments)
      
-@login_required()
-def Private(request):
-    return render(request, 'beautycalendar/privado.html', {})
-
-
-def Public(request):
-    return render(request, 'beautycalendar/publico.html', {})
-
 @login_required
 def PrivateProfile(request):
     
@@ -520,7 +512,6 @@ def mycontent_pause(request, pk):
         })
     return JsonResponse(data)
 
-
 @login_required
 def avatar_update(request,pk):
     mycontent = get_object_or_404(Users, pk=pk)
@@ -675,6 +666,55 @@ class MyPasswordChangeView(PasswordChangeView):
 
 password_change = login_required(MyPasswordChangeView.as_view())
 
+
+def save_report(request,form,template_name,email):
+    data=dict()
+    
+    if request.method=='POST':
+        if form.is_valid():
+            data['form_is_valid'] = True
+            form.save(commit=False)
+            informer= request.user.email
+            informed= email
+            option= request.POST['options']
+            other= request.POST['other']
+            report= Reports()
+            report.informer= informer
+            report.informed= informed
+            report.options= option
+            report.other= other            
+            report.save()
+        user=request.user
+        data['html_profile'] = render_to_string('beautycalendar/private_profile_client.html', {'user':user})
+        # return redirect(PrivateProfile)
+    else:
+        context = {'form': form,'email':email}
+        data['html_form'] = render_to_string(template_name, context, request=request)
+    
+    return JsonResponse(data)
+        
+        
+
+def reporter(request,email):
+    if request.method == 'POST':  
+        form= ReportsForm(request.POST)
+    else:
+        # import web_pdb; web_pdb.set_trace()    
+        form= ReportsForm()
+      
+    return save_report(request, form, 'beautycalendar/profiles/partial_report.html',email)
+    
+    # if request.method=="POST":
+        # informer= request.user
+        # informed= request.POST['informedid']
+        # option= request.POST['option']
+        # other= request.POST['other']
+        # report= Reports(informer=informer,informed=informed,option=option,other=other)
+        # report.save()
+    
+        
+
 def mi_error_404(request,Exception):
     nombre_template = 'beautycalendar/404.html'
     return page_not_found(request, template_name=nombre_template)
+

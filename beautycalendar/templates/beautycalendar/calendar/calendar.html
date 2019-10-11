@@ -76,22 +76,22 @@
         {% csrf_token %}
         <row>
           <p >Servicio: </p>
-          <input id="p-service" name="nom_service" >
+          <input id="p-service" name="nom_service" readonly>
           <input id="h-service" type="hidden" name="val_service">
         </row>
         <row>
           <p >Profesional: </p>
-          <input id="p-professional"  name="nom_professional"> 
+          <input id="p-professional"  name="nom_professional" readonly> 
           <input id="h-professional" type="hidden" name="val_professional">
 
         </row>
         <row>
           <p>Dia: </p>
-          <input id="p-day" name="nom_day">
+          <input id="p-day" name="nom_day" readonly>
         </row>
         <row>
           <p>Hora: </p>
-          <input id="p-time" name="nom_time">
+          <input id="p-time" name="nom_time" readonly>
         </row>
         <button>Confirmar</button>
       </form>     

@@ -10,8 +10,6 @@ urlpatterns = [
     url(r'^accounts/', include('allauth.urls')),
 
     path('private_profile', views.PrivateProfile, name='private_profile'),
-    path('private',views.Private, name='private'),
-    path('public', views.Public, name='public'),
 
     url(r'filter_professional/(?P<pk>\d+)/$', views.filter_professional, name="filter_professional"),
 
@@ -42,10 +40,9 @@ urlpatterns = [
     url(r'profile/(?P<pk>\d+)/update/avatar/$', views.avatar_update, name='avatar_update'),
     url(r'profile/(?P<pk>\d+)/update/front/$', views.front_update, name='front_update'),
     url(r'profile/(?P<pk>\d+)/update/bio/$', views.bio_update, name='bio_update'),
-
-    url(r'privacy-policy-facebook/$',views.facebookprivacy, name= 'facebook-privacy'),
-
+    
     url(r'profile/(?P<email>[\w.@+-]+)/$', views.PublicProfile, name= 'public_profile'),
+    url(r'profile/(?P<email>[\w.@+-]+)/report/$',views.reporter, name='report'),
 
     url(r'calendar/(?P<pk>\d+)/$',views.Calendar, name='calendar'),
     url(r'calendar/(?P<pk>\d+)/confirm/$', views.confirmarTurno, name='confirm-date'),
@@ -62,6 +59,9 @@ urlpatterns = [
     url(r'events/client',views.getEventsClient, name='events_client'),
     
     url(r'bio/daysandhours', views.get_HoursandDays, name='wkhours'),
-    url(r'bio/items',views.get_items, name='get_items')
+    url(r'bio/items',views.get_items, name='get_items'),
+    
+    url(r'privacy-policy-facebook/$',views.facebookprivacy, name= 'facebook-privacy')
+
 ]
 handler404 = views.mi_error_404

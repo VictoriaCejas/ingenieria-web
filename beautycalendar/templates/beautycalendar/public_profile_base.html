@@ -1,5 +1,9 @@
 {% extends 'beautycalendar/base.html' %}
 {% load static %}
+{% block javascript %}
+  <script src="{% static 'content/profile.js' %}"></script>
+{% endblock %}
+
 
 {% block header %}
 {% if myuser.imageFront %}
@@ -64,6 +68,12 @@
         </div>
       </div>
 
+      <div class="modal fade" id="modal-photo">
+        <div class="modal-dialog">
+          <div class="modal-content">
+          </div>
+        </div>
+    </div>
 {% endblock header %}
 {% block content %}
       {% block profile %}
