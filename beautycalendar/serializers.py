@@ -9,12 +9,13 @@ class servicesSerializer(serializers.ModelSerializer):
         fields=('title',)
 
 class eventsSerializer(serializers.ModelSerializer):
+    id= serializers.ReadOnlyField(source='pk')
     title= serializers.StringRelatedField(source='service')
     start= serializers.ReadOnlyField(source='init_time')
     end= serializers.ReadOnlyField(source='finish_time')
     class Meta:
         model= UserDates
-        fields=('title','start','end')
+        fields=('id','title','start','end')
 
 
 class wkHoursSerializer(serializers.ModelSerializer):

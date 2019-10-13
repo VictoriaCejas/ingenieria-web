@@ -1,7 +1,7 @@
 {% extends "beautycalendar/basewithoutimage.html" %}
 {% load static %}
 {% block javascript %}
-
+  
 <script type="text/javascript">
     
     document.addEventListener('DOMContentLoaded', function() {
@@ -29,14 +29,35 @@
         color: "orange",
         textColor: "black"
       },
+      eventClick: function(info) {
+
+        var message= confirm("Desea este cancelar turno?")
+        if (message == true){
+          var event= info.event.id
+          $.ajax({
+            url:'{% url "delete-event" pk=111 %}'.replace(111,event),
+            data:event.id,
+            method:"GET",
+            type:'json',
+            success: function(data){
+              if (data.is_valid) {
+                location.reload();
+            };
+          }
+          })
+        }
+
+      }
 
       
     });
     calendar.render();
   });
 
-</script>
 
+
+
+</script>
 
 
 {% endblock javascript %}

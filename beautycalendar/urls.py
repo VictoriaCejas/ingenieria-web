@@ -67,7 +67,9 @@ urlpatterns = [
     url(r'block-user-user/(?P<email>[\w.@+-]+)/', views.StateUser, name="blockuser-user"),
     url(r'report-delete/(?P<pk>\d+)/$',views.DeleteReport, name="report-delete"),
     url(r'reports/',views.ListReports, name='reports'),
-    url(r'users-locked/', views.ListUsersLockes, name='users-locked')
+    url(r'users-locked/', views.ListUsersLockes, name='users-locked'),
+    url(r'delete-event/(?P<pk>\d+)',views.DeleteEvet, name='delete-event')
+    
     
 ]
 handler404 = views.mi_error_404

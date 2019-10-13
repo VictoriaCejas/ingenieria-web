@@ -394,8 +394,12 @@ def StateUser(request, email, pk=None):
     
     
     
-   
-
+def DeleteEvet(request,pk):
+    data=dict()
+    event= UserDates.objects.get(pk=pk)
+    event.delete()
+    data['is_valid']=True
+    return JsonResponse(data)
 
 
 
