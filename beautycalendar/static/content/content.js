@@ -60,7 +60,6 @@ $(function () {
 
   /* Binding */
   $('#mycontent-table').DataTable( {  } );
-
   // Create content
   $(".js-create-mycontent").click(loadForm);
   $("#modal-mycontent").on("submit", ".js-mycontent-create-form", saveForm);

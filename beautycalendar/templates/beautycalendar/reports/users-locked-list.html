@@ -1,0 +1,18 @@
+{% for user in users %}
+    <tr>
+        <td>{{ user.email }}</td>
+        <td>
+            Accion
+        </td>
+        
+        <td style="width: 150px">
+        <button style="margin: 2px" type="button" class="btn btn-warning btn-sm js-update-mycontent" data-url="{% url 'blockuser-user' user.email %}">
+            <i class="fa fa-stumbleupon-circle"></i>Desbloquear 
+        </button>
+
+    </tr>
+    {% empty %}
+    <tr>
+    <td colspan="8" class="text-center bg-warning">No hay usuarios bloqueados aun</td>
+    </tr>
+{% endfor %}

@@ -48,6 +48,7 @@ $(function () {
 
 
   /* Binding */
+  // $('#admin-table').DataTable();
 
   $(".js-update-photo").click(loadForm)
   $("#modal-photo").on("submit",".js-photo-update-form",saveForm)

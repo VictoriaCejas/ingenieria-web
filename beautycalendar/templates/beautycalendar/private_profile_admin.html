@@ -1,8 +1,50 @@
 {% extends "beautycalendar/private_profile_base.html" %}
-{% block profile %}
+{% load static %}
 
-    <p>Hola! Admin </p>
+{% block profile %}
+  
     <a class="btn" href='admin/''>Administracion</a>
     <a class="btn " href='admin/beautycalendar/users/'>Administrar usuarios</a>
     <a class="btn" href='admin/beautycalendar/workitems/'>Administrar rubros</a>
+
+
+    <hr />
+
+    <div class="accordion" id="accordionExample">
+        <div class="card">
+            <div class="card-header" id="headingOne">
+            <h2 class="mb-0">
+                <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="false" aria-controls="collapseTwo">
+                REPORTES
+                </button>
+            </h2>
+            </div>
+            <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordionExample">  
+            <div class="card-body">
+                <a href="{% url 'reports' %}" class="btn btn-primary">GO</a>
+            </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header" id="headingTwo">
+            <h2 class="mb-0">
+                <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                USUARIOS BLOQUEADOS
+                </button>
+            </h2>
+            </div>
+            <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">      
+            <div class="card-body">
+                <a href="{% url 'users-locked' %}" class="btn btn-primary">GO</a>
+            </div>
+            </div>
+        </div>
+        
+    
+        </div>
+    
+    <div>
+        
 {% endblock profile %}
+
+

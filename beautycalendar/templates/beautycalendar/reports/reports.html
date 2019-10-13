@@ -1,0 +1,37 @@
+{% extends "beautycalendar/basewithoutimage.html" %}
+{% load static %}
+{% block javascript %}
+  <script src="{% static 'content/reports.js' %}"></script>
+{% endblock %}
+{% block content %}
+  <p>
+    <a href="{% url 'private_profile' %}" style="color: black"><i class="fa fa-angle-left" ></i> Back</a>
+  </p>
+  <h1>Denuncias</h1>
+
+    <table id="admin-table"  class="table  table-bordered" style="width:100%">
+        <thead>
+            <tr>
+            <th>Denunciante</th>
+            <th>Denunciado</th>
+            <th>Razon</th>
+            <th>Otro</th>
+            <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% include "beautycalendar/reports/reports_list.html" %}
+
+        </tbody>
+    </table>
+
+  <div class="modal fade" id="modal-mycontent">
+        <div class="modal-dialog">
+          <div class="modal-content">
+          </div>
+        </div>
+  </div>
+{% endblock %}
+
+
+

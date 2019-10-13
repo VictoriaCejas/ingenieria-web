@@ -27,14 +27,14 @@ from rest_framework.reverse import reverse
 def Home(request):
     items= WorkItems.objects.all()
     return render(request, 'beautycalendar/home.html', {'items':items})
- 
+
 def filter_professional(request, pk):
     item= WorkItems.objects.get(id=pk)
     salons= BeautySalons.objects.filter(items=item)
     owners=[]
-    for salon in salons:  
+    for salon in salons:
         owners.append(salon.owner)
-    
+
     return render(request, 'beautycalendar/filter_professional.html',{'owners':owners})
 
 def Calendar(request,pk):
@@ -52,7 +52,7 @@ def Calendar(request,pk):
     for e in empleoyees:
         name= e.first_name + ' '+ e.last_name
         empleoyees_list.append((e.id , name),)
-   
+
 
     if request.method == 'POST':
         data = dict()
@@ -72,7 +72,7 @@ def Calendar(request,pk):
         datef=datetime.strptime(datef, '%d/%m/%Y' )
         t= UserDates.objects.all()
         ocupados= UserDates.objects.filter(date=datef,empleoyee=empleoyee,state=1).order_by('init_time')
-        
+
         #Calculo huecos
         #huecos[inicio,fin,duracion]
         huecos=[]
@@ -95,7 +95,7 @@ def Calendar(request,pk):
                 last=fin_turno
 
         serv_tiempo_to_hour= int(serv_tiempo.hour)+(int(serv_tiempo.minute))/60
-        for h in huecos: 
+        for h in huecos:
             if serv_tiempo_to_hour <=  h[2]:
                 divi= int(h[2]/serv_tiempo_to_hour)
                 i=0
@@ -122,13 +122,13 @@ def Calendar(request,pk):
             lista= disponibles
         else:
             lista= None
-       
+
         mycontent= lista
         data['html_time_list'] = render_to_string('beautycalendar/calendar/partial.html', {
             'mycontent': mycontent
-        })        
+        })
         JsonResponse(data)
-        
+
         form= DatesUserForm(empleoyees_list,services_list, request.POST)
         return render(request,'beautycalendar/calendar/calendar.html',{'form':form,'salon':salon,'mycontent':mycontent})
 
@@ -172,9 +172,9 @@ def confirmarTurno(request,pk):
     return redirect(PrivateProfile)
 #    return PrivateProfile(request)
 @bussines_required
-def getCalendarBussines(request,pk): 
+def getCalendarBussines(request,pk):
     empleoyee= get_object_or_404(Empleoyees,pk=pk)
-    return render(request,'beautycalendar/calendar/calendar_bussines.html',{'empleoyee':empleoyee})            
+    return render(request,'beautycalendar/calendar/calendar_bussines.html',{'empleoyee':empleoyee})
 
 @bussines_required
 def getEventsBussines(request,pk):
@@ -182,17 +182,17 @@ def getEventsBussines(request,pk):
     #Ver lo del serializer
     user=request.user
     empleoyee= get_object_or_404(Empleoyees,pk=pk)
-    
+
     queryset= UserDates.objects.filter(empleoyee=empleoyee,state=1)
     serializer_data= eventsSerializer(queryset, many=True)
     return JsonResponse( serializer_data.data, safe=False)
 
 @login_required
-def getCalendarClient(request): 
+def getCalendarClient(request):
     return render(request,'beautycalendar/calendar/calendar_client.html',{})
 
 @login_required
-def getEventsClient(request):    
+def getEventsClient(request):
     user=request.user
     queryset= UserDates.objects.filter(client=user,state=1)
     serialer_data= eventsSerializer(queryset,many=True)
@@ -205,11 +205,11 @@ def listPublication(request):
         lista= Publications.objects.filter(owner=user)
         #return render(request,'beautycalendar/calendar/dates.html',{'lista':lista})
     except:
-        lista=None    
+        lista=None
 
     return render(request,'beautycalendar/publications/publications.html',{'lista':lista})
 
-@login_required    
+@login_required
 def createPublication(request):
     if request.method== 'POST':
         form= PublForm(request.POST, request.FILES)
@@ -220,12 +220,12 @@ def createPublication(request):
             desc= form.cleaned_data['description']
             publication= Publications(owner=owner,publish_date=publish_date,imagePublication=image,description=desc,)
             publication.save()
-           
+
             return redirect(listPublication)
     else:
         form= PublForm()
         return render(request,'beautycalendar/publications/publication_create.html',{'form':form})
-    
+
 def getPublication(request,pk):
     if request.method == 'POST':
         form=request.POST
@@ -261,15 +261,15 @@ def saveComment(request,pk):
 
     comments= publicationComment.objects.get(publication=publication)
     return Response(comments)
-     
+
 @login_required
 def PrivateProfile(request):
-    
+
     user= request.user
     myuser= Users.objects.get(email=user.email)
     #kind = Users.objects.get(email=user.email).kind
     kind= myuser.kind
-    
+
     if kind == 1:
         #bussines
         try:
@@ -281,12 +281,31 @@ def PrivateProfile(request):
         #client
         return render(request, 'beautycalendar/private_profile_client.html', {'usuario': myuser,'user':user})
     else:
-        #administrator
+        #administrador
         return render(request, 'beautycalendar/private_profile_admin.html', {'usuario': myuser,'user':user})
 
-  #  return render(request, 'beautycalendar/private_profile.html', {'usuario': myuser,'user':user})
-
-
+def DeleteReport(request,pk):
+    report = get_object_or_404(Reports, pk=pk)
+    data = dict()
+    if request.method == 'POST':
+        report.delete()
+        data['form_is_valid'] = True  
+        reports= Reports.objects.all()
+        for report in reports:
+            inf=Users.objects.get(email=report.informed)    
+            report.emailInformed= inf.email
+            
+            inf=Users.objects.get(email=report.informer)
+            report.emailInformer= inf.email
+        data['html_report_list'] = render_to_string('beautycalendar/reports/reports_list.html', { 'reports': reports})
+    else:
+        context = {'report': report}
+        data['html_form'] = render_to_string('beautycalendar/reports/partial_report_delete.html',
+            context,
+            request=request,
+        )
+    return JsonResponse(data)
+    
 def PublicProfile(request, email):
     myuser = Users.objects.get(email=email)
     kind= myuser.kind
@@ -311,12 +330,80 @@ def PublicProfile(request, email):
 
   #  return render(request, 'beautycalendar/private_profile.html', {'usuario': myuser,'user':user})
 
+def ListReports(request):
+
+    reports= Reports.objects.all()
+    for report in reports:
+        inf=Users.objects.get(email=report.informed)    
+        report.emailInformed= inf.email
+        
+        inf=Users.objects.get(email=report.informer)
+        report.emailInformer= inf.email
+
+    
+    return render(request, 'beautycalendar/reports/reports.html', {'reports':reports})
+
+
+def ListUsersLockes(request):
+    users= Users.objects.filter(state=3)
+    return render(request, 'beautycalendar/reports/users-locked.html',{'users':users})
+
+
+def StateUser(request, email, pk=None):
+    user= Users.objects.get(email=email)
+    data = dict()
+   
+    if pk is None:
+        if request.method == "POST":
+            user.state=1
+            user.save()
+            data['form_is_valid'] = True 
+            users= Users.objects.filter(state=3)
+            data['html_report_list'] = render_to_string('beautycalendar/reports/users-locked-list.html', {'users': users})
+        else:
+            context = {'user': user}
+            data['html_form'] = render_to_string('beautycalendar/reports/partial_user_unlock.html',
+                context,
+                request=request,
+            )
+        
+    else:
+        
+        if request.method == 'POST':
+            user.state=3
+            user.save()
+                
+            data['form_is_valid'] = True  # This is just to play along with the existing code
+            report= Reports.objects.get(id=pk)
+            report.delete()
+            reports= Reports.objects.all()
+            for report in reports:
+                inf=Users.objects.get(email=report.informed)    
+                report.emailInformed= inf.email
+                
+                inf=Users.objects.get(email=report.informer)
+                report.emailInformer= inf.email
+            data['html_report_list'] = render_to_string('beautycalendar/reports/reports_list.html', {'reports': reports})
+        else:
+            context = {'user': user,'reportid':pk}
+            data['html_form'] = render_to_string('beautycalendar/reports/partial_user_block.html',
+                context,
+                request=request,
+            )
+    return JsonResponse(data)
+    
+    
+    
+   
+
+
+
 
 """CRUD"""
 @bussines_required
 def mycontent_list(request):
     user= request.user
-    
+
     if ('products' in request.path):
         mycontent= ContentUsers.objects.filter(user=user,category=1).exclude(state=3)
         return render(request, 'beautycalendar/products/product_list.html', {'mycontent': mycontent})
@@ -326,12 +413,12 @@ def mycontent_list(request):
     if ('empleoyees' in request.path):
         mycontent= Empleoyees.objects.filter(boss=user).exclude(state=3)
         return render(request, 'beautycalendar/empleoyees/empleoyee_list.html', {'mycontent': mycontent})
-        
+
 @bussines_required
 def save_mycontent_form(request, form, template_name):
     data = dict()
     if request.method == 'POST':
-        if form.is_valid():   
+        if form.is_valid():
             state= request.POST.get("paused", None)
             if state == 'on':
                 state=2
@@ -344,22 +431,22 @@ def save_mycontent_form(request, form, template_name):
                     time= None
                 if('services' in request.path):
                     category=2
-                    img= None   
-                    time=request.POST.get("attentionTime") 
+                    img= None
+                    time=request.POST.get("attentionTime")
                     time= time.split(':')
                     time= datetime(year=1901,month=1,day=1, hour=int(time[0]), minute=int(time[1]))
 
-                
+
                 if('update' in request.path):
                     obj = form.save(commit=False)
                     obj.state = state
                     obj.attention_time=time
                     obj.save()
                 else:
-                    form.save(commit=False)            
+                    form.save(commit=False)
                     user=request.user
                     title= form.cleaned_data['title']
-                    price= form.cleaned_data['price'] 
+                    price= form.cleaned_data['price']
                     content= ContentUsers(user=user,category=category,title=title,imageProduct=img,price=price, state=state, attention_time=time)
                     content.save()
                 data['form_is_valid'] = True
@@ -384,7 +471,7 @@ def save_mycontent_form(request, form, template_name):
                     first_name= form.cleaned_data['first_name']
                     last_name= form.cleaned_data['last_name']
                     imageEmpleoyee= form.cleaned_data['imageEmpleoyee']
-                    
+
                     empleoyee= Empleoyees(boss=boss,first_name=first_name,last_name=last_name,imageEmpleoyee=imageEmpleoyee,state=state)
                     empleoyee.save()
                 data['form_is_valid'] = True
@@ -409,7 +496,7 @@ def mycontent_create(request):
             return save_mycontent_form(request, form, 'beautycalendar/products/includes/partial_product_create.html')
         if ('services' in request.path):
             return save_mycontent_form(request, form, 'beautycalendar/services/includes/partial_service_create.html')
-    
+
     if ('empleoyees' in request.path):
         if request.method =='POST':
             form = EmpleoyeesForm(request.POST,request.FILES or None)
@@ -419,10 +506,10 @@ def mycontent_create(request):
 
 @bussines_required
 def mycontent_update(request, pk):
-    
+
     if (('products' in request.path) or ('services' in request.path)):
         mycontent = get_object_or_404(ContentUsers, pk=pk)
-        if request.method == 'POST':  
+        if request.method == 'POST':
             form = ContentForm(request.POST,request.FILES, instance=mycontent)
         else:
             form = ContentForm(instance=mycontent)
@@ -431,10 +518,10 @@ def mycontent_update(request, pk):
             return save_mycontent_form(request, form, 'beautycalendar/products/includes/partial_product_update.html')
         if ('services' in request.path):
             return save_mycontent_form(request, form, 'beautycalendar/services/includes/partial_service_update.html')
-    
+
     if ('empleoyees' in request.path):
         mycontent=get_object_or_404(Empleoyees,pk=pk)
-        if request.method == 'POST':  
+        if request.method == 'POST':
                 form= EmpleoyeesForm(request.POST, request.FILES, instance=mycontent)
         else:
                 form= EmpleoyeesForm(instance=mycontent)
@@ -446,28 +533,28 @@ def mycontent_delete(request, pk):
         mycontent = get_object_or_404(ContentUsers, pk=pk)
     if ('empleoyees' in request.path):
         mycontent= get_object_or_404(Empleoyees, pk=pk)
-    
+
     data = dict()
     if request.method == 'POST':
         mycontent.state= 3
         mycontent.save()
         data['form_is_valid'] = True
         if ('products' in request.path):
-            mycontent = ContentUsers.objects.filter(user=request.user,category=1).exclude(state=3)       
+            mycontent = ContentUsers.objects.filter(user=request.user,category=1).exclude(state=3)
             data['html_product_list'] = render_to_string('beautycalendar/products/includes/partial_product_list.html', {
                 'mycontent': mycontent
             })
         if ('services' in request.path):
-            mycontent = ContentUsers.objects.filter(user=request.user,category=2).exclude(state=3)       
+            mycontent = ContentUsers.objects.filter(user=request.user,category=2).exclude(state=3)
             data['html_service_list'] = render_to_string('beautycalendar/services/includes/partial_service_list.html', {
                 'mycontent': mycontent
             })
         if ('empleoyees' in request.path):
-            mycontent = Empleoyees.objects.filter(boss=request.user).exclude(state=3)        
+            mycontent = Empleoyees.objects.filter(boss=request.user).exclude(state=3)
             data['html_empleoyee_list'] = render_to_string('beautycalendar/empleoyees/includes/partial_empleoyee_list.html', {
                 'mycontent': mycontent
             })
-    
+
     else:
         context = {'mycontent': mycontent}
         if ('products' in request.path):
@@ -476,7 +563,7 @@ def mycontent_delete(request, pk):
             data['html_form'] = render_to_string('beautycalendar/services/includes/partial_service_delete.html', context, request=request)
         if ('empleoyees' in request.path):
             data['html_form'] = render_to_string('beautycalendar/empleoyees/includes/partial_empleoyee_delete.html', context, request=request)
-            
+
     return JsonResponse(data)
 
 def mycontent_pause(request, pk):
@@ -484,7 +571,7 @@ def mycontent_pause(request, pk):
         mycontent = get_object_or_404(ContentUsers, pk=pk)
     if ('empleoyees' in request.path):
         mycontent= get_object_or_404(Empleoyees, pk=pk)
-    
+
     data = dict()
 
     state= mycontent.state
@@ -496,17 +583,17 @@ def mycontent_pause(request, pk):
     mycontent.save()
     data['form_is_valid'] = True
     if ('products' in request.path):
-        mycontent = ContentUsers.objects.filter(user=request.user,category=1).exclude(state=3)       
+        mycontent = ContentUsers.objects.filter(user=request.user,category=1).exclude(state=3)
         data['html_product_list'] = render_to_string('beautycalendar/products/includes/partial_product_list.html', {
             'mycontent': mycontent
         })
     if ('services' in request.path):
-        mycontent = ContentUsers.objects.filter(user=request.user,category=2).exclude(state=3)      
+        mycontent = ContentUsers.objects.filter(user=request.user,category=2).exclude(state=3)
         data['html_service_list'] = render_to_string('beautycalendar/services/includes/partial_service_list.html', {
             'mycontent': mycontent
         })
     if ('empleoyees' in request.path):
-        mycontent = Empleoyees.objects.filter(boss=request.user).exclude(state=3)    
+        mycontent = Empleoyees.objects.filter(boss=request.user).exclude(state=3)
         data['html_empleoyee_list'] = render_to_string('beautycalendar/empleoyees/includes/partial_empleoyee_list.html', {
             'mycontent': mycontent
         })
@@ -515,7 +602,7 @@ def mycontent_pause(request, pk):
 @login_required
 def avatar_update(request,pk):
     mycontent = get_object_or_404(Users, pk=pk)
-    if request.method == 'POST':  
+    if request.method == 'POST':
         form= AvatarForm(request.POST, request.FILES, instance=mycontent)
     else:
         if (mycontent== None):
@@ -527,7 +614,7 @@ def avatar_update(request,pk):
 @login_required
 def front_update(request,pk):
     mycontent = get_object_or_404(Users, pk=pk)
-    if request.method == 'POST':  
+    if request.method == 'POST':
         form= FrontForm(request.POST, request.FILES, instance=mycontent)
     else:
         if (mycontent== None):
@@ -538,9 +625,9 @@ def front_update(request,pk):
 
 @login_required
 def bio_update(request,pk):
-    
+
     mycontent = get_object_or_404(Users, pk=pk)
-    if request.method == 'POST': 
+    if request.method == 'POST':
         form= BioForm(request.POST, instance= mycontent)
     else:
         if (mycontent== None):
@@ -551,20 +638,20 @@ def bio_update(request,pk):
     return save_my_profile_update_form(request, form, 'beautycalendar/profiles/partial_bio_update.html')
 
 def get_HoursandDays(request):
-    
+
     user=request.user
     queryset= get_object_or_404(WorkingHoursSalons,salon=user)
     if queryset:
         serialer_data= wkHoursSerializer(queryset,many=False)
-        
+
     return JsonResponse(serialer_data.data, safe=False)
-  
+
 def get_items(request):
     user=request.user
     querysey= BeautySalons.objects.filter(owner=user)
     serialer_data= itemsSelectedSerialezer(querysey, many=True)
     return JsonResponse(serialer_data.data, safe=False)
-      
+
 def save_my_profile_update_form(request,form,template_name):
     data = dict()
     if request.method == 'POST':
@@ -572,7 +659,7 @@ def save_my_profile_update_form(request,form,template_name):
             form.save(commit=False)
             data['form_is_valid'] = True
             user= Users.objects.get(email=request.user)
-        
+
             if ('avatar' in request.path):
                 image=form.cleaned_data['imageAvatar']
                 if (image is False):
@@ -584,13 +671,13 @@ def save_my_profile_update_form(request,form,template_name):
                 if (image is False):
                     image= None
                 user.imageFront= image
-            
+
             if ('bio' in request.path):
                 if user.kind==1:
                     name=form.cleaned_data['name_salon']
-                    user.name_salon= name     
-                else:                     
-                    name= form.cleaned_data['first_name']              
+                    user.name_salon= name
+                else:
+                    name= form.cleaned_data['first_name']
                     user.first_name= name
                 user.description= form.cleaned_data['description']
                 items= form.cleaned_data['items']
@@ -616,11 +703,11 @@ def save_my_profile_update_form(request,form,template_name):
                     times = WorkingHoursSalons(salon=salon,init_date=initDay,finish_date=endDay,init_time=initHour,finish_time=endHour)
 
                 except:
-                    times = WorkingHoursSalons(salon=salon,init_date=initDay,finish_date=endDay,init_time=initHour,finish_time=endHour)            
+                    times = WorkingHoursSalons(salon=salon,init_date=initDay,finish_date=endDay,init_time=initHour,finish_time=endHour)
                 finally:
                     times.save()
             user.save()
-            
+
             usuario=user
             if (user.kind == 1):
                 data['html_profile'] = render_to_string('beautycalendar/private_profile_bussines.html', {'user':user})
@@ -628,7 +715,7 @@ def save_my_profile_update_form(request,form,template_name):
                 data['html_profile'] = render_to_string('beautycalendar/private_profile_client.html', {'user':user})
             if (user.kind== 3):
                 data['html_profile'] = render_to_string('beautycalendar/private_profile_admin.html', {'user':user})
-                
+
         else:
             data['form_is_valid'] = False
     context = {'form': form}
@@ -641,7 +728,7 @@ def facebookprivacy(request):
 
 class MyPasswordChangeView(PasswordChangeView):
     """
-    Custom class to override the password change view 
+    Custom class to override the password change view
     """
 
     success_url = "/private_profile"
@@ -669,7 +756,7 @@ password_change = login_required(MyPasswordChangeView.as_view())
 
 def save_report(request,form,template_name,email):
     data=dict()
-    
+
     if request.method=='POST':
         if form.is_valid():
             data['form_is_valid'] = True
@@ -682,7 +769,7 @@ def save_report(request,form,template_name,email):
             report.informer= informer
             report.informed= informed
             report.options= option
-            report.other= other            
+            report.other= other
             report.save()
         user=request.user
         data['html_profile'] = render_to_string('beautycalendar/private_profile_client.html', {'user':user})
@@ -690,29 +777,20 @@ def save_report(request,form,template_name,email):
     else:
         context = {'form': form,'email':email}
         data['html_form'] = render_to_string(template_name, context, request=request)
-    
+
     return JsonResponse(data)
-        
-        
+
+
 
 def reporter(request,email):
-    if request.method == 'POST':  
+    if request.method == 'POST':
         form= ReportsForm(request.POST)
     else:
-        # import web_pdb; web_pdb.set_trace()    
         form= ReportsForm()
-      
+
     return save_report(request, form, 'beautycalendar/profiles/partial_report.html',email)
+
     
-    # if request.method=="POST":
-        # informer= request.user
-        # informed= request.POST['informedid']
-        # option= request.POST['option']
-        # other= request.POST['other']
-        # report= Reports(informer=informer,informed=informed,option=option,other=other)
-        # report.save()
-    
-        
 
 def mi_error_404(request,Exception):
     nombre_template = 'beautycalendar/404.html'

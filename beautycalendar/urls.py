@@ -61,7 +61,13 @@ urlpatterns = [
     url(r'bio/daysandhours', views.get_HoursandDays, name='wkhours'),
     url(r'bio/items',views.get_items, name='get_items'),
     
-    url(r'privacy-policy-facebook/$',views.facebookprivacy, name= 'facebook-privacy')
+    url(r'privacy-policy-facebook/$',views.facebookprivacy, name= 'facebook-privacy'),
 
+    url(r'block-user/(?P<email>[\w.@+-]+)/(?P<pk>\d+)', views.StateUser, name="blockuser"),
+    url(r'block-user-user/(?P<email>[\w.@+-]+)/', views.StateUser, name="blockuser-user"),
+    url(r'report-delete/(?P<pk>\d+)/$',views.DeleteReport, name="report-delete"),
+    url(r'reports/',views.ListReports, name='reports'),
+    url(r'users-locked/', views.ListUsersLockes, name='users-locked')
+    
 ]
 handler404 = views.mi_error_404

@@ -3,6 +3,7 @@
 
 {% block javascript %}
   <script src="{% static 'content/profile.js' %}"></script>
+
 {% endblock %}
 
 {% block header %}
@@ -61,9 +62,11 @@
           {% endif %}
 
           <br/>
-
+          {% if user.kind != 3 %}
           <btn class="btn btn-outline-default btn-round js-update-photo"data-url="{% url 'bio_update' pk=user.id %}"><i class="fa fa-cog"></i> Configurar</btn>
-          <a href='{% url "client_calendar" %}' class="btn">Mis Turnos</a>
+          <a href='{% url "client_calendar" %}' class="btn">Mis Turnos</a>            
+          {% endif %}
+
         </div>
       </div>
       <br/>

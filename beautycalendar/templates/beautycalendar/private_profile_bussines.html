@@ -1,6 +1,9 @@
 {% extends "beautycalendar/private_profile_base.html" %}
 {% include 'board / confirm_delete_modal.html '%}
 {% block profile %}
+  {% if user.state == 3 %}
+  <p>Estas bloqueado temporalmente! </p>
+  {% else %}
   <div class="accordion" id="accordionExample">
     <div class="card">
       <div class="card-header" id="headingOne">
@@ -60,6 +63,7 @@
     </div>
 
   </div>
+  {% endif %}
 
 {% endblock profile %}
 
