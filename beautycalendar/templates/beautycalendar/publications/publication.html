@@ -1,15 +1,25 @@
 {% extends "beautycalendar/basewithoutimage.html" %}
 {% load static %}
 
+  
 {% block content %}
 <div>
     <div class="row">
-    <div class="col-md-8">
+    <div class="col-md-6">
         {% if publication.imagePublication %}
             <img src="{{ publication.imagePublication.url }}" width="400px">
         {% endif %}
         <p> </p>
         <p>{{publication.description}}</p>
+    </div>
+    <div class="col-sm-2">
+        <div class="row ">
+            <button id="like" type="button" style="margin: 2px" class="btn btn-warning btn-sm " data-url="">
+            <i class="fa fa-thumbs-up"></i> Like
+
+            <button id="dislike" type="button" style="margin: 2px" class="btn btn-warning btn-sm " data-url="">
+                    <i class="fa fa-thumbs-down"></i> Dislike
+        </div>
     </div>
     <div class="col-md-4">
             <div style="overflow: scroll; max-height: 400px;overflow-x: hidden;">

@@ -11,13 +11,13 @@
         
         <td style="width: 150px">
         <button style="margin: 2px" type="button" class="btn btn-warning btn-sm js-update-mycontent"data-url="{% url 'blockuser' report.emailInformed report.id %}">
-            <i class="fa fa-minus-circle"></i>Bloquear denunciado
+            <i class="fa fa-lock"></i>Bloquear denunciado
         </button>
         <button type="button" style="margin: 2px" class="btn btn-danger btn-sm js-delete-mycontent" data-url="{% url 'report-delete' report.id %}">
             <i class="fa fa-trash"></i> No hacer nada
         </button>
         <button type="button" style="margin: 2px" class="btn btn-warning btn-sm js-update-mycontent" data-url="{% url 'blockuser' report.emailInformer report.id %}">
-            <i class="fa fa-minus-circle"></i> Bloquear denunciante
+            <i class="fa fa-lock"></i> Bloquear denunciante
         </td>
 
     </tr>
