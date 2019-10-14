@@ -765,7 +765,7 @@ def save_report(request,form,template_name,email):
         if form.is_valid():
             data['form_is_valid'] = True
             form.save(commit=False)
-            informer= request.user.email
+            informer= request.user.emaillike
             informed= email
             option= request.POST['options']
             other= request.POST['other']
@@ -794,8 +794,69 @@ def reporter(request,email):
 
     return save_report(request, form, 'beautycalendar/profiles/partial_report.html',email)
 
-    
 
+
+    
+def Like(request,pk):
+    data= dict()
+    user=request.user
+    publ=Publications(pk=pk)
+    
+    try:
+        publication= LikesPublications.objects.get(user=user,publication=publ)
+        if ('dislike' in request.path):
+            if (publication.value == False):
+                data['is_valid']=False
+            else:
+                publication.value= False
+                data['is_valid']=True
+                publication.save()
+        else:
+            if (publication.value == True):
+                data['is_valid']= False
+            else:
+                publication.value= True
+                data['is_valid']=True
+                publication.save()     
+    except:
+            newLike= LikesPublications()
+            newLike.user=user
+            newLike.publication=publ
+            if ('dislike' in request.path):
+                newLike.valur= False
+            else:
+                newLike.value= True
+            newLike.save()
+            data['is_valid']=True
+        
+    return JsonResponse(data)
+
+def DeletePublication(request, pk):
+    data=dict()
+    publication= Publications.objects.get(pk=pk)
+    publication.delete()
+    data['is_valid']=True
+    return JsonResponse(data)
+    
+def TotalLikes(request, pk):
+    
+    data= dict()
+    user=request.user
+    publication= Publications(pk=pk)
+    likes= LikesPublications.objects.filter(user=user,publication=publication) 
+    positives=0
+    negatives=0
+    for l in likes:
+        if l.value== True:
+            positives = positives + 1
+        else:
+            negatives = negatives + 1
+    data['positives']=positives
+    data['negatives']= negatives
+    
+    return JsonResponse(data)
+    
+    
 def mi_error_404(request,Exception):
     nombre_template = 'beautycalendar/404.html'
     return page_not_found(request, template_name=nombre_template)

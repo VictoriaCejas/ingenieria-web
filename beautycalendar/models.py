@@ -206,8 +206,10 @@ class Publications(models.Model):
     state= models.PositiveSmallIntegerField(choices= statesChoices, blank=True, null=True)
 
 class LikesPublications(models.Model):
+    #True is Like , False Dislike
     publication= models.ForeignKey('Publications', on_delete= models.CASCADE)
     user= models.ForeignKey('Users', on_delete=models.CASCADE)
+    value=models.NullBooleanField(blank=True, null=True)
     class Meta:
         unique_together = (("publication", "user"),)
 

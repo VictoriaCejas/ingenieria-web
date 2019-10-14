@@ -53,6 +53,7 @@ urlpatterns = [
     url(r'publications/create/$', views.createPublication, name='publications_create'),
     url(r'publications/(?P<pk>\d+)/$', views.getPublication, name='publication_get'),
     url(r'publications/(?P<pk>\d+)/comment/$', views.getPublication, name='save-comment'),
+    url(r'publication-delete/(?P<pk>\d+)',views.DeletePublication, name='publication_delete'),
 
     # url(r'events/$',views.getEvents, name='events'),
     url(r'events/(?P<pk>\d+)/empleoyee', views.getEventsBussines, name='events_bussines'),
@@ -68,8 +69,11 @@ urlpatterns = [
     url(r'report-delete/(?P<pk>\d+)/$',views.DeleteReport, name="report-delete"),
     url(r'reports/',views.ListReports, name='reports'),
     url(r'users-locked/', views.ListUsersLockes, name='users-locked'),
-    url(r'delete-event/(?P<pk>\d+)',views.DeleteEvet, name='delete-event')
+    url(r'delete-event/(?P<pk>\d+)',views.DeleteEvet, name='delete-event'),
     
+    url(r'like/(?P<pk>\d+)',views.Like,name='like'),
+    url(r'dislike/(?P<pk>\d+)',views.Like,name='dislike'),
+    url(r'totalLikes/(?P<pk>\d+)', views.TotalLikes, name='totalLikes')
     
 ]
 handler404 = views.mi_error_404
