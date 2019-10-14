@@ -30,6 +30,9 @@
 {% endblock javascript %}
 {% block content %}
   <a href="{% url 'publications_create' %}">CREAR</a>
-  
-  {% include "beautycalendar/publications/publications_list.html" %}
+  {% if typeUser == 1 %}
+    {% include "beautycalendar/publications/publications_list.html" %}
+  {% else %}
+    {% include "beautycalendar/publications/publication_list_client.html" %}
+  {% endif %}
 {% endblock content %}

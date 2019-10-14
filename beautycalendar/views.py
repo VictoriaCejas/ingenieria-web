@@ -206,8 +206,11 @@ def listPublication(request):
         #return render(request,'beautycalendar/calendar/dates.html',{'lista':lista})
     except:
         lista=None
-
-    return render(request,'beautycalendar/publications/publications.html',{'lista':lista})
+    typeUser=1
+    if ('client' in request.path):
+        typeUser=2
+        
+    return render(request,'beautycalendar/publications/publications.html',{'lista':lista,'typeUser':typeUser})
 
 @login_required
 def createPublication(request):

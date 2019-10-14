@@ -1,0 +1,11 @@
+<ul class="list-group">
+        {% for l in lista  %}
+          <li class="list-group-item">      
+            <img src="{{ l.imagePublication.url }}" width="100px">
+            <input id="idpub" hidden val="{{l.id}}"  text="{{l.id}}">
+            <a class="btn" href="{% url 'publication_get' l.id %}" >Ver</a>
+          </li>
+        {% empty %}
+          <li class="list-group-item-danger">No existen publicaciones aun</li>
+        {% endfor %}
+</ul>
