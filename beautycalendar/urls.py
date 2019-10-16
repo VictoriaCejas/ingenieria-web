@@ -49,8 +49,8 @@ urlpatterns = [
     url(r'calendar/(?P<pk>\d+)/empleoyee_calendar/$', views.getCalendarBussines, name='empleoyee_calendar'),
     url(r'calendar/client',views.getCalendarClient, name='client_calendar'),
     
-    url(r'publications/$', views.listPublication, name='publications'),
-    url(r'publications/client/$', views.listPublication, name='publications-client'),
+    url(r'publications/private/(?P<email>[\w.@+-]+)/$', views.listPublication, name='publications-private'),
+    url(r'publications/client/(?P<email>[\w.@+-]+)/$', views.listPublication, name='publications-client'),
     url(r'publications/create/$', views.createPublication, name='publications_create'),
     url(r'publications/(?P<pk>\d+)/$', views.getPublication, name='publication_get'),
     url(r'publications/(?P<pk>\d+)/comment/$', views.getPublication, name='save-comment'),

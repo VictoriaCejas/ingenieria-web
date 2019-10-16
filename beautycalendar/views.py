@@ -178,7 +178,6 @@ def getCalendarBussines(request,pk):
 
 @bussines_required
 def getEventsBussines(request,pk):
-
     #Ver lo del serializer
     user=request.user
     empleoyee= get_object_or_404(Empleoyees,pk=pk)
@@ -199,8 +198,8 @@ def getEventsClient(request):
     return JsonResponse(serialer_data.data, safe=False)
 
 @login_required
-def listPublication(request):
-    user=request.user
+def listPublication(request,email):
+    user=Users.objects.get(email=email)
     try:
         lista= Publications.objects.filter(owner=user)
         #return render(request,'beautycalendar/calendar/dates.html',{'lista':lista})
@@ -279,7 +278,7 @@ def PrivateProfile(request):
             items= BeautySalons.objects.filter(owner=myuser)
         except:
             items=""
-        return render(request, 'beautycalendar/private_profile_bussines.html', {'usaurio':myuser,'items':items,'user':user})
+        return render(request, 'beautycalendar/private_profile_bussines.html', {'usuario':myuser,'items':items,'user':user})
     elif kind == 2:
         #client
         return render(request, 'beautycalendar/private_profile_client.html', {'usuario': myuser,'user':user})
@@ -768,7 +767,7 @@ def save_report(request,form,template_name,email):
         if form.is_valid():
             data['form_is_valid'] = True
             form.save(commit=False)
-            informer= request.user.emaillike
+            informer= request.user.email
             informed= email
             option= request.POST['options']
             other= request.POST['other']
@@ -842,13 +841,12 @@ def DeletePublication(request, pk):
     return JsonResponse(data)
     
 def TotalLikes(request, pk):
-    
     data= dict()
     user=request.user
     publication= Publications(pk=pk)
-    likes= LikesPublications.objects.filter(user=user,publication=publication) 
+    likes= LikesPublications.objects.filter(publication=publication) 
     positives=0
-    negatives=0
+    negatives=0 
     for l in likes:
         if l.value== True:
             positives = positives + 1

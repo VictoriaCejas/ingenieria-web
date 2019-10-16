@@ -13,12 +13,14 @@
              success: function like(data){
                  if (data.is_valid){
                     alert('like hecho')
+
                     }
                 else{
                     alert('ya habias dado like')
                 }
-                location.reload()
-             }        
+                window.location.reload()
+           }        
+
          })
         });
 
@@ -34,12 +36,16 @@
              success: function like(data){
                  if (data.is_valid){
                     alert('dislike hecho')
+
                     }
                 else{
                     alert('ya habias dado dislike')
                 }
-                location.reload()
+                window.location.reload()
+
+
              }        
+
          })
         });
   </script>
