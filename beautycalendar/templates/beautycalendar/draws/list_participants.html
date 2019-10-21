@@ -1,0 +1,17 @@
+{% extends "beautycalendar/basewithoutimage.html" %}
+{% load static %}
+{% block javascript %}
+{% endblock %}
+{% block content %}
+<p>
+    <a href="{% url 'draw_list' %}" style="color: black"><i class="fa fa-angle-left" ></i> Back</a>
+</p>
+<h1>Participantes</h1>
+<dl>
+    {% for participant in participants %}
+      <dt>{{participant.client.first_name}} {{participant.client.last_name}}</dt>
+    {% empty %}
+      <dt><p>No hay participantes aun</p></dt>
+    {% endfor %}
+</dl>  
+{% endblock content %}

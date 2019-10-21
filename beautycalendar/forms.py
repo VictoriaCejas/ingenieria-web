@@ -1,7 +1,8 @@
 from django import forms
-from .models import Users, ContentUsers, Empleoyees, WorkItems, BeautySalons, Publications,Reports
+from .models import Users, ContentUsers, Empleoyees, WorkItems, BeautySalons, Publications,Reports, Draws
 from allauth.account.forms import SignupForm
 from django_resized import ResizedImageField
+from django_summernote.widgets import SummernoteWidget, SummernoteInplaceWidget
 
 
 class CustomSignupForm(SignupForm):
@@ -133,5 +134,14 @@ class ReportsForm(forms.ModelForm):
         model= Reports
         fields=['options','other']
         # widgets={'other':forms.HiddenInput()}
-    
-    
+
+class DrawsForm(forms.ModelForm):
+    class  Meta:
+      model=Draws   
+      fields=['name','description']
+      widgets={
+          'description': SummernoteWidget(attrs={'summernote': {'width': '100%', 'height': '250px'}}),
+      }
+      def __init__(self, *args, **kwargs):
+        super(self.__class__, self).__init__(*args, **kwargs)
+        self.fields['owner'].required= False

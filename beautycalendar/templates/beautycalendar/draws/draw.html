@@ -1,0 +1,60 @@
+{% extends "beautycalendar/basewithoutimage.html" %}
+{% load static %}
+{% block javascript %}
+  <script src="{% static 'clock/downCount.js' %}"></script>
+  <script>
+        day= $('#date').val()
+        $('.countdown').downCount({
+                    date: day,
+                    offset: +10
+                }, function () {
+                    alert('Tiempo terminado!');
+                    $("#btn_insc").attr('disabled',true)
+                });
+            
+    </script>
+    <script >
+        var des=$('#inputdesc').val();
+        $('#contenido').html(des)
+    </script>
+
+{% endblock %}
+{% block content %}
+<row>
+<h1 align="center" style="margin-top:150px;"></h1>
+<ul class="countdown">
+<li> <span class="days">00</span>
+<p class="days_ref">days</p>
+</li>
+<li class="seperator">.</li>
+<li> <span class="hours">00</span>
+<p class="hours_ref">hours</p>
+</li>
+<li class="seperator">:</li>
+<li> <span class="minutes">00</span>
+<p class="minutes_ref">minutes</p>
+</li>
+<li class="seperator">:</li>
+<li> <span class="seconds">00</span>
+<p class="seconds_ref">seconds</p>
+</li>
+</ul>
+</row>
+<div class="row container-fluid">
+    <input id="inputdesc" value="{{draw.description}}" hidden>
+    <input id="date" value="{{date}}" hidden>
+    <div class="col-sm">
+    Premios
+    <div id='contenido'>
+    </div>
+    </div>
+    <div class="col-sm center">
+        {% if ins == False %}
+            <a id="btn_insc" class="btn btn-outline-primary center" href="{% url 'inscription_draw' draw.id %}">Inscribirse</a>
+        {% else %}
+            <a id="btn_insc" class="btn btn-outline-primary center" disabled>Inscribirse</a>
+
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -37,6 +37,14 @@ urlpatterns = [
     url(r'empleoyees/(?P<pk>\d+)/delete/$', views.mycontent_delete, name='empleoyee_delete'),
     url(r'empleoyees/(?P<pk>\d+)/pause/$', views.mycontent_pause, name='empleoyee_pause'),
 
+    url(r'draws/$', views.mycontent_list, name='draw_list'),
+    url(r'draws/create/$', views.mycontent_create, name='draw_create'),
+    url(r'draws/(?P<pk>\d+)/delete/$', views.mycontent_delete, name='draw_delete'),
+    url(r'draw/(?P<pk>\d+)/$', views.getDraw, name='get_draw'),
+    url(r'draw-client/$', views.getDrawClient, name='draws_client'),
+    url(r'draw-insc/(?P<pk>\d+)/$', views.inscriptionDraw, name='inscription_draw'),
+    url(r'draw-participant/(?P<pk>\d+)/$',views.getParticipants, name='draw_participants'),
+    
     url(r'profile/(?P<pk>\d+)/update/avatar/$', views.avatar_update, name='avatar_update'),
     url(r'profile/(?P<pk>\d+)/update/front/$', views.front_update, name='front_update'),
     url(r'profile/(?P<pk>\d+)/update/bio/$', views.bio_update, name='bio_update'),
@@ -76,5 +84,6 @@ urlpatterns = [
     url(r'dislike/(?P<pk>\d+)',views.Like,name='dislike'),
     url(r'totalLikes/(?P<pk>\d+)', views.TotalLikes, name='totalLikes')
     
+
 ]
 handler404 = views.mi_error_404

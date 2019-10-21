@@ -4,7 +4,7 @@ from django.contrib.auth.models import Group
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 
-from beautycalendar.models import Users, ContentUsers, Empleoyees, WorkItems, BeautySalons, WorkingHoursSalons, UserDates, Publications,Reports, LikesPublications,CommentsPublications
+from beautycalendar.models import Users, ContentUsers, Empleoyees, WorkItems, BeautySalons, WorkingHoursSalons, UserDates, Publications,Reports, LikesPublications,CommentsPublications, Draws,DrawsList
 
 #admin.site.register(ContentUsers)
 #admin.site.register(Empleoyees)
@@ -116,6 +116,13 @@ class AdminReports(admin.ModelAdmin):
 class AdminLikes(admin.ModelAdmin):
     list_display=('user','publication','value')
 
+class AdminDraws(admin.ModelAdmin):
+    list_display=('name','owner','finish_day','state')
+
+class AdminListDraws(admin.ModelAdmin):
+    list_display=('draw','client')
+    list_filter=('draw',)
+
 # Now register the new UserAdmin...
 admin.site.register(Users, UserAdmin)
 admin.site.register(BeautySalons,AdminSalons)
@@ -126,6 +133,8 @@ admin.site.register(UserDates, AdminUserDater)
 admin.site.register(Publications,AdminPublications)
 admin.site.register(Reports, AdminReports)
 admin.site.register(LikesPublications,AdminLikes)
+admin.site.register(Draws,AdminDraws)
+admin.site.register(DrawsList,AdminListDraws)
 # ... and, since we're not using Django's built-in permissions,
 # unregister the Group model from admin.
 admin.site.unregister(Group)

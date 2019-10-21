@@ -39,6 +39,9 @@ $(function () {
           if (window.location.pathname.indexOf("/empleoyees/")==0){
             $("#mycontent-table tbody").html(data.html_empleoyee_list);
           }
+          if (window.location.pathname.indexOf("/draws/")==0){
+            $("#mycontent-table tbody").html(data.html_draw_list);
+          }
           $("#modal-mycontent").modal("hide");
         }
         else {
@@ -74,5 +77,7 @@ $(function () {
 
   // Pause content
   $("#mycontent-table").on("click", ".js-pause-mycontent", pause);
+
+  
 
 });

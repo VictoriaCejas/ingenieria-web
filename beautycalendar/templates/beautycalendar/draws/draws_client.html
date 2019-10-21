@@ -1,0 +1,32 @@
+{% extends "beautycalendar/basewithoutimage.html" %}
+{% load static %}
+{% block javascript %}
+
+<script>
+$('#mycontent-table').DataTable( {  } );
+</script>
+{% endblock %}
+{% block content %}
+<p>
+    <a href="{% url 'private_profile' %}" style="color: black"><i class="fa fa-angle-left" ></i> Back</a>
+</p>
+<h1>Sorteos</h1>
+<table class="table" id="mycontent-table">
+        <thead>
+          <tr>
+            <th>Sorteo</th>
+            <th>Salon</th>
+            <th>Fecha</th>
+          </tr>
+        </thead>
+        <tbody>
+            {% for draw in draws %}
+                <td>{{draw.name}}</td>
+                <td>{{draw.owner}}</td>
+                <td>{{draw.finish_day|date}}</td>
+            {% empty %}
+                <td colspan="10" class="text-center bg-warning">No existen sorteos aun</td>
+            {% endfor %}
+        </tbody>
+      </table>
+{% endblock %}

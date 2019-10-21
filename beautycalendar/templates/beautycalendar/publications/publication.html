@@ -3,70 +3,78 @@
 
 
 {% block javascript %}
-  <script>
-      $( "#like" ).on( "click", function() {
-        var publication='{{publication.id}}'
-         $.ajax({
-             url:'{% url "like" pk=111%}'.replace('111',publication),
-             type:'json',
-             method:'GET',   
-             success: function like(data){
-                 if (data.is_valid){
-                    alert('like hecho')
+<script>
+    $( "#like" ).on( "click", function() {
+      var publication='{{publication.id}}'
+      var likes=document.getElementById('Tlikes').textContent
+      likes= parseInt(likes) + 1
 
-                    }
-                else{
-                    alert('ya habias dado like')
-                }
-                window.location.reload()
-           }        
+       $.ajax({
+           url:'{% url "like" pk=111%}'.replace('111',publication),
+           type:'json',
+           method:'GET',
+           success: function like(data){
+               if (data.is_valid){
+                  alert('like hecho'),
+                  $('#Tlikes').text(likes + ' Likes');
+                  $('#like').attr('disabled',true);
+                  $('#dislike').attr('disabled',false);
 
-         })
-        });
+              }
+              else{
+                  alert('ya habias dado like')
+              }
+         }
 
-  </script>
-  <script>
-        
-        $( "#dislike" ).on( "click", function() {
-        var publication='{{publication.id}}'
-         $.ajax({
-             url:'{% url "dislike" pk=111%}'.replace('111',publication),
-             type:'json',
-             method:'GET',   
-             success: function like(data){
-                 if (data.is_valid){
-                    alert('dislike hecho')
-
-                    }
-                else{
-                    alert('ya habias dado dislike')
-                }
-                window.location.reload()
-
-
-             }        
-
-         })
-        });
-  </script>
-  <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        var publication= '{{ publication.id }}'
-        $.ajax({
-            url:'{% url "totalLikes" pk=111 %}'.replace('111',publication),
-            typle:'json',
-            method:'GET',
-            success: function totals(data){
-                $('#Tlikes').text(data.positives + ' Likes'),
-                $('#Tdislikes').text(data.negatives+' Dislikes')
-            }
-        })
+       })
       });
 
-      
-  </script>
+</script>
+<script>
+
+      $( "#dislike" ).on( "click", function() {
+      var publication='{{publication.id}}'
+      var dislikes=document.getElementById('Tdislikes').textContent
+      dislikes= parseInt(dislikes) - 1
+
+       $.ajax({
+           url:'{% url "dislike" pk=111%}'.replace('111',publication),
+           type:'json',
+           method:'GET',
+           success: function like(data){
+               if (data.is_valid){
+                  alert('dislike hecho'),
+                  $('#Tdislikes').text(dislikes + ' Dislikes');
+                  $('#dislike').attr("disabled", true);
+                  $('#like').attr('disabled',false);
+
+                  }
+              else{
+                  alert('ya habias dado dislike')
+              }
+           }
+
+       })
+      });
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var publication= '{{ publication.id }}'
+      $.ajax({
+          url:'{% url "totalLikes" pk=111 %}'.replace('111',publication),
+          typle:'json',
+          method:'GET',
+          success: function totals(data){
+              $('#Tlikes').text(data.positives + ' Likes'),
+              $('#Tdislikes').text(data.negatives+' Dislikes')
+          }
+      })
+    });
+
+
+</script>
 {% endblock javascript %}
-  
+
 {% block content %}
 <div>
     <div class="row">
@@ -80,11 +88,28 @@
     </div>
     <div class="col-sm-2">
         <div class="row ">
-            <button id="like" type="button" style="margin: 2px" class="btn btn-warning btn-sm " data-url="">
-            <i class="fa fa-thumbs-up"></i> Like
-
-            <button id="dislike" type="button" style="margin: 2px" class="btn btn-warning btn-sm " data-url="">
+            {% if valLike == "" %}
+                    <button id="like" type="button" style="margin: 2px" class="btn btn-warning btn-sm " data-url="">
+                    <i class="fa fa-thumbs-up"></i> Like
+        
+                    <button id="dislike" type="button" style="margin: 2px" class="btn btn-warning btn-sm " data-url="">
                     <i class="fa fa-thumbs-down"></i> Dislike
+            {% else %}
+                        {% if valLike == True %}
+                               <button id="like" type="button" style="margin: 2px" class="btn btn-warning btn-sm " data-url="" disabled>
+                                <i class="fa fa-thumbs-up"></i> Like
+                    
+                                <button id="dislike" type="button" style="margin: 2px" class="btn btn-warning btn-sm " data-url="">
+                                <i class="fa fa-thumbs-down"></i> Dislike
+                        {% else %}
+                                <button id="like" type="button" style="margin: 2px" class="btn btn-warning btn-sm " data-url="">
+                                <i class="fa fa-thumbs-up"></i> Like
+                    
+                                <button id="dislike" type="button" style="margin: 2px" class="btn btn-warning btn-sm " data-url="" disabled>
+                                <i class="fa fa-thumbs-down"></i> Dislike
+                        {% endif %}
+            {% endif %}
+            
         </div>
     </div>
     <div class="col-md-4">

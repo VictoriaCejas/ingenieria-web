@@ -1,8 +1,8 @@
 from django.http import HttpResponse, HttpResponseRedirect, HttpRequest
 from django.shortcuts import render, redirect, get_object_or_404, render_to_response
 from django.contrib.auth.decorators import login_required
-from .models import Users, ContentUsers,Empleoyees, BeautySalons, WorkItems, WorkingHoursSalons,UserDates, Publications, CommentsPublications, LikesPublications, Reports
-from .forms import ContentForm,EmpleoyeesForm, AvatarForm, FrontForm, BeautySalonsForm,BioForm,DatesUserForm, PublicationForm, PublForm, ReportsForm
+from .models import Users, ContentUsers,Empleoyees, BeautySalons, WorkItems, WorkingHoursSalons,UserDates, Publications, CommentsPublications, LikesPublications, Reports, Draws, DrawsList
+from .forms import ContentForm,EmpleoyeesForm, AvatarForm, FrontForm, BeautySalonsForm,BioForm,DatesUserForm, PublicationForm, PublForm, ReportsForm,DrawsForm
 from django.template.loader import render_to_string
 from django.contrib import messages
 from django.http import JsonResponse
@@ -229,10 +229,11 @@ def createPublication(request):
         return render(request,'beautycalendar/publications/publication_create.html',{'form':form})
 
 def getPublication(request,pk):
+    user= request.user
+
     if request.method == 'POST':
         form=request.POST
         comment= request.POST['textarea-pub']
-        user= request.user
         publication= Publications.objects.get(id=pk)
         date= datetime.now()
         publicationComment= CommentsPublications()
@@ -241,10 +242,17 @@ def getPublication(request,pk):
         publicationComment.comment= comment
         publicationComment.user= user
         publicationComment.save()
-
-    publication= Publications.objects.get(id=pk)
+        
+    publication= Publications.objects.get(id=pk)    
+    lk=get_object_or_404(LikesPublications,user=user,publication=publication)
+    val=""
+    if lk is not None:
+        val=lk.value
+    else:
+        val=""
+    valueLike= val
     comments= CommentsPublications.objects.filter(publication=publication)
-    return render(request,'beautycalendar/publications/publication.html',{'publication':publication, 'comments':comments})
+    return render(request,'beautycalendar/publications/publication.html',{'publication':publication, 'comments':comments,'valLike':valueLike, })
 
 def saveComment(request,pk):
 
@@ -311,17 +319,17 @@ def DeleteReport(request,pk):
 def PublicProfile(request, email):
     myuser = Users.objects.get(email=email)
     kind= myuser.kind
-
     if kind == 1:
         #bussines
         products= ContentUsers.objects.filter(user=myuser,category=1, state=1)
         services= ContentUsers.objects.filter(user=myuser,category=2, state=1)
         empleoyees= Empleoyees.objects.filter(boss=myuser, state=1)
+        draws= Draws.objects.filter(owner=myuser,state=1)
         try:
             items= BeautySalons.objects.filter(owner=myuser)
         except:
             items=""
-        return render(request, 'beautycalendar/public_profile_bussines.html', {'myuser':myuser,'items':items,'products':products,'services':services,'empleoyees':empleoyees})
+        return render(request, 'beautycalendar/public_profile_bussines.html', {'myuser':myuser,'items':items,'products':products,'services':services,'empleoyees':empleoyees,'draws':draws})
     elif kind == 2:
         #client
         return render(request, 'beautycalendar/public_profile_client.html', {'myuser': myuser})
@@ -332,6 +340,44 @@ def PublicProfile(request, email):
 
   #  return render(request, 'beautycalendar/private_profile.html', {'usuario': myuser,'user':user})
 
+def getDraw(request,pk):
+    draw= get_object_or_404(Draws,pk=pk)
+    date=draw.finish_day
+    day= date.strftime('%m/%d/%Y %H:%M:%S')
+    try:
+        inscripto= DrawsList.objects.get(client=request.user,draw=draw)
+        ins=True
+    except:
+        ins=False
+    return render(request,'beautycalendar/draws/draw.html',{'draw':draw,'date':day,'ins':ins})
+
+def inscriptionDraw(request,pk):
+    draw= get_object_or_404(Draws,pk=pk)
+    user= request.user
+    ins= DrawsList()
+    ins.client=user
+    ins.draw=draw
+    ins.save()
+    return redirect(getDrawClient)
+
+def getDrawClient(request):
+    user=request.user
+    draws= DrawsList.objects.filter(client=user)
+    listdraws=[]
+    for d in draws:
+        dr=Draws.objects.get(pk=d.draw.pk)
+        listdraws.append(dr)
+    
+    return render(request,'beautycalendar/draws/draws_client.html',{'draws':listdraws})
+def getParticipants(request,pk):
+    draw=Draws.objects.get(pk=pk)
+    try:
+        participants= DrawsList.objects.filter(draw=draw)
+    except:
+        participants=[]
+    return render(request,'beautycalendar/draws/list_participants.html',{'participants':participants})
+    
+    
 def ListReports(request):
 
     reports= Reports.objects.all()
@@ -419,6 +465,10 @@ def mycontent_list(request):
     if ('empleoyees' in request.path):
         mycontent= Empleoyees.objects.filter(boss=user).exclude(state=3)
         return render(request, 'beautycalendar/empleoyees/empleoyee_list.html', {'mycontent': mycontent})
+    if ('draws' in request.path):
+        mycontent= Draws.objects.filter(owner=user).exclude(state=2)
+        return render(request, 'beautycalendar/draws/draw_list.html', {'mycontent': mycontent})
+
 
 @bussines_required
 def save_mycontent_form(request, form, template_name):
@@ -485,6 +535,24 @@ def save_mycontent_form(request, form, template_name):
                 data['html_empleoyee_list'] = render_to_string('beautycalendar/empleoyees/includes/partial_empleoyee_list.html', {
                     'mycontent': mycontent
                 })
+            if ('draws' in request.path):
+                form.save(commit=False)
+                owner=request.user
+                name= form.cleaned_data['name']
+                finish_day= request.POST['finish_day']
+                description= request.POST['description']
+                draw= Draws()
+                draw.owner= owner
+                draw.name= name 
+                draw.state= 1
+                draw.description= description
+                draw.finish_day= finish_day
+                draw.save()
+                data['form_is_valid'] = True
+                mycontent = Draws.objects.filter(owner=request.user).exclude(state=2)
+                data['html_draw_list'] = render_to_string('beautycalendar/draws/includes/partial_draw_list.html', {
+                    'mycontent': mycontent
+                })
         else:
             data['form_is_valid'] = False
     context = {'form': form}
@@ -509,6 +577,13 @@ def mycontent_create(request):
         else:
             form = EmpleoyeesForm()
         return save_mycontent_form(request, form, 'beautycalendar/empleoyees/includes/partial_empleoyee_create.html')
+    if ('draws' in request.path):
+        if request.method == 'POST':
+            form=DrawsForm(request.POST)
+        else:
+            form= DrawsForm()
+        return save_mycontent_form(request, form, 'beautycalendar/draws/includes/partial_draw_create.html')
+
 
 @bussines_required
 def mycontent_update(request, pk):
@@ -537,12 +612,18 @@ def mycontent_update(request, pk):
 def mycontent_delete(request, pk):
     if (('products' in request.path) or ('services' in request.path)):
         mycontent = get_object_or_404(ContentUsers, pk=pk)
+        state=3
     if ('empleoyees' in request.path):
         mycontent= get_object_or_404(Empleoyees, pk=pk)
+        state=3
+    
+    if ('draws' in request.path):
+        mycontent=get_object_or_404(Draws,pk=pk)
+        state=2
 
     data = dict()
     if request.method == 'POST':
-        mycontent.state= 3
+        mycontent.state= state
         mycontent.save()
         data['form_is_valid'] = True
         if ('products' in request.path):
@@ -560,6 +641,11 @@ def mycontent_delete(request, pk):
             data['html_empleoyee_list'] = render_to_string('beautycalendar/empleoyees/includes/partial_empleoyee_list.html', {
                 'mycontent': mycontent
             })
+        if ('draws' in request.path):
+            mycontent= Draws.objects.filter(owner=request.user).exclude(state=state)
+            data['html_draw_list'] = render_to_string('beautycalendar/draws/includes/partial_draw_list.html', {
+                'mycontent': mycontent
+            })
 
     else:
         context = {'mycontent': mycontent}
@@ -569,7 +655,9 @@ def mycontent_delete(request, pk):
             data['html_form'] = render_to_string('beautycalendar/services/includes/partial_service_delete.html', context, request=request)
         if ('empleoyees' in request.path):
             data['html_form'] = render_to_string('beautycalendar/empleoyees/includes/partial_empleoyee_delete.html', context, request=request)
-
+        if ('draws' in request.path):
+            data['html_form'] = render_to_string('beautycalendar/draws/includes/partial_draw_delete.html', context, request=request)
+        
     return JsonResponse(data)
 
 def mycontent_pause(request, pk):
@@ -825,7 +913,7 @@ def Like(request,pk):
             newLike.user=user
             newLike.publication=publ
             if ('dislike' in request.path):
-                newLike.valur= False
+                newLike.value= False
             else:
                 newLike.value= True
             newLike.save()

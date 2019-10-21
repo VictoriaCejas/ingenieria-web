@@ -1,0 +1,17 @@
+  
+{% for hidden in form.hidden_fields %}
+{{ hidden }}
+{% endfor %}
+<p>Finaliza</p>
+<input type="date" name='finish_day'>
+{% for field in form.visible_fields  %}
+          <p> {{ field.label }} </p>  
+          {% if field.label == 'description' %}
+            <p>{{ field|safe }}</p>
+          {% else %}
+             <p>{{ field }}</p>
+          {% endif %}
+{% endfor %}
+
+
+

@@ -14,22 +14,17 @@
              }        
          }) 
     };
-    // $( "#delete" ).on( "click", function() {
-    //     var publication='{{l.id}}'
-    //      $.ajax({
-    //          url:'{% url "publication_delete" pk=111%}'.replace('111',publication),
-    //          type:'json',
-    //          method:'GET',   
-    //          success: function like(data){
-    //             location.reload()
-    //          }        
-    //      })
-    //     });
+   
     </script>
 
 {% endblock javascript %}
 {% block content %}
+
   {% if typeUser == 1 %}
+    <p>
+      <a href="{% url 'private_profile' %}" style="color: black"><i class="fa fa-angle-left" ></i> Back</a>
+    </p>
+    <h1>Productos</h1>
     <a href="{% url 'publications_create' %}">CREAR</a>
     {% include "beautycalendar/publications/publications_list.html" %}
   {% else %}

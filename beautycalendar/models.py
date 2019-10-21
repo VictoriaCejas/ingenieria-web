@@ -265,6 +265,9 @@ class UserDates(models.Model):
     state= models.PositiveSmallIntegerField(choices= statesChoices, blank=True, null=True)
     init_time= models.DateTimeField(blank=True, null=True)
     finish_time= models.DateTimeField(blank=True, null=True)
+    class Meta:
+        verbose_name = 'Dates'
+        verbose_name_plural = 'Dates'
 
 class Reports(models.Model):
     
@@ -279,6 +282,37 @@ class Reports(models.Model):
     options= models.PositiveSmallIntegerField(choices=choices_report,blank=False, null=False)
     other= models.CharField(max_length=50,blank=True, null=True)
 
+    class Meta:
+        verbose_name = 'Reports'
+        verbose_name_plural = 'Reports'
+        
+class Draws(models.Model):
+    actived= 1
+    finalized=2
+    statesChoices= (
+        (actived,'actived'),
+        (finalized,'finalized'),
+    )
+    name= models.CharField(max_length=50, blank=False, null=False)
+    owner= models.ForeignKey('Users',on_delete=models.CASCADE)
+    finish_day= models.DateTimeField(blank=False, null=False)
+    state= models.PositiveSmallIntegerField(choices= statesChoices, blank=True, null=True)
+    description= models.TextField(max_length=250, blank=True, null=True)
+    class Meta:
+        verbose_name = 'Draws'
+        verbose_name_plural = 'Draws'
+
+    
+class DrawsList(models.Model):
+    draw= models.ForeignKey('Draws',on_delete=models.CASCADE)
+    client= models.ForeignKey('Users',on_delete=models.CASCADE)
+    class Meta:
+        unique_together = (("draw", "client"),)
+        verbose_name = 'Lists draws'
+        verbose_name_plural = 'Lists draws'
+
+    
+    
 #SEÑALES ALLAUTH
 @receiver(user_signed_up)
 def sing_up(request,user,**kwargs):
