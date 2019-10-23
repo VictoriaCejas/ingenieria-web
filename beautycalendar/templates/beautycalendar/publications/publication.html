@@ -7,8 +7,12 @@
     $( "#like" ).on( "click", function() {
       var publication='{{publication.id}}'
       var likes=document.getElementById('Tlikes').textContent
+      var dislikes=document.getElementById('Tdislikes').textContent
       likes= parseInt(likes) + 1
-
+      dislikes= parseInt(dislikes)-1
+      if (dislikes < 0){
+          dislikes=0
+      }
        $.ajax({
            url:'{% url "like" pk=111%}'.replace('111',publication),
            type:'json',
@@ -17,6 +21,7 @@
                if (data.is_valid){
                   alert('like hecho'),
                   $('#Tlikes').text(likes + ' Likes');
+                  $('#Tdislikes').text(dislikes + ' Dislikes');
                   $('#like').attr('disabled',true);
                   $('#dislike').attr('disabled',false);
 
@@ -35,8 +40,12 @@
       $( "#dislike" ).on( "click", function() {
       var publication='{{publication.id}}'
       var dislikes=document.getElementById('Tdislikes').textContent
-      dislikes= parseInt(dislikes) - 1
-
+      var likes=document.getElementById('Tlikes').textContent
+      dislikes= parseInt(dislikes) + 1
+      likes= parseInt(likes)-1
+      if (likes<0){
+          likes=0
+      }
        $.ajax({
            url:'{% url "dislike" pk=111%}'.replace('111',publication),
            type:'json',
@@ -45,6 +54,7 @@
                if (data.is_valid){
                   alert('dislike hecho'),
                   $('#Tdislikes').text(dislikes + ' Dislikes');
+                  $("#Tlikes").text(likes+' Likes');
                   $('#dislike').attr("disabled", true);
                   $('#like').attr('disabled',false);
 
@@ -76,9 +86,8 @@
 {% endblock javascript %}
 
 {% block content %}
-<div>
-    <div class="row">
-    <div class="col-md-6">
+<div class="row">
+    <div class="col-md-5">
         {% if publication.imagePublication %}
             <img src="{{ publication.imagePublication.url }}" width="400px">
         {% endif %}
@@ -86,53 +95,73 @@
         <p><label type="text" id="Tlikes"></label> <label id="Tdislikes" type="text" ></label> </p>
         <p>{{publication.description}}</p>
     </div>
-    <div class="col-sm-2">
-        <div class="row ">
+    <div class="col-sm-1">
             {% if valLike == "" %}
+                <div class="row ">  
                     <button id="like" type="button" style="margin: 2px" class="btn btn-warning btn-sm " data-url="">
                     <i class="fa fa-thumbs-up"></i> Like
-        
+                </div>    
+                <div class="row ">  
                     <button id="dislike" type="button" style="margin: 2px" class="btn btn-warning btn-sm " data-url="">
                     <i class="fa fa-thumbs-down"></i> Dislike
+                </div>
             {% else %}
-                        {% if valLike == True %}
-                               <button id="like" type="button" style="margin: 2px" class="btn btn-warning btn-sm " data-url="" disabled>
-                                <i class="fa fa-thumbs-up"></i> Like
-                    
-                                <button id="dislike" type="button" style="margin: 2px" class="btn btn-warning btn-sm " data-url="">
-                                <i class="fa fa-thumbs-down"></i> Dislike
-                        {% else %}
-                                <button id="like" type="button" style="margin: 2px" class="btn btn-warning btn-sm " data-url="">
-                                <i class="fa fa-thumbs-up"></i> Like
-                    
-                                <button id="dislike" type="button" style="margin: 2px" class="btn btn-warning btn-sm " data-url="" disabled>
-                                <i class="fa fa-thumbs-down"></i> Dislike
-                        {% endif %}
+                {% if valLike == True %}
+                    <div class="row">
+                        <button id="like" type="button" style="margin: 2px" class="btn btn-warning btn-sm " data-url="" disabled>
+                        <i class="fa fa-thumbs-up"></i> Like
+                    </div>
+                    <div class="row">
+                        <button id="dislike" type="button" style="margin: 2px" class="btn btn-warning btn-sm " data-url="">
+                        <i class="fa fa-thumbs-down"></i> Dislike
+                    </div>
+                {% else %}
+                    <div class="row">
+                        <button id="like" type="button" style="margin: 2px" class="btn btn-warning btn-sm " data-url="">
+                        <i class="fa fa-thumbs-up"></i> Like
+                    </div>
+                    <div class="row">
+                        <button id="dislike" type="button" style="margin: 2px" class="btn btn-warning btn-sm " data-url="" disabled>
+                        <i class="fa fa-thumbs-down"></i> Dislike
+                    </div>
+                {% endif %}
             {% endif %}
-            
-        </div>
     </div>
-    <div class="col-md-4">
-            <div style="overflow: scroll; max-height: 400px;overflow-x: hidden;">
-            <p>Comentarios</p>
-            <ul id="list-comments" class="list-group">
-                {% for c in comments %}
-                <li class="list-group-item">
-                    <p>{{c.user.first_name}} {{c.user.last_name}} dice:</p>
-                    <p>{{c.comment}}</p>
-                </li>
-                {% empty %}
-                <li class="text-danger">No existen comentarios aun</li>
-                {% endfor %}
-            </ul>
-        </div>
-        <div>
-            <form method="POST" action="{% url 'publication_get' publication.id %}" >
-                {% csrf_token %}
-                <textarea id="pub-comment" class="form-control z-depth-1" name="textarea-pub" rows="3" placeholder="Write something here..."></textarea>
-                <input id='pub-id' hidden value="{{ publication.id }}"></p>
-                <button id='btn-comentario'>Comentar</button>
-            </form>
+    <div class="col-md-5" >
+        <div style="height:100%; width: 100%;">
+            <div style="height:325;overflow-y: scroll; overflow-x:hidden;">
+                <p>Comentarios</p>
+                <ul id="list-comments" class="list-group">
+                    {% for c in comments %}
+                    <li class="list-group-item" style="height: 80px;">
+                        <div class="row">
+                            <div class="col-sm-2">
+                                {% if user.imageAvatar %}
+                                    <img  src="{{ user.imageAvatar.url }}" width="200" alt="Circle Image" class="img-circle img-no-padding img-responsive myphoto-div">
+                                {% else %}
+                                    <img src='static/assets/img/placeholder.jpg'  alt="Circle Image" class="img-circle img-no-padding img-responsive">
+                                {% endif %}     
+                            
+                            </div>
+                            <div>
+                                <p>{{c.user.first_name}} {{c.user.last_name}} dice:</p>
+                                <p>{{c.comment}}</p>
+                            </div>
+                        </div>
+                    </li>
+                    {% empty %}
+                    <li class="text-danger">No existen comentarios aun</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div>
+                <form method="POST" action="{% url 'publication_get' publication.id %}" >
+                    {% csrf_token %}
+                    <textarea id="pub-comment" class="form-control z-depth-1" name="textarea-pub" rows="3" placeholder="Write something here..."></textarea>
+                    <input id='pub-id' hidden value="{{ publication.id }}"></p>
+                    <button id='btn-comentario'>Comentar</button>
+                </form>
+            </div>
         </div>
     </div>
 </div>

@@ -38,22 +38,10 @@
       {% else %}
         <p>Nombre</p>
         <p>{{form.first_name}}</p>
+        <p>Apellido</p>
+        <p>{{form.last_name}}</p>
         <p>Descripcion</p>
-        <p>{{form.description}}</p>
-<!--
-        {% for field in form.visible_fields  %}
-          {% if field.name != "items" %}
-            {% if field.name != "name_salon" %}
-              {% if field.name != "initDay" %}
-                {% if field.name != "endDay" %}
-                  <p> {{ field.label }} </p>   
-                  <p>{{ field }}</p>
-                {% endif %}
-              {% endif %}
-              {% endif %}
-          {% endif %}
-          {% endfor %}
--->      
+        <p>{{form.description}}</p>   
     {% endif %}
 
     </div>
@@ -65,7 +53,8 @@
 </form>
 
 <script>
-
+  id={{user.kind}},
+  if (id==1){
     $.ajax({
       url:'/bio/daysandhours',
       dataType:'json',
@@ -91,5 +80,5 @@
         })
       }
     });
-
+  }
 </script>

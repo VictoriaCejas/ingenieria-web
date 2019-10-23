@@ -85,12 +85,18 @@ class BioForm(forms.ModelForm):
     endDay= forms.ChoiceField(choices=daysChoices)
     class Meta:
         model= Users
-        fields=['first_name','name_salon','description',"items","initDay","endDay",]
+        fields=['first_name','last_name','name_salon','description',"items","initDay","endDay",]
    
     def __init__(self, *args, **kwargs):
         super(self.__class__, self).__init__(*args, **kwargs)
         self.fields['first_name'].required= False
         self.fields['name_salon'].required= False
+        self.fields['last_name'].required=False
+        self.fields['description'].required=False
+        self.fields['items'].required=False
+        self.fields['initDay'].required=False
+        self.fields['endDay'].required=False
+        
 
 class DatesUserForm(forms.Form):
     #service= forms.CharField(max_length=50)

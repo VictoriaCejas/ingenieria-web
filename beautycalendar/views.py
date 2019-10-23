@@ -223,7 +223,7 @@ def createPublication(request):
             publication= Publications(owner=owner,publish_date=publish_date,imagePublication=image,description=desc,)
             publication.save()
 
-            return redirect(listPublication)
+            return redirect('publications-private',email=owner)
     else:
         form= PublForm()
         return render(request,'beautycalendar/publications/publication_create.html',{'form':form})
@@ -244,11 +244,11 @@ def getPublication(request,pk):
         publicationComment.save()
         
     publication= Publications.objects.get(id=pk)    
-    lk=get_object_or_404(LikesPublications,user=user,publication=publication)
     val=""
-    if lk is not None:
+    try:
+        lk=get_object_or_404(LikesPublications,user=user,publication=publication)
         val=lk.value
-    else:
+    except:
         val=""
     valueLike= val
     comments= CommentsPublications.objects.filter(publication=publication)
@@ -719,7 +719,6 @@ def front_update(request,pk):
 
 @login_required
 def bio_update(request,pk):
-
     mycontent = get_object_or_404(Users, pk=pk)
     if request.method == 'POST':
         form= BioForm(request.POST, instance= mycontent)
@@ -767,39 +766,43 @@ def save_my_profile_update_form(request,form,template_name):
                 user.imageFront= image
 
             if ('bio' in request.path):
-                if user.kind==1:
+                if user.kind!=1:
+                    name= form.cleaned_data['first_name']
+                    lstname=form.cleaned_data['last_name']
+                    desc= form.cleaned_data['description']
+                    user.first_name= name
+                    user.last_name=lstname
+                    user.description=desc
+                else:
                     name=form.cleaned_data['name_salon']
                     user.name_salon= name
-                else:
-                    name= form.cleaned_data['first_name']
-                    user.first_name= name
-                user.description= form.cleaned_data['description']
-                items= form.cleaned_data['items']
-                delete= BeautySalons.objects.filter(owner=request.user).delete()
-                for i in items:
+                    user.description= form.cleaned_data['description']
+                    items= form.cleaned_data['items']
+                    delete= BeautySalons.objects.filter(owner=request.user).delete()
+                    for i in items:
+                        try:
+                            salon= BeautySalons.objects.get(owner=request.user,items=i)
+                        except:
+                            salon= BeautySalons(owner= request.user, items= i)
+                            salon.save()
+                    ihour=request.POST['initHour']
+                    fhour=request.POST['endHour']
+                    ihour=ihour.split(':')
+                    fhour=fhour.split(':')
+                    initDay= request.POST['initDay']
+                    endDay= request.POST['endDay']
+                    initHour= datetime(year=1901,month=1,day=1,hour=int(ihour[0]),minute=int(ihour[1]))
+                    endHour= datetime(year=1901,month=1,day=1,hour=int(fhour[0]),minute=int(fhour[1]))
+                    salon=user
                     try:
-                        salon= BeautySalons.objects.get(owner=request.user,items=i)
-                    except:
-                        salon= BeautySalons(owner= request.user, items= i)
-                        salon.save()
-                ihour=request.POST['initHour']
-                fhour=request.POST['endHour']
-                ihour=ihour.split(':')
-                fhour=fhour.split(':')
-                initDay= request.POST['initDay']
-                endDay= request.POST['endDay']
-                initHour= datetime(year=1901,month=1,day=1,hour=int(ihour[0]),minute=int(ihour[1]))
-                endHour= datetime(year=1901,month=1,day=1,hour=int(fhour[0]),minute=int(fhour[1]))
-                salon=user
-                try:
-                    timeExist = WorkingHoursSalons.objects.get(salon=salon)
-                    timeExist.delete()
-                    times = WorkingHoursSalons(salon=salon,init_date=initDay,finish_date=endDay,init_time=initHour,finish_time=endHour)
+                        timeExist = WorkingHoursSalons.objects.get(salon=salon)
+                        timeExist.delete()
+                        times = WorkingHoursSalons(salon=salon,init_date=initDay,finish_date=endDay,init_time=initHour,finish_time=endHour)
 
-                except:
-                    times = WorkingHoursSalons(salon=salon,init_date=initDay,finish_date=endDay,init_time=initHour,finish_time=endHour)
-                finally:
-                    times.save()
+                    except:
+                        times = WorkingHoursSalons(salon=salon,init_date=initDay,finish_date=endDay,init_time=initHour,finish_time=endHour)
+                    finally:
+                        times.save()
             user.save()
 
             usuario=user

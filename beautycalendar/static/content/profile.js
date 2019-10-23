@@ -33,9 +33,10 @@ $(function () {
 
         if (data.form_is_valid) {
           location.reload();
-
           $("#modal-photo").modal("hide");
-          alert('Denuncia recibida!');
+          if (window.location.pathname.indexOf("/profile/")==0){
+            alert('Denuncia recibida!');
+          }
 
         }
         else {

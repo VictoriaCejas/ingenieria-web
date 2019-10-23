@@ -35,11 +35,11 @@
         <div class="name">
           <h4 class="title">
               {% if user.kind == 1 %}
-              {% if user.name_salon %}
-                {{user.name_salon}}
-              {% else %}
-              <p>Ingrese nombre salon en Configurar</p>
-              {% endif %}
+                {% if user.name_salon %}
+                  {{user.name_salon}}
+                {% else %}
+                <p>Ingrese nombre salon en Configurar</p>
+                {% endif %}
             {% else %}
               {{user.first_name}} {{user.last_name}}
             {% endif %}
@@ -62,8 +62,8 @@
           {% endif %}
 
           <br/>
-          {% if user.kind != 3 %}
           <btn class="btn btn-outline-default btn-round js-update-photo"data-url="{% url 'bio_update' pk=user.id %}"><i class="fa fa-cog"></i> Configurar</btn>
+          {% if user.kind != 3 %}
           <a href='{% url "client_calendar" %}' class="btn">Mis Turnos</a>            
           {% endif %}
 
