@@ -7,6 +7,7 @@
     <h4 class="modal-title">Cargar biografia</h4>
   </div>
   <div class="modal-body">
+      <input id='iduser' value="{{user.kind}}" hidden>
       {% if user.kind == 1 %}
         <p>Salon</p>
         <p> {{form.name_salon}} </p>
@@ -53,8 +54,8 @@
 </form>
 
 <script>
-  id={{user.kind}},
-  if (id==1){
+  id= document.getElementById('iduser').value
+  if (id=='1'){
     $.ajax({
       url:'/bio/daysandhours',
       dataType:'json',
