@@ -28,6 +28,7 @@
     <a href="{% url 'publications_create' %}">CREAR</a>
     {% include "beautycalendar/publications/publications_list.html" %}
   {% else %}
+    <a href="javascript:window.history.back();" style="color: black" ><i class="fa fa-angle-left" ></i> Back</a>
     {% include "beautycalendar/publications/publication_list_client.html" %}
   {% endif %}
 {% endblock content %}
