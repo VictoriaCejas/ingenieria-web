@@ -3,7 +3,32 @@
 
 
 {% block javascript %}
+
 <script>
+        
+    var publication='{{publication.id}}'
+   
+    $(document).on('submit','#post-form',function(e){
+        
+        $.ajax({
+            type:'POST',
+            url:'{% url "save_comment" pk=111 %}'.replace('111',publication),
+            data:{
+                comment:$('#pub-comment').val(),
+                csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val(),
+                action: 'post'
+            },
+            success: function sincComments(data){
+                if (data.is_valid){
+                    document.getElementById("list-comments").appendChild(data.comment); 
+                    var objDiv= document.getElementById('divcom');
+                    objDiv.scrollTop=objDiv.scrollHeight;
+                    $("#divcom").animate({scrollTop:$('divcom').prop('scrollHeigth')},500)
+                }
+            }
+        })
+    });
+
     $( "#like" ).on( "click", function() {
       var publication='{{publication.id}}'
       var likes=document.getElementById('Tlikes').textContent
@@ -34,9 +59,6 @@
        })
       });
 
-</script>
-<script>
-
       $( "#dislike" ).on( "click", function() {
       var publication='{{publication.id}}'
       var dislikes=document.getElementById('Tdislikes').textContent
@@ -66,23 +88,23 @@
 
        })
       });
-</script>
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-      var publication= '{{ publication.id }}'
-      $.ajax({
-          url:'{% url "totalLikes" pk=111 %}'.replace('111',publication),
-          typle:'json',
-          method:'GET',
-          success: function totals(data){
-              $('#Tlikes').text(data.positives + ' Likes'),
-              $('#Tdislikes').text(data.negatives+' Dislikes')
-          }
-      })
-    });
 
-
+        document.addEventListener('DOMContentLoaded', function() {
+          var publication= '{{ publication.id }}'
+          $.ajax({
+              url:'{% url "totalLikes" pk=111 %}'.replace('111',publication),
+              typle:'json',
+              method:'GET',
+              success: function totals(data){
+                  $('#Tlikes').text(data.positives + ' Likes'),
+                  $('#Tdislikes').text(data.negatives+' Dislikes')
+              }
+          })
+          var objDiv= document.getElementById('divcom');
+          objDiv.scrollTop=objDiv.scrollHeight;          
+        }); 
 </script>
+
 {% endblock javascript %}
 
 {% block content %}
@@ -96,7 +118,8 @@
         <p><label type="text" id="Tlikes"></label> <label id="Tdislikes" type="text" ></label> </p>
         <p>{{publication.description}}</p>
     </div>
-    <div class="col-sm-1">
+    <div class="col-sm-2">
+        <div class="col-sm-1">
             {% if valLike == "" %}
                 <div class="row ">  
                     <button id="like" type="button" style="margin: 2px" class="btn btn-warning btn-sm " data-url="">
@@ -127,11 +150,12 @@
                     </div>
                 {% endif %}
             {% endif %}
+        </div>
     </div>
     <div class="col-md-5" >
         <div style="height:100%; width: 100%;">
-            <div style="height:325;overflow-y: scroll; overflow-x:hidden;">
-                <p>Comentarios</p>
+            <p>Comentarios</p>
+            <div id='divcom' style="height:325;overflow-y: scroll; overflow-x:hidden;">
                 <ul id="list-comments" class="list-group">
                     {% for c in comments %}
                     <li class="list-group-item" style="height: 80px;">
@@ -156,12 +180,12 @@
                 </ul>
             </div>
             <div>
-                <form method="POST" action="{% url 'publication_get' publication.id %}" >
+                <form method="POST" id='post-form' >
                     {% csrf_token %}
                     <textarea id="pub-comment" class="form-control z-depth-1" name="textarea-pub" rows="3" placeholder="Write something here..."></textarea>
-                    <input id='pub-id' hidden value="{{ publication.id }}"></p>
-                    <button id='btn-comentario'>Comentar</button>
-                </form>
+                    <input id='pub-id' hidden value="{{ publication.id }}"></p>                    
+                    <input type="submit" class="btn btn-primary" id='comentario' value="Comentar">
+                </form> 
             </div>
         </div>
     </div>

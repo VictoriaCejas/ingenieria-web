@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import UserDates, ContentUsers, WorkingHoursSalons, BeautySalons
+from .models import UserDates, ContentUsers, WorkingHoursSalons, BeautySalons, CommentsPublications
 
 
 class servicesSerializer(serializers.ModelSerializer):
@@ -30,3 +30,8 @@ class itemsSelectedSerialezer(serializers.ModelSerializer):
     class Meta:
         model= BeautySalons
         fields=['items']
+        
+class commentsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=CommentsPublications
+    

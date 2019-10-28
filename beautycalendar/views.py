@@ -25,10 +25,13 @@ from rest_framework.reverse import reverse
 
 
 def Home(request):
+    '''Recibe la request de home, la renderiza,ademas,devuelve los items de los distintos rubros existentes'''
     items= WorkItems.objects.all()
     return render(request, 'beautycalendar/home.html', {'items':items})
 
 def filter_professional(request, pk):
+    '''Recibe id del rubro para mostrar los profesionales que sean del mismo, devuelve a cada profesional bussines 
+    que tenga tal id en rubro'''
     item= WorkItems.objects.get(id=pk)
     salons= BeautySalons.objects.filter(items=item)
     owners=[]
@@ -37,7 +40,14 @@ def filter_professional(request, pk):
 
     return render(request, 'beautycalendar/filter_professional.html',{'owners':owners})
 
+'''Calendar'''
 def Calendar(request,pk):
+    
+    ''' El calendario es por empleado.
+        GET: recibe id de salon para renderizar el formulario de calendario
+        POST: recibe id de salon del form se obtine, el empleado,el servicio y la fecha en que se desea sacar turno.
+        calcula los huecos en los que hay disponibilidad horaria para asignar el turno y los muestra'''
+    
     salon= Users.objects.get(id=pk)
     services= ContentUsers.objects.filter(user=salon,category=2,state=1)
     services_list= []
@@ -108,6 +118,8 @@ def Calendar(request,pk):
         serv_tiempo_delta=timedelta(hours=serv_tiempo.hour, minutes=serv_tiempo.minute)
 
         #Minimo tiempo = 30
+        #Desde el ultimo turno pedido en el dia para el profesional, asigna huecos de 30 min. para otorgar un turno.
+        #Ej: si el ultimo turno tomado termina las 15 y el salon cierra a las 17, se debera mostrar 15:00,15:30,16:00,16:30 si el turno dura una hora mostrar 15:00,15:30,16:00
         if last.time() != finish.time():
             time= last
             resta= (timedelta(hours=finish.hour,minutes=finish.minute)-timedelta(hours=time.hour,minutes=time.minute)).seconds/3600
@@ -138,7 +150,9 @@ def Calendar(request,pk):
 
 @login_required
 def confirmarTurno(request,pk):
-
+    '''Recibe el salon y el formulario para obtener un turno, genera la nueva cita y luego le muestra al 
+    usuario, sus turnos tomados'''
+    
     if request.method == 'POST':
         professional= request.POST['val_professional']
         prf= Empleoyees.objects.get(id=professional)
@@ -150,8 +164,6 @@ def confirmarTurno(request,pk):
         time=time.split(":")
         h= int(time[0])
         m= int(time[1])
-        #time_frm= (h*60)+m
-        #att_time= str(datetime.timedelta(minutes=srv.attention_time))
 
         date=datetime.strptime(date, '%d/%m/%Y' )
         i_time= datetime(year=date.year, month=date.month, day=date.day,hour=h,minute=m)
@@ -170,15 +182,21 @@ def confirmarTurno(request,pk):
         nuevaCita.save()
 
     return redirect(PrivateProfile)
-#    return PrivateProfile(request)
+
 @bussines_required
 def getCalendarBussines(request,pk):
+    '''Obtiene el calendario por cada empleado del salon'''
     empleoyee= get_object_or_404(Empleoyees,pk=pk)
     return render(request,'beautycalendar/calendar/calendar_bussines.html',{'empleoyee':empleoyee})
 
+@login_required
+def getCalendarClient(request):
+    '''Obtiene el calendario del cliente'''
+    return render(request,'beautycalendar/calendar/calendar_client.html',{})
+
 @bussines_required
 def getEventsBussines(request,pk):
-    #Ver lo del serializer
+    '''Json que recibe un pk para obtener un empleado y sus turnos asignados'''
     user=request.user
     empleoyee= get_object_or_404(Empleoyees,pk=pk)
 
@@ -187,22 +205,22 @@ def getEventsBussines(request,pk):
     return JsonResponse( serializer_data.data, safe=False)
 
 @login_required
-def getCalendarClient(request):
-    return render(request,'beautycalendar/calendar/calendar_client.html',{})
-
-@login_required
 def getEventsClient(request):
+    '''Json que devueve los turnos de un cliente'''
     user=request.user
     queryset= UserDates.objects.filter(client=user,state=1)
     serialer_data= eventsSerializer(queryset,many=True)
     return JsonResponse(serialer_data.data, safe=False)
 
+'''Publications'''
 @login_required
 def listPublication(request,email):
+    '''Recibe email de quien se requiere ver publicaciones y devuelve la lista de publicaciones y si el 
+    tipo de usuario es el dueño de las publicaciones o un usuario que solo quiere mirarlas'''
+    
     user=Users.objects.get(email=email)
     try:
         lista= Publications.objects.filter(owner=user)
-        #return render(request,'beautycalendar/calendar/dates.html',{'lista':lista})
     except:
         lista=None
     typeUser=1
@@ -213,6 +231,8 @@ def listPublication(request,email):
 
 @login_required
 def createPublication(request):
+    '''GET: muestra el formulario para crear una publicacion
+       POST:recibe los datos para crear una publicacion y la guarda en la base de datos'''
     if request.method== 'POST':
         form= PublForm(request.POST, request.FILES)
         if form.is_valid():
@@ -229,19 +249,21 @@ def createPublication(request):
         return render(request,'beautycalendar/publications/publication_create.html',{'form':form})
 
 def getPublication(request,pk):
+    '''GET: muestra la publicacion con sus cantidades de likes y dislikes
+    POST: guarda un comentario  de la publicacion'''
     user= request.user
 
-    if request.method == 'POST':
-        form=request.POST
-        comment= request.POST['textarea-pub']
-        publication= Publications.objects.get(id=pk)
-        date= datetime.now()
-        publicationComment= CommentsPublications()
-        publicationComment.publication= publication
-        publicationComment.date= date
-        publicationComment.comment= comment
-        publicationComment.user= user
-        publicationComment.save()
+    # if request.method == 'POST':
+    #     form=request.POST
+    #     comment= request.POST['textarea-pub']
+    #     publication= Publications.objects.get(id=pk)
+    #     date= datetime.now()
+    #     publicationComment= CommentsPublications()
+    #     publicationComment.publication= publication
+    #     publicationComment.date= date
+    #     publicationComment.comment= comment
+    #     publicationComment.user= user
+    #     publicationComment.save()
         
     publication= Publications.objects.get(id=pk)    
     val=""
@@ -255,12 +277,13 @@ def getPublication(request,pk):
     return render(request,'beautycalendar/publications/publication.html',{'publication':publication, 'comments':comments,'valLike':valueLike, })
 
 def saveComment(request,pk):
-
+    # import web_pdb; web_pdb.set_trace()
+    publication= Publications.objects.get(id=pk)
+    data=dict()
     if request.method == 'POST':
         form=request.POST
-        comment= request.POST['textarea-pub']
+        comment= request.POST['comment']
         user= request.user
-        publication= Publications.objects.get(id=pk)
         date= datetime.now()
         publicationComment= CommentsPublications()
         publicationComment.publication= publication
@@ -268,16 +291,73 @@ def saveComment(request,pk):
         publicationComment.comment= comment
         publicationComment.user= user
         publicationComment.save()
+        data['is_valid']=True
+        data['comment']=comment
+    return JsonResponse(data)
 
-    comments= publicationComment.objects.get(publication=publication)
-    return Response(comments)
+def Like(request,pk):
+    data= dict()
+    user=request.user
+    publ=Publications(pk=pk)
+    
+    try:
+        publication= LikesPublications.objects.get(user=user,publication=publ)
+        if ('dislike' in request.path):
+            if (publication.value == False):
+                data['is_valid']=False
+            else:
+                publication.value= False
+                data['is_valid']=True
+                publication.save()
+        else:
+            if (publication.value == True):
+                data['is_valid']= False
+            else:
+                publication.value= True
+                data['is_valid']=True
+                publication.save()     
+    except:
+            newLike= LikesPublications()
+            newLike.user=user
+            newLike.publication=publ
+            if ('dislike' in request.path):
+                newLike.value= False
+            else:
+                newLike.value= True
+            newLike.save()
+            data['is_valid']=True
+        
+    return JsonResponse(data)
+
+def DeletePublication(request, pk):
+    data=dict()
+    publication= Publications.objects.get(pk=pk)
+    publication.delete()
+    data['is_valid']=True
+    return JsonResponse(data)
+    
+def TotalLikes(request, pk):
+    data= dict()
+    user=request.user
+    publication= Publications(pk=pk)
+    likes= LikesPublications.objects.filter(publication=publication) 
+    positives=0
+    negatives=0 
+    for l in likes:
+        if l.value== True:
+            positives = positives + 1
+        else:
+            negatives = negatives + 1
+    data['positives']=positives
+    data['negatives']= negatives
+    
+    return JsonResponse(data)
 
 @login_required
 def PrivateProfile(request):
 
     user= request.user
     myuser= Users.objects.get(email=user.email)
-    #kind = Users.objects.get(email=user.email).kind
     kind= myuser.kind
 
     if kind == 1:
@@ -369,6 +449,7 @@ def getDrawClient(request):
         listdraws.append(dr)
     
     return render(request,'beautycalendar/draws/draws_client.html',{'draws':listdraws})
+
 def getParticipants(request,pk):
     draw=Draws.objects.get(pk=pk)
     try:
@@ -376,8 +457,7 @@ def getParticipants(request,pk):
     except:
         participants=[]
     return render(request,'beautycalendar/draws/list_participants.html',{'participants':participants})
-    
-    
+        
 def ListReports(request):
 
     reports= Reports.objects.all()
@@ -391,11 +471,9 @@ def ListReports(request):
     
     return render(request, 'beautycalendar/reports/reports.html', {'reports':reports})
 
-
 def ListUsersLockes(request):
     users= Users.objects.filter(state=3)
     return render(request, 'beautycalendar/reports/users-locked.html',{'users':users})
-
 
 def StateUser(request, email, pk=None):
     user= Users.objects.get(email=email)
@@ -439,9 +517,7 @@ def StateUser(request, email, pk=None):
                 request=request,
             )
     return JsonResponse(data)
-    
-    
-    
+     
 def DeleteEvet(request,pk):
     data=dict()
     event= UserDates.objects.get(pk=pk)
@@ -450,8 +526,7 @@ def DeleteEvet(request,pk):
     return JsonResponse(data)
 
 
-
-"""CRUD"""
+"""CRUD PRODUCTS - SERVICES - EMPLEOYESS """
 @bussines_required
 def mycontent_list(request):
     user= request.user
@@ -468,7 +543,6 @@ def mycontent_list(request):
     if ('draws' in request.path):
         mycontent= Draws.objects.filter(owner=user).exclude(state=2)
         return render(request, 'beautycalendar/draws/draw_list.html', {'mycontent': mycontent})
-
 
 @bussines_required
 def save_mycontent_form(request, form, template_name):
@@ -584,7 +658,6 @@ def mycontent_create(request):
             form= DrawsForm()
         return save_mycontent_form(request, form, 'beautycalendar/draws/includes/partial_draw_create.html')
 
-
 @bussines_required
 def mycontent_update(request, pk):
 
@@ -693,6 +766,8 @@ def mycontent_pause(request, pk):
         })
     return JsonResponse(data)
 
+"""CRUD AVATAR - BIO - FRONT """
+
 @login_required
 def avatar_update(request,pk):
     mycontent = get_object_or_404(Users, pk=pk)
@@ -729,21 +804,6 @@ def bio_update(request,pk):
             form= BioForm(instance=mycontent)
 
     return save_my_profile_update_form(request, form, 'beautycalendar/profiles/partial_bio_update.html')
-
-def get_HoursandDays(request):
-
-    user=request.user
-    queryset= get_object_or_404(WorkingHoursSalons,salon=user)
-    if queryset:
-        serialer_data= wkHoursSerializer(queryset,many=False)
-
-    return JsonResponse(serialer_data.data, safe=False)
-
-def get_items(request):
-    user=request.user
-    querysey= BeautySalons.objects.filter(owner=user)
-    serialer_data= itemsSelectedSerialezer(querysey, many=True)
-    return JsonResponse(serialer_data.data, safe=False)
 
 def save_my_profile_update_form(request,form,template_name):
     data = dict()
@@ -820,7 +880,6 @@ def save_my_profile_update_form(request,form,template_name):
     return JsonResponse(data)
 
 def facebookprivacy(request):
-
     return render(request,'allauth/socialaccount/privacy.html')
 
 class MyPasswordChangeView(PasswordChangeView):
@@ -850,7 +909,7 @@ class MyPasswordChangeView(PasswordChangeView):
 
 password_change = login_required(MyPasswordChangeView.as_view())
 
-
+'''REPORTS'''
 def save_report(request,form,template_name,email):
     data=dict()
 
@@ -877,8 +936,6 @@ def save_report(request,form,template_name,email):
 
     return JsonResponse(data)
 
-
-
 def reporter(request,email):
     if request.method == 'POST':
         form= ReportsForm(request.POST)
@@ -890,64 +947,22 @@ def reporter(request,email):
 
 
     
-def Like(request,pk):
-    data= dict()
-    user=request.user
-    publ=Publications(pk=pk)
-    
-    try:
-        publication= LikesPublications.objects.get(user=user,publication=publ)
-        if ('dislike' in request.path):
-            if (publication.value == False):
-                data['is_valid']=False
-            else:
-                publication.value= False
-                data['is_valid']=True
-                publication.save()
-        else:
-            if (publication.value == True):
-                data['is_valid']= False
-            else:
-                publication.value= True
-                data['is_valid']=True
-                publication.save()     
-    except:
-            newLike= LikesPublications()
-            newLike.user=user
-            newLike.publication=publ
-            if ('dislike' in request.path):
-                newLike.value= False
-            else:
-                newLike.value= True
-            newLike.save()
-            data['is_valid']=True
-        
-    return JsonResponse(data)
 
-def DeletePublication(request, pk):
-    data=dict()
-    publication= Publications.objects.get(pk=pk)
-    publication.delete()
-    data['is_valid']=True
-    return JsonResponse(data)
-    
-def TotalLikes(request, pk):
-    data= dict()
+
+def get_HoursandDays(request):
+
     user=request.user
-    publication= Publications(pk=pk)
-    likes= LikesPublications.objects.filter(publication=publication) 
-    positives=0
-    negatives=0 
-    for l in likes:
-        if l.value== True:
-            positives = positives + 1
-        else:
-            negatives = negatives + 1
-    data['positives']=positives
-    data['negatives']= negatives
-    
-    return JsonResponse(data)
-    
+    queryset= get_object_or_404(WorkingHoursSalons,salon=user)
+    if queryset:
+        serialer_data= wkHoursSerializer(queryset,many=False)
+
+    return JsonResponse(serialer_data.data, safe=False)
+
+def get_items(request):
+    user=request.user
+    querysey= BeautySalons.objects.filter(owner=user)
+    serialer_data= itemsSelectedSerialezer(querysey, many=True)
+    return JsonResponse(serialer_data.data, safe=False)
     
 def mi_error_404(request,Exception):
     nombre_template = 'beautycalendar/404.html'

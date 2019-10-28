@@ -13,11 +13,7 @@ urlpatterns = [
 
     url(r'filter_professional/(?P<pk>\d+)/$', views.filter_professional, name="filter_professional"),
 
-    
-    #path('products', views.product_list, name='product_list'),
-    #path('createproducts',views.product_create, name='product_create'),
-    #path('product-create', view.product_create, name='product_create')
-    #path('poducts/create'),views.product_create, name='product_create'),
+
     url(r'products/$', views.mycontent_list, name='product_list'),
     url(r'products/create/$', views.mycontent_create, name='product_create'),
     url(r'products/(?P<pk>\d+)/update/$', views.mycontent_update, name='product_update'),
@@ -61,7 +57,7 @@ urlpatterns = [
     url(r'publications/client/(?P<email>[\w.@+-]+)/$', views.listPublication, name='publications-client'),
     url(r'publications/create/$', views.createPublication, name='publications_create'),
     url(r'publications/(?P<pk>\d+)/$', views.getPublication, name='publication_get'),
-    url(r'publications/(?P<pk>\d+)/comment/$', views.getPublication, name='save-comment'),
+    url(r'publications/(?P<pk>\d+)/comment/$', views.saveComment, name='save_comment'),
     url(r'publication-delete/(?P<pk>\d+)',views.DeletePublication, name='publication_delete'),
 
     # url(r'events/$',views.getEvents, name='events'),
