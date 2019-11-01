@@ -4,6 +4,27 @@
 {% block javascript %}
 
 <script>
+  $('.hour').on('click',function(){
+    var salon= document.getElementById('salonId').value
+    var fd = document.getElementById("myForm");    
+    var message= confirm("Desea confirmar turno?")
+    if (message==true){   
+      alert(salon)
+      alert(fd)
+      $.ajax({
+        url: '{% url "confirm-date" pk=111 %}'.replace('111',salon),
+        data: $("#myForm").serialize(),
+        method: "POST",
+        type:"POST",
+      }).done(function (data) {
+        if (data.is_valid) {
+            window.location.href = data.url;
+        }    
+      });;
+    }
+  })
+</script>
+<script>
     $(function () {
       $("#id_date").datepicker({
         format:'dd/mm/yyyy',
@@ -70,9 +91,9 @@
         <button class="js-create-times">Buscar</button>
       </form>
     </div>
-
+    <input id='salonId' value="{{salon.id}}" hidden>
     <div class="col-md-8">
-      <form method="POST" action="{% url 'confirm-date' salon.id %}" >
+      <form id='myForm' method="POST" hidden>
         {% csrf_token %}
         <row>
           <p >Servicio: </p>

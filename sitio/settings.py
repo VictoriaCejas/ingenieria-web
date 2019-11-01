@@ -51,7 +51,9 @@ INSTALLED_APPS = [
     'django_summernote',
     
     'rest_framework',
-
+    'rest_framework.authtoken',
+    'rest_auth',
+    'rest_auth.registration'
 ]
 
 MIDDLEWARE = [
@@ -203,6 +205,16 @@ DJANGORESIZED_DEFAULT_KEEP_META = True
 # DJANGORESIZED_DEFAULT_FORCE_FORMAT = 'JPEG'
 # DJANGORESIZED_DEFAULT_FORMAT_EXTENSIONS = {'JPEG': ".jpg"}
 DJANGORESIZED_DEFAULT_NORMALIZE_ROTATION = True
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',  
+    ],
+    'DEFAULT_FILTER_BACKENDS': [
+        'django_filters.rest_framework.DjangoFilterBackend'
+    ],
+
+}
 
 django_heroku.settings(locals())
 

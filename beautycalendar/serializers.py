@@ -1,13 +1,21 @@
 from rest_framework import serializers
-from .models import UserDates, ContentUsers, WorkingHoursSalons, BeautySalons, CommentsPublications
+from .models import UserDates, ContentUsers, WorkingHoursSalons, BeautySalons, CommentsPublications, Users
+from allauth.socialaccount.models import SocialToken
 
 
+"""Usados por beautycalendar"""
 class servicesSerializer(serializers.ModelSerializer):
 
     class Meta:
         model= ContentUsers
         fields=('title',)
 
+class userEventSerializer(serializers.ModelSerializer):
+    salon=serializers.ReadOnlyField()
+    class Meta:
+        model=Users
+        fields=['name_salon','salon']
+        
 class eventsSerializer(serializers.ModelSerializer):
     id= serializers.ReadOnlyField(source='pk')
     title= serializers.StringRelatedField(source='service')
@@ -15,7 +23,7 @@ class eventsSerializer(serializers.ModelSerializer):
     end= serializers.ReadOnlyField(source='finish_time')
     class Meta:
         model= UserDates
-        fields=('id','title','start','end')
+        fields=('id','title','start','end','client','salon','empleoyee')
 
 
 class wkHoursSerializer(serializers.ModelSerializer):
@@ -31,7 +39,29 @@ class itemsSelectedSerialezer(serializers.ModelSerializer):
         model= BeautySalons
         fields=['items']
         
-class commentsSerializer(serializers.ModelSerializer):
+
+"""Usados en API"""
+class serviceSerializer(serializers.ModelSerializer):
     class Meta:
-        model=CommentsPublications
-    
+        model=ContentUsers
+        fields=['user','title','price','attention_time']
+
+class productSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=ContentUsers
+        fields=['user','title','price']
+        
+class bussineSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=Users
+        fields=['first_name','last_name','name_salon','description']
+
+class tokenSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=SocialToken
+        fields= ['token']
+
+class userSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=Users
+        fields='__all__'

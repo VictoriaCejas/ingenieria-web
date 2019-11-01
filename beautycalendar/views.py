@@ -103,31 +103,53 @@ def Calendar(request,pk):
                     resta= (timedelta(hours=inicio_turno.hour,minutes=inicio_turno.minute)-timedelta(hours=last.hour,minutes=last.minute)).seconds/3600
                     huecos.append((last,inicio_turno,resta,))
                 last=fin_turno
-
         serv_tiempo_to_hour= int(serv_tiempo.hour)+(int(serv_tiempo.minute))/60
         for h in huecos:
             if serv_tiempo_to_hour <=  h[2]:
-                divi= int(h[2]/serv_tiempo_to_hour)
-                i=0
-                while( i<divi):
-                    inicio= (timedelta(hours=h[0].hour, minutes=h[0].minute)) + i * (timedelta(hours=serv_tiempo.hour, minutes=serv_tiempo.minute))
-                    h_str=str(inicio)[:-3]
+                #Bloques de 30 en cada hueco hasta la hora que no se puede 
+                tiempo=  h[2]-serv_tiempo_to_hour
+                bloques= h[0]+timedelta(hours=tiempo)
+                hInicio= h[0]
+                while(datetime.time(hInicio)<= datetime.time(bloques)):
+                    h= datetime.time(hInicio)
+                    h_str=str(h)[:-3]
                     disponibles.append((h_str))
-                    i=i+1
+                    hInicio= hInicio+timedelta(hours=0.5)
+
+                # divi= int(h[2]/serv_tiempo_to_hour)
+                # i=0
+                # while( i<divi):
+                #     inicio= (timedelta(hours=h[0].hour, minutes=h[0].minute)) + i * (timedelta(hours=serv_tiempo.hour, minutes=serv_tiempo.minute))
+                #     h_str=str(inicio)[:-3]
+                #     disponibles.append((h_str))
+                #     i=i+1
 
         serv_tiempo_delta=timedelta(hours=serv_tiempo.hour, minutes=serv_tiempo.minute)
 
         #Minimo tiempo = 30
         #Desde el ultimo turno pedido en el dia para el profesional, asigna huecos de 30 min. para otorgar un turno.
-        #Ej: si el ultimo turno tomado termina las 15 y el salon cierra a las 17, se debera mostrar 15:00,15:30,16:00,16:30 si el turno dura una hora mostrar 15:00,15:30,16:00
+        #Ej: si el ultimo turno tomado termina las 15 y el servicio dura 30min y el salon cierra a las 17, se debera mostrar 15:00,15:30,16:00,16:30 si el turno dura una hora mostrar 15:00,15:30,16:00
+        # import web_pdb; web_pdb.set_trace()
         if last.time() != finish.time():
-            time= last
-            resta= (timedelta(hours=finish.hour,minutes=finish.minute)-timedelta(hours=time.hour,minutes=time.minute)).seconds/3600
-            while resta > 0:
-                h_str=time.time()
-                disponibles.append(h_str)
-                time=time+timedelta(minutes=30)
-                resta= (timedelta(hours=finish.hour,minutes=finish.minute)-timedelta(hours=time.hour,minutes=time.minute)).seconds/3600
+            
+            resta= (timedelta(hours=finish.hour,minutes=finish.minute)-timedelta(hours=last.hour,minutes=last.minute)).seconds/3600
+            time= finish
+            tiempo=  resta-serv_tiempo_to_hour        
+            bloques= last+timedelta(hours=tiempo)
+            hInicio= last
+            while(datetime.time(hInicio)<=datetime.time(bloques)):
+                h= datetime.time(hInicio)
+                h_str=str(h)[:-3]
+                disponibles.append((h_str))
+                hInicio= hInicio+timedelta(hours=0.5)
+              
+            # time= last
+            # resta= (timedelta(hours=finish.hour,minutes=finish.minute)-timedelta(hours=time.hour,minutes=time.minute)).seconds/3600
+            # while resta > 0:
+            #     h_str=time.time()
+            #     disponibles.append(h_str)
+            #     time=time+timedelta(minutes=30)
+            #     resta= (timedelta(hours=finish.hour,minutes=finish.minute)-timedelta(hours=time.hour,minutes=time.minute)).seconds/3600
             lista=disponibles
 
         if disponibles is not None:
@@ -152,8 +174,8 @@ def Calendar(request,pk):
 def confirmarTurno(request,pk):
     '''Recibe el salon y el formulario para obtener un turno, genera la nueva cita y luego le muestra al 
     usuario, sus turnos tomados'''
-    
     if request.method == 'POST':
+        # import web_pdb; web_pdb.set_trace()    
         professional= request.POST['val_professional']
         prf= Empleoyees.objects.get(id=professional)
         service= request.POST['val_service']
@@ -180,8 +202,13 @@ def confirmarTurno(request,pk):
         nuevaCita.init_time= i_time
         nuevaCita.finish_time= f_time
         nuevaCita.save()
-
-    return redirect(PrivateProfile)
+        # data=dict()
+        # data['is_valid']= True
+        return JsonResponse({
+                'is_valid': True,
+                'url': reverse('private_profile'),
+            })
+        
 
 @bussines_required
 def getCalendarBussines(request,pk):
@@ -197,20 +224,32 @@ def getCalendarClient(request):
 @bussines_required
 def getEventsBussines(request,pk):
     '''Json que recibe un pk para obtener un empleado y sus turnos asignados'''
+    # import web_pdb; web_pdb.set_trace()
     user=request.user
     empleoyee= get_object_or_404(Empleoyees,pk=pk)
-
     queryset= UserDates.objects.filter(empleoyee=empleoyee,state=1)
     serializer_data= eventsSerializer(queryset, many=True)
+    for d in serializer_data.data:
+        client=Users.objects.get(id=d['client'])
+        d['client']=client.email
+        d['title']= d['title'] +' - '+ 'cliente: '+d['client']
     return JsonResponse( serializer_data.data, safe=False)
 
 @login_required
 def getEventsClient(request):
     '''Json que devueve los turnos de un cliente'''
+    
     user=request.user
     queryset= UserDates.objects.filter(client=user,state=1)
-    serialer_data= eventsSerializer(queryset,many=True)
-    return JsonResponse(serialer_data.data, safe=False)
+    serializer_data= eventsSerializer(queryset,many=True)
+    for d in serializer_data.data:
+        salon=Users.objects.get(id=d['salon'])
+        empleoyee=Empleoyees.objects.get(id=d['empleoyee'])
+        d['salon']=salon.name_salon
+        d['empleoyee']=empleoyee.first_name +' '+empleoyee.last_name
+        d['title']= d['title'] +' - '+ 'salon: '+d['salon'] +' - '+'empleado:'+d['empleoyee']
+    import web_pdb; web_pdb.set_trace()    
+    return JsonResponse(serializer_data.data, safe=False)
 
 '''Publications'''
 @login_required

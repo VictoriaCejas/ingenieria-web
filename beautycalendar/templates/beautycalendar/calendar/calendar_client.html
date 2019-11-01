@@ -35,7 +35,7 @@
         if (message == true){
           var event= info.event.id
           $.ajax({
-            url:'{% url "delete-event" pk=111 %}'.replace(111,event),
+            url:'{% url "delete-event" pk=111 %}'.replace('111',event),
             data:event.id,
             method:"GET",
             type:'json',

@@ -44,7 +44,7 @@
            method:'GET',
            success: function like(data){
                if (data.is_valid){
-                  alert('like hecho'),
+                //   alert('like hecho'),
                   $('#Tlikes').text(likes + ' Likes');
                   $('#Tdislikes').text(dislikes + ' Dislikes');
                   $('#like').attr('disabled',true);
@@ -52,7 +52,7 @@
 
               }
               else{
-                  alert('ya habias dado like')
+                //   alert('ya habias dado like')
               }
          }
 
@@ -74,7 +74,7 @@
            method:'GET',
            success: function like(data){
                if (data.is_valid){
-                  alert('dislike hecho'),
+                //   alert('dislike hecho'),
                   $('#Tdislikes').text(dislikes + ' Dislikes');
                   $("#Tlikes").text(likes+' Likes');
                   $('#dislike').attr("disabled", true);
@@ -82,7 +82,7 @@
 
                   }
               else{
-                  alert('ya habias dado dislike')
+                //   alert('ya habias dado dislike')
               }
            }
 

@@ -2,9 +2,41 @@ from django.urls import path, include
 from . import views
 from django.conf.urls import url
 from django.conf.urls import handler404
+from rest_framework import routers
+from . import apiViews
+from rest_framework.authtoken.views import obtain_auth_token
 
+router= routers.DefaultRouter()
+router.register(r'users',apiViews.UserView,base_name='users')
+# router.register(r'services',apiViews.ServicesView)
+# router.register(r'services',apiViews.servicesViewSet)
+# router.register(r'services', apiViews.servicesViewSet, basename='services')
 urlpatterns = [
+    
+    path('api/', include(router.urls)),
+    
+    path('api/token-auth/',obtain_auth_token,name='api_token_auth'),
+    
+    path('api/rest-auth/', include('rest_auth.urls')),
+    
+    path('api/rest-auth/facebook', apiViews.FacebookLogin.as_view(), name='fb-login'),
+
+    path('api/rest-auth/google',apiViews.GoogleLogin.as_view(), name='google-login'),
+    
+    path('api/services/',apiViews.ServicesView.as_view(),name='services'),
+    
+    url(r'api/services/(?P<email>[\w.@+-]+)/',apiViews.ServiceList.as_view(),name='services-bussines'),
+    
+    url(r'api/dates/get',apiViews.DatesClientView.as_view(),name='dates-client'),
+    url(r'api/dates/post',apiViews.DatesClientView.as_view(),name='post-dates-client'),
+    path('api/token/',apiViews.tokenAppView.as_view(),name='token-app'),
+    
+    # url(r'api/users/',apiViews.UserView.as_view({'get':'list'}),name='users'),
+    # url(r'api/users/(?P<email>[\w.@+-]+)/', apiViews.UserView.as_view({'get':'one'}),name='user'),
+    # url('api/services/(?P<email>.+)/$', apiViews.ServiceList.as_view()),
+
     path('', views.Home, name='home'),
+    
     url(r'^accounts/password/change/$', views.password_change, name='password_change'),
 
     url(r'^accounts/', include('allauth.urls')),

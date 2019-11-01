@@ -5,6 +5,7 @@ from django.dispatch import receiver
 from django.contrib.auth.models import  BaseUserManager, AbstractBaseUser
 from django.core.validators import MaxValueValidator
 from django_resized import ResizedImageField
+from rest_framework.authtoken.models import Token
 
 # Create your models here.
 
@@ -345,7 +346,9 @@ def sing_up(request,user,**kwargs):
     us.state= stateUser
     us.kind= kindUser
     us.save()
-
+    """Crear token para api"""
+    Token.objects.create(user=us)
+    
 @receiver(email_confirmed)
 def confirm_user(request,email_address,**kwargs):
     #Cuando se recibe la señal de confirmacion de mail, cambia el estado del usuario
