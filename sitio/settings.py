@@ -227,7 +227,6 @@ REST_FRAMEWORK = {
 
  
 
-django_heroku.settings(locals())
 
 if os.environ.get('SEARCHBOX_URL'):
     from urllib.parse import urlparse
@@ -246,3 +245,4 @@ if os.environ.get('SEARCHBOX_URL'):
     if es.username:
         HAYSTACK_CONNECTIONS['default']['KWARGS'] = {"http_auth": es.username + ':' + es.password}
        
+django_heroku.settings(locals())
