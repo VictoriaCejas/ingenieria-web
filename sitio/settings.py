@@ -225,9 +225,6 @@ REST_FRAMEWORK = {
 
 }
 
-
-django_heroku.settings(locals())
-
 if os.environ.get('HEROKU', False):
     # settings especificas para heroku
     import dj_database_url
@@ -250,3 +247,6 @@ if os.environ.get('HEROKU', False):
 
     if es.username:
         HAYSTACK_CONNECTIONS['default']['KWARGS'] = {"http_auth": es.username + ':' + es.password}
+
+django_heroku.settings(locals())
+
