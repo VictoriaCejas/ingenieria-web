@@ -6,3 +6,4 @@ myvenv
 .DS_Store
 .vscode
 db.sqlite3
+/whoosh_index
