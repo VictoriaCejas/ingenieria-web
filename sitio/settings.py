@@ -32,7 +32,6 @@ ALLOWED_HOSTS = ['localhost','127.0.0.1'] #LocalHost para login social con Faceb
 # Application definition
 
 INSTALLED_APPS = [
-    'beautycalendar',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -42,19 +41,29 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     #'registration',
     #'django_extensions',
+    'haystack',
     
+    'beautycalendar',    
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.facebook',
     'allauth.socialaccount.providers.google',
     'django_summernote',
-    
+
+
     'rest_framework',
     'rest_framework.authtoken',
     'rest_auth',
     'rest_auth.registration'
 ]
+
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.whoosh_backend.WhooshEngine',
+        'PATH': os.path.join(BASE_DIR, 'whoosh_index'),
+    },
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

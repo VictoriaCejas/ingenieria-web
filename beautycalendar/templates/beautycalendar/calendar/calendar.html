@@ -9,8 +9,6 @@
     var fd = document.getElementById("myForm");    
     var message= confirm("Desea confirmar turno?")
     if (message==true){   
-      alert(salon)
-      alert(fd)
       $.ajax({
         url: '{% url "confirm-date" pk=111 %}'.replace('111',salon),
         data: $("#myForm").serialize(),

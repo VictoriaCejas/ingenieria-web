@@ -110,7 +110,10 @@ urlpatterns = [
     
     url(r'like/(?P<pk>\d+)',views.Like,name='like'),
     url(r'dislike/(?P<pk>\d+)',views.Like,name='dislike'),
-    url(r'totalLikes/(?P<pk>\d+)', views.TotalLikes, name='totalLikes')
+    url(r'totalLikes/(?P<pk>\d+)', views.TotalLikes, name='totalLikes'),
+
+    url(r'^search/', include('haystack.urls')),
+    url(r'^search/autocomplete',views.autocomplete, name='autocomplete')
     
 
 ]

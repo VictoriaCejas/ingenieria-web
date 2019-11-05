@@ -19,7 +19,9 @@ from .serializers import eventsSerializer,wkHoursSerializer,itemsSelectedSeriale
 from rest_framework import response
 from rest_framework.renderers import JSONRenderer
 from rest_framework.reverse import reverse
-
+import simplejson as json
+from django.http import HttpResponse
+from haystack.query import SearchQuerySet
 
 # Create your views here.
 
@@ -129,7 +131,6 @@ def Calendar(request,pk):
         #Minimo tiempo = 30
         #Desde el ultimo turno pedido en el dia para el profesional, asigna huecos de 30 min. para otorgar un turno.
         #Ej: si el ultimo turno tomado termina las 15 y el servicio dura 30min y el salon cierra a las 17, se debera mostrar 15:00,15:30,16:00,16:30 si el turno dura una hora mostrar 15:00,15:30,16:00
-        # import web_pdb; web_pdb.set_trace()
         if last.time() != finish.time():
             
             resta= (timedelta(hours=finish.hour,minutes=finish.minute)-timedelta(hours=last.hour,minutes=last.minute)).seconds/3600
@@ -175,7 +176,6 @@ def confirmarTurno(request,pk):
     '''Recibe el salon y el formulario para obtener un turno, genera la nueva cita y luego le muestra al 
     usuario, sus turnos tomados'''
     if request.method == 'POST':
-        # import web_pdb; web_pdb.set_trace()    
         professional= request.POST['val_professional']
         prf= Empleoyees.objects.get(id=professional)
         service= request.POST['val_service']
@@ -224,7 +224,6 @@ def getCalendarClient(request):
 @bussines_required
 def getEventsBussines(request,pk):
     '''Json que recibe un pk para obtener un empleado y sus turnos asignados'''
-    # import web_pdb; web_pdb.set_trace()
     user=request.user
     empleoyee= get_object_or_404(Empleoyees,pk=pk)
     queryset= UserDates.objects.filter(empleoyee=empleoyee,state=1)
@@ -248,7 +247,6 @@ def getEventsClient(request):
         d['salon']=salon.name_salon
         d['empleoyee']=empleoyee.first_name +' '+empleoyee.last_name
         d['title']= d['title'] +' - '+ 'salon: '+d['salon'] +' - '+'empleado:'+d['empleoyee']
-    import web_pdb; web_pdb.set_trace()    
     return JsonResponse(serializer_data.data, safe=False)
 
 '''Publications'''
@@ -316,7 +314,6 @@ def getPublication(request,pk):
     return render(request,'beautycalendar/publications/publication.html',{'publication':publication, 'comments':comments,'valLike':valueLike, })
 
 def saveComment(request,pk):
-    # import web_pdb; web_pdb.set_trace()
     publication= Publications.objects.get(id=pk)
     data=dict()
     if request.method == 'POST':
@@ -1007,3 +1004,13 @@ def mi_error_404(request,Exception):
     nombre_template = 'beautycalendar/404.html'
     return page_not_found(request, template_name=nombre_template)
 
+def autocomplete(request):
+    sqs = SearchQuerySet().autocomplete(content_auto=request.GET.get('q', ''))[:5]
+    suggestions = [result.title for result in sqs]
+    suggestions=list(set(suggestions))
+    # Make sure you return a JSON object, not a bare list.
+    # Otherwise, you could be vulnerable to an XSS attack.
+    the_data = json.dumps({
+        'results': suggestions
+    })
+    return HttpResponse(the_data, content_type='application/json')

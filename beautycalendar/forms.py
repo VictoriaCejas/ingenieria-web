@@ -3,6 +3,7 @@ from .models import Users, ContentUsers, Empleoyees, WorkItems, BeautySalons, Pu
 from allauth.account.forms import SignupForm
 from django_resized import ResizedImageField
 from django_summernote.widgets import SummernoteWidget, SummernoteInplaceWidget
+from haystack.forms import SearchForm
 
 
 class CustomSignupForm(SignupForm):
@@ -151,3 +152,4 @@ class DrawsForm(forms.ModelForm):
       def __init__(self, *args, **kwargs):
         super(self.__class__, self).__init__(*args, **kwargs)
         self.fields['owner'].required= False
+

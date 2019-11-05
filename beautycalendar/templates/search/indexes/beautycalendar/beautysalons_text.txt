@@ -1,0 +1,4 @@
+{{ object.items }}
+{{ object.owner }}
+{{ object.name_salon }}
+{{ object.full_name }}
