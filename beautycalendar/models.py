@@ -325,7 +325,6 @@ class DrawsList(models.Model):
 @receiver(user_signed_up)
 def sing_up(request,user,**kwargs):
     #Cuando se recibe señal de registro exitoso, se guarda en usuario en el modelo Usuario.
-    #import web_pdb; web_pdb.set_trace()
     """Cuando se recive la señal de registro exitoso, se guarda en usuarios el modelo
     de usuario, ademas, si el usuario es bussines, crea el salon correspondiente a este"""
     active= 1
@@ -347,7 +346,6 @@ def sing_up(request,user,**kwargs):
     else:
         stateUser= active
         kindUser= client
-        #import web_pdb; web_pdb.set_trace()
         email=user
     us=Users.objects.get(email=email)
     us.state= stateUser

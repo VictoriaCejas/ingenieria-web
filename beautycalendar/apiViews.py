@@ -28,7 +28,6 @@ class UserView(viewsets.ReadOnlyModelViewSet):
 class tokenAppView(APIView):
     'obtiene token del provider para un usuario para utilizar GoogleLogin y FacebookLogin'
     def post(self,request):
-        import web_pdb; web_pdb.set_trace()    
         data=json.loads(request.body)    
         email=data['email']
         provider=data['provider']
@@ -43,7 +42,6 @@ class ServiceList(generics.ListAPIView):
     serializer_class= serviceSerializer
     
     def get_queryset(self):
-        import web_pdb; web_pdb.set_trace()
         email=self.kwargs['email']
         user= Users.objects.get(email=email)
         services= ContentUsers.objects.filter(state=1,category=2,user=user)
@@ -111,17 +109,28 @@ class GoogleLogin(SocialLoginView):
     client_class = OAuth2Client
     callback_url= ['http://127.0.0.1:8000/accounts/google/login/callback']
 
+
 class DatesClientView(APIView):
     '''Lista los turnos para un cliente pasando en json email
     '''  
     permission_classes = (IsAuthenticated,)             
     def get(self,request, *args, **kwargs):
-        import web_pdb; web_pdb.set_trace()
+        user= request.user
         data=json.loads(request.body)
-        email= data['email']
-        client=Users.objects.get(email=email)
-        dates= UserDates.objects.filter(client=client)
-        serializer=eventsSerializer(dates,many=True)
-        return JsonResponse(serializer.data,safe=False)
+        email=data['email']
+        try:
+            userEmail= Users.objects.get(id=email)
+        except:
+            userEmail= Users.objects.get(email=email)
+      
+        if user==userEmail:
+            data=json.loads(request.body)
+            email= data['email']
+            client=Users.objects.get(email=email)
+            dates= UserDates.objects.filter(client=client)
+            serializer=eventsSerializer(dates,many=True)
+            return JsonResponse(serializer.data,safe=False)
+        else:
+            return Response(data={'Solo puedes ver tus turnos'})
     
         

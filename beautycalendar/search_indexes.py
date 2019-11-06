@@ -41,7 +41,6 @@ class beautySalonsIndex(indexes.SearchIndex, indexes.Indexable):
         return obj.owner.name_salon
     
     def prepare_full_name(self,obj):
-        #import web_pdb; web_pdb.set_trace()
         #full= obj.owner.first_name + obj.owner.last_name
         return obj.owner.get_full_name()
     
