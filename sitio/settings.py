@@ -224,10 +224,10 @@ REST_FRAMEWORK = {
     ],
 }
 
-if os.environ.get('SEARCHBOX_URL'):
+if os.environ.get('SEARCHBOX_SSL_URL'):
     from urllib.parse import urlparse
                     
-    es = urlparse(os.environ.get('SEARCHBOX_URL') or 'http://127.0.0.1:9200/')
+    es = urlparse(os.environ.get('SEARCHBOX_SSL_URL') or 'http://127.0.0.1:9200/')
 
     port = es.port or 80
 
