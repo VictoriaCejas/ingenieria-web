@@ -226,13 +226,14 @@ REST_FRAMEWORK = {
 
 if os.environ.get('SEARCHBOX_URL'):
     from urllib.parse import urlparse
-
+                    
     es = urlparse(os.environ.get('SEARCHBOX_URL') or 'http://127.0.0.1:9200/')
+
     port = es.port or 80
 
     HAYSTACK_CONNECTIONS = {
         'default': {
-            'ENGINE': 'haystack_elasticsearch5.Elasticsearch5SearchEngine',
+            'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
             'URL': es.scheme + '://' + es.hostname + ':' + str(port),
             'INDEX_NAME': 'documents',
         },
