@@ -97,107 +97,104 @@
         {% if query %}
             <h3>Resultados</h3>
             {% for result in page.object_list %}
-            <div class="container-fluid">
-                <div class="row">
-                  <div class="col-2">
-                  </div>
-                  <div class="col-6">
-                {% if result.model_name == 'users' %}
-                  {% if result.kind == 1 %}
-                    {% if result.name_salon %}
-                    <div class="row" style="margin: 10px"></div>
-                    <div class="card mb-3" style="max-width: 900px;">
-                        <div class="card-body">
-                            <h5 class="card-title">              
-                              <a href="{% url 'public_profile' result.email %}"style="color:orange"><b> {{result.name_salon}}</b></a>
-                            </h5>
-                          </div>
-                            </div>
-                        </div>
+              <div class="container-fluid">
+                  <div class="row">
+                    <div class="col-2">
                     </div>
-            
-                    {% else %}
-
-                    <div class="row" style="margin: 10px"></div>
-                    <div class="card mb-3" style="max-width: 900px;">
-                        <div class="card-body">
-                            <h5 class="card-title">              
-                              <a href="{% url 'public_profile' result.email %}"style="color:orange"><b> {{result.title}}</b></a>
-                            </h5>
-                          </div>
-                            </div>
-                        </div>
-                    </div>
-  
-                    {% endif %}
-                  {% else %}
-                      {% if result.kind == 2 %}   
-                      <div class="row" style="margin: 10px"></div>
-                      <div class="card mb-3" style="max-width: 900px;">
-                          <div class="card-body">
-                              <h5 class="card-title">              
-                                <a href="{% url 'public_profile' result.email %}"style="color:orange"><b>{{result.title}}</b></a>
-                              </h5>
-                            </div>
-                              </div>
-                          </div>
-                      </div>
-                      {% endif %}
-                      {% endif %}
-                  {% endif %}
-                {% if result.model_name == 'contentusers' %}
-                <div class="row" style="margin: 10px"></div>
-                <div class="card mb-3" style="max-width: 900px;">
-                    <div class="card-body">
-                        <h5 class="card-title">     
-                                   
-                          <a href="{% url 'public_profile' result.user %}" style="color:orange"><b> {{ result.title }}</b></a>
-                          
-                          <div class="card-text">
-                            <p>Usuario: {{result.user}}</p>
-                            <p>Precio: {{result.price}}</p>
-                          
-                            {% if result.category == "1" %}
-                              <p>Categoria: Producto</p>
-                            {% endif %}
-                            {% if result.category == "2"  %}
-                              <p>Categoria: Servicio</p>                              
-                            {% endif %}
-                          </div>
-                        </h5>
-                      </div>
-                        </div>
-                    </div>
-                </div>
-                {% endif %}
-                  {% if result.model_name == 'beautysalons' %}
-                      {% if result.salon_name != 'None' %}
-                      <div class="row" style="margin: 10px"></div>
+                    <div class="col-6">
+                  {% if result.model_name == 'users' %}
+                    {% if result.kind == 1 %}
+                      {% if result.name_salon!='None' %}
+                        <div class="row" style="margin: 10px"></div>
                         <div class="card mb-3" style="max-width: 900px;">
                             <div class="card-body">
                                 <h5 class="card-title">              
-                                  <a href="{% url 'public_profile' result.owner %}" style="color:orange"><b> {{ result.salon_name }} </b></a>
+                                  <a href="{% url 'public_profile' result.email %}"style="color:orange"><b> {{result.name_salon}}</b></a>
                                 </h5>
                               </div>
                                 </div>
                             </div>
                         </div>
                       {% else %}
+                        <div class="row" style="margin: 10px"></div>
+                        <div class="card mb-3" style="max-width: 900px;">
+                            <div class="card-body">
+                                <h5 class="card-title">              
+                                  <a href="{% url 'public_profile' result.email %}"style="color:orange"><b> {{result.title}}</b></a>
+                                </h5>
+                              </div>
+                                </div>
+                            </div>
+                          </div>
+                      {% endif %}
+                    {% else %}
+                        {% if result.kind == 2 %}   
+                          <div class="row" style="margin: 10px"></div>
+                          <div class="card mb-3" style="max-width: 900px;">
+                              <div class="card-body">
+                                  <h5 class="card-title">              
+                                    <a href="{% url 'public_profile' result.email %}"style="color:orange"><b>{{result.title}}</b></a>
+                                  </h5>
+                                </div>
+                                  </div>
+                              </div>
+                          </div>
+                        {% endif %}
+                    {% endif %}
+                  {% else %}
+                    {% if result.model_name == 'contentusers' %}
                       <div class="row" style="margin: 10px"></div>
                       <div class="card mb-3" style="max-width: 900px;">
                           <div class="card-body">
-                              <h5 class="card-title">              
-                                <a href="{% url 'public_profile' result.owner %}"style="color:orange"><b> {{ result.full_name }}</b></a>
+                              <h5 class="card-title">     
+                                        
+                                <a href="{% url 'public_profile' result.user %}" style="color:orange"><b> {{ result.title }}</b></a>
+                                
+                                <div class="card-text">
+                                  <p>Usuario: {{result.user}}</p>
+                                  <p>Precio: {{result.price}}</p>
+                                
+                                  {% if result.category == "1" %}
+                                    <p>Categoria: Producto</p>
+                                  {% endif %}
+                                  {% if result.category == "2"  %}
+                                    <p>Categoria: Servicio</p>                              
+                                  {% endif %}
+                                </div>
                               </h5>
                             </div>
                               </div>
                           </div>
                       </div>
-                      {% endif %}
-                {% endif %}
-                  
-              </div>
-               
+                    {% endif %}
+                    {% if result.model_name == 'beautysalons' %}
+                        {% if result.salon_name != 'None' %}
+                          <div class="row" style="margin: 10px"></div>
+                            <div class="card mb-3" style="max-width: 900px;">
+                                <div class="card-body">
+                                    <h5 class="card-title">              
+                                      <a href="{% url 'public_profile' result.owner %}" style="color:orange"><b> {{ result.salon_name }} </b></a>
+                                    </h5>
+                                  </div>
+                                    </div>
+                                </div>
+                          </div>
+                        {% else %}
+                          <div class="row" style="margin: 10px"></div>
+                          <div class="card mb-3" style="max-width: 900px;">
+                              <div class="card-body">
+                                  <h5 class="card-title">              
+                                    <a href="{% url 'public_profile' result.owner %}"style="color:orange"><b> {{ result.full_name }}</b></a>
+                                  </h5>
+                                </div>
+                                  </div>
+                              </div>
+                          </div>
+                        {% endif %}
+                  {% endif %}
+                    
+                </div>
+                
             {% empty %}
                 <p>No results found.</p>
             {% endfor %}
