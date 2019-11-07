@@ -250,7 +250,6 @@ def getEventsClient(request):
     return JsonResponse(serializer_data.data, safe=False)
 
 '''Publications'''
-@login_required
 def listPublication(request,email):
     '''Recibe email de quien se requiere ver publicaciones y devuelve la lista de publicaciones y si el 
     tipo de usuario es el dueño de las publicaciones o un usuario que solo quiere mirarlas'''
