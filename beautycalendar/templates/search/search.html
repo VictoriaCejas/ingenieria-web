@@ -104,12 +104,12 @@
                     <div class="col-6">
                   {% if result.model_name == 'users' %}
                     {% if result.kind == 1 %}
-                      {% if result.name_salon!='None' %}
+                      {% if result.name_salon == 'None' %}
                         <div class="row" style="margin: 10px"></div>
                         <div class="card mb-3" style="max-width: 900px;">
                             <div class="card-body">
                                 <h5 class="card-title">              
-                                  <a href="{% url 'public_profile' result.email %}"style="color:orange"><b> {{result.name_salon}}</b></a>
+                                  <a href="{% url 'public_profile' result.email %}"style="color:orange"><b> {{result.title}}</b></a>
                                 </h5>
                               </div>
                                 </div>
@@ -120,7 +120,7 @@
                         <div class="card mb-3" style="max-width: 900px;">
                             <div class="card-body">
                                 <h5 class="card-title">              
-                                  <a href="{% url 'public_profile' result.email %}"style="color:orange"><b> {{result.title}}</b></a>
+                                  <a href="{% url 'public_profile' result.email %}"style="color:orange"><b> {{result.name_salon}}</b></a>
                                 </h5>
                               </div>
                                 </div>
@@ -168,12 +168,12 @@
                       </div>
                     {% endif %}
                     {% if result.model_name == 'beautysalons' %}
-                        {% if result.salon_name != 'None' %}
+                        {% if result.salon_name == "None" %}
                           <div class="row" style="margin: 10px"></div>
                             <div class="card mb-3" style="max-width: 900px;">
                                 <div class="card-body">
                                     <h5 class="card-title">              
-                                      <a href="{% url 'public_profile' result.owner %}" style="color:orange"><b> {{ result.salon_name }} </b></a>
+                                      <a href="{% url 'public_profile' result.owner %}" style="color:orange"><b> {{ result.full_name }} </b></a>
                                     </h5>
                                   </div>
                                     </div>
@@ -184,7 +184,7 @@
                           <div class="card mb-3" style="max-width: 900px;">
                               <div class="card-body">
                                   <h5 class="card-title">              
-                                    <a href="{% url 'public_profile' result.owner %}"style="color:orange"><b> {{ result.full_name }}</b></a>
+                                    <a href="{% url 'public_profile' result.owner %}"style="color:orange"><b> {{ result.salon_name }}</b></a>
                                   </h5>
                                 </div>
                                   </div>
@@ -192,11 +192,10 @@
                           </div>
                         {% endif %}
                   {% endif %}
-                    
-                </div>
+                  {% endif %}
                 
             {% empty %}
-                <p>No results found.</p>
+                <h5>No se encontraron resultados</h5>
             {% endfor %}
             {% if page.has_previous or page.has_next %}
                 <div>
