@@ -73,4 +73,5 @@ web-pdb==1.5.1
 whitenoise==4.1.3
 Whoosh==2.7.4
 elasticsearch
-django-haystack-elasticsearch5
+certifi
+
