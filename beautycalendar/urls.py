@@ -113,7 +113,8 @@ urlpatterns = [
     url(r'totalLikes/(?P<pk>\d+)', views.TotalLikes, name='totalLikes'),
 
     url(r'^search/', include('haystack.urls')),
-    url(r'^search/autocomplete',views.autocomplete, name='autocomplete')
+    url(r'^search/autocomplete',views.autocomplete, name='autocomplete'),
+    url(r'^robots\.txt/$', TemplateView.as_view(template_name='robots.txt', content_type='text/plain'))
     
 
 ]
