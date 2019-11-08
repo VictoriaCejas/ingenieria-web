@@ -1,0 +1,8 @@
+User-agent: *
+Disallow: /allauth/
+Disallow: /private_profile_base.html
+Disallow: /private_profile_admin.html
+Disallow: /private_profile_bussines.html
+Disallow: /private_profile_client.html
+Disallow: /profiles/
+Disallow: /reports/
