@@ -5,6 +5,7 @@ from django.conf.urls import handler404
 from rest_framework import routers
 from . import apiViews
 from rest_framework.authtoken.views import obtain_auth_token
+from django.views.generic import TemplateView
 
 router= routers.DefaultRouter()
 router.register(r'users',apiViews.UserView,base_name='users')
